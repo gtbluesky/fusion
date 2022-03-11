@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gtbluesky.fusion">
+
+    <application>
+        <activity
+            android:name=".controller.FusionActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:theme="@style/FusionTheme"
+            android:windowSoftInputMode="adjustResize" />
+    </application>
+</manifest>
