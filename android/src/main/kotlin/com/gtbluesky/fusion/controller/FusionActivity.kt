@@ -30,7 +30,7 @@ class FusionActivity : FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val routeName = intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: "/"
+        val routeName = intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         engineBinding = EngineBinding(context, routeName, routeArguments).also {

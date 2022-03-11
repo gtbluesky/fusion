@@ -6,7 +6,7 @@
 //
 
 import Foundation
-public class FusionViewController: FlutterViewController {
+open class FusionViewController: FlutterViewController {
     private let engineBinding: EngineBinding
     
     public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
@@ -14,12 +14,12 @@ public class FusionViewController: FlutterViewController {
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    public required init(coder aDecoder: NSCoder) {
         engineBinding = EngineBinding(routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
     }
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         engineBinding.attach()
