@@ -6,7 +6,10 @@ import 'page/test_page.dart';
 import 'page/unknown_page.dart';
 
 void main() {
-  runApp(FusionApp(routeMap));
+  runApp(FusionApp(
+    routeMap,
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
 final Map<String, PageFactory> routeMap = {
