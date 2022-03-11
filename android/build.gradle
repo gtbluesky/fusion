@@ -2,7 +2,7 @@ group 'com.gtbluesky.fusion'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.5.30'
     repositories {
         google()
         mavenCentral()
