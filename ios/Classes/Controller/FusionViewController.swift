@@ -7,16 +7,16 @@
 
 import Foundation
 open class FusionViewController: FlutterViewController {
-    private let engineBinding: EngineBinding
+    private let engineBinding: FusionEngineBinding
     
     public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
-        engineBinding = EngineBinding(routeName: routeName, routeArguments: routeArguments)
+        engineBinding = FusionEngineBinding(routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
         engineBinding.provideEngine(vc: self)
     }
     
     public required init(coder aDecoder: NSCoder) {
-        engineBinding = EngineBinding(routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
+        engineBinding = FusionEngineBinding(routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
     }
     

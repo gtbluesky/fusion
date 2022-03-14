@@ -9,7 +9,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 
-internal class EngineBinding(
+internal class FusionEngineBinding(
     context: Context,
     routeName: String,
     routeArguments: Map<String, Any>?
@@ -25,7 +25,7 @@ internal class EngineBinding(
         engine = Fusion.engineGroup.createAndRunEngine(context, DartExecutor.DartEntrypoint.createDefault(), routeUri)
         channel = MethodChannel(engine.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
         attach()
-        if (context is EngineProvider) {
+        if (context is FusionEngineProvider) {
             context.onEngineCreated(engine)
         }
     }

@@ -2,7 +2,7 @@ package com.gtbluesky.fusion.controller
 
 import android.content.Context
 import android.os.Bundle
-import com.gtbluesky.fusion.engine.EngineBinding
+import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.constant.FusionConstant
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.RenderMode
@@ -11,7 +11,7 @@ import java.io.Serializable
 
 class FusionFragment : FlutterFragment() {
 
-    private lateinit var engineBinding: EngineBinding
+    private lateinit var engineBinding: FusionEngineBinding
 
     companion object {
         @JvmStatic
@@ -30,7 +30,7 @@ class FusionFragment : FlutterFragment() {
         val routeName = arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        engineBinding = EngineBinding(context, routeName, routeArguments)
+        engineBinding = FusionEngineBinding(context, routeName, routeArguments)
         super.onAttach(context)
     }
 

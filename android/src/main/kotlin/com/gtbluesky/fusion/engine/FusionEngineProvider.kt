@@ -2,6 +2,6 @@ package com.gtbluesky.fusion.engine
 
 import io.flutter.embedding.engine.FlutterEngine
 
-interface EngineProvider {
+interface FusionEngineProvider {
     fun onEngineCreated(engine: FlutterEngine)
 }

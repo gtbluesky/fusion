@@ -5,11 +5,11 @@ import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.controller.FusionFragment
-import com.gtbluesky.fusion.engine.EngineProvider
+import com.gtbluesky.fusion.engine.FusionEngineProvider
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
 import io.flutter.embedding.engine.FlutterEngine
 
-class FragmentSceneActivity : FragmentActivity(), EngineProvider {
+class FragmentSceneActivity : FragmentActivity(), FusionEngineProvider {
     private lateinit var binding: ActivityFirstFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

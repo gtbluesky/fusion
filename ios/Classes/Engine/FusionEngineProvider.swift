@@ -6,6 +6,6 @@
 //
 
 import Foundation
-public protocol EngineProvider {
+public protocol FusionEngineProvider {
     func onEngineCreated(engine: FlutterEngine)
 }

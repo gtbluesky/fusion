@@ -7,7 +7,7 @@
 
 import Foundation
 import fusion
-class CustomViewController : FusionViewController, EngineProvider {
+class CustomViewController : FusionViewController, FusionEngineProvider {
     func onEngineCreated(engine: FlutterEngine) {
         print("CustomViewController,onEngineCreated")
     }

@@ -6,19 +6,19 @@
 //
 
 import Foundation
-class EngineBinding {
+class FusionEngineBinding {
     private var channel: FlutterMethodChannel? = nil
     let engine: FlutterEngine
     
     init(routeName: String, routeArguments: Dictionary<String, Any>?) {
-        let initialRoute = EngineBinding.convert2Uri(routeName, routeArguments)
+        let initialRoute = FusionEngineBinding.convert2Uri(routeName, routeArguments)
         engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
         attach()
     }
     
     func provideEngine(vc: UIViewController) {
-        if let provider = vc as? EngineProvider {
+        if let provider = vc as? FusionEngineProvider {
             provider.onEngineCreated(engine: engine)
         }
     }
