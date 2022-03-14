@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fusion/channel/fusion_channel.dart';
 import 'package:fusion/navigator/fusion_navigator.dart';
 
@@ -92,6 +93,10 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
+    if (_history.length == 1) {
+      SystemNavigator.pop(animated: true)
+      return;
+    }
     _history.removeLast();
     _callback[_history.last]?.complete(result);
     await FusionChannel.pop();
