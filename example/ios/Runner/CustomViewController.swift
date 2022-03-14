@@ -7,8 +7,12 @@
 
 import Foundation
 import fusion
-class CustomViewController : FusionViewController, FusionEngineProvider {
-    func onEngineCreated(engine: FlutterEngine) {
-        print("CustomViewController,onEngineCreated")
+class CustomViewController : FusionViewController, FusionMessengerProvider {
+    func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
+        print("CustomViewController, configureFlutterChannel")
+        let channel = FlutterMethodChannel(name: "channel名", binaryMessenger: binaryMessenger)
+        channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+   
+        }
     }
 }

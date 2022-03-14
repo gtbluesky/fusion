@@ -25,8 +25,8 @@ internal class FusionEngineBinding(
         engine = Fusion.engineGroup.createAndRunEngine(context, DartExecutor.DartEntrypoint.createDefault(), routeUri)
         channel = MethodChannel(engine.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
         attach()
-        if (context is FusionEngineProvider) {
-            context.onEngineCreated(engine)
+        if (context is FusionMessengerProvider) {
+            context.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
         }
     }
 

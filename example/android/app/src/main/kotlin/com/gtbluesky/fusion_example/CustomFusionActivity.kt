@@ -2,13 +2,13 @@ package com.gtbluesky.fusion_example
 
 import android.util.Log
 import com.gtbluesky.fusion.controller.FusionActivity
-import com.gtbluesky.fusion.engine.FusionEngineProvider
-import io.flutter.embedding.engine.FlutterEngine
+import com.gtbluesky.fusion.engine.FusionMessengerProvider
+import io.flutter.plugin.common.BinaryMessenger
 
-class CustomFusionActivity : FusionActivity(), FusionEngineProvider {
+class CustomFusionActivity : FusionActivity(), FusionMessengerProvider {
 
-    override fun onEngineCreated(engine: FlutterEngine) {
-        Log.d("CustomFusionActivity", "onEngineCreated")
+    override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
+        Log.d("CustomFusionActivity", "configureFlutterChannel")
     }
 
 }

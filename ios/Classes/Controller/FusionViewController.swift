@@ -12,7 +12,7 @@ open class FusionViewController: FlutterViewController {
     public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
         engineBinding = FusionEngineBinding(routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
-        engineBinding.provideEngine(vc: self)
+        engineBinding.provideMessenger(vc: self)
     }
     
     public required init(coder aDecoder: NSCoder) {
