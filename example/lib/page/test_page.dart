@@ -55,7 +55,7 @@ class TestPage extends StatelessWidget {
             InkWell(
                 child: const Text('native pop'),
                 onTap: () {
-                  SystemNavigator.pop();
+                  SystemNavigator.pop(animated: true);
                 }),
             const SizedBox(
               height: 20,

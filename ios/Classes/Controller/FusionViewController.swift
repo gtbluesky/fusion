@@ -18,6 +18,7 @@ open class FusionViewController: FlutterViewController {
     public required init(coder aDecoder: NSCoder) {
         engineBinding = FusionEngineBinding(routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
+        engineBinding.provideMessenger(vc: self)
     }
     
     open override func viewDidLoad() {

@@ -19,7 +19,7 @@ class FusionEngineBinding {
     
     func provideMessenger(vc: FusionViewController) {
         if let provider = vc as? FusionMessengerProvider {
-            provider.configureFlutterChannel(binaryMessenger: vc.binaryMessenger)
+            provider.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
         }
     }
     
