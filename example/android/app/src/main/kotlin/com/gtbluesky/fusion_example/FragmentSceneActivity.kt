@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.controller.FusionFragment
-import com.gtbluesky.fusion.engine.FusionMessengerProvider
+import com.gtbluesky.fusion.channel.FusionMessengerProvider
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
 import io.flutter.plugin.common.BinaryMessenger
 

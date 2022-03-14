@@ -1,4 +1,4 @@
-package com.gtbluesky.fusion.engine
+package com.gtbluesky.fusion.channel
 
 import io.flutter.plugin.common.BinaryMessenger
 

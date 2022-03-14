@@ -3,6 +3,7 @@ package com.gtbluesky.fusion.engine
 import android.content.Context
 import android.net.Uri
 import com.gtbluesky.fusion.Fusion
+import com.gtbluesky.fusion.channel.FusionMessengerProvider
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
