@@ -94,7 +94,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
 
   Future<void> pop<T extends Object>([T? result]) async {
     if (_history.length == 1) {
-      SystemNavigator.pop(animated: true)
+      SystemNavigator.pop(animated: true);
       return;
     }
     _history.removeLast();
