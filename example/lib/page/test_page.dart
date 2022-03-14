@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 
 class TestPage extends StatelessWidget {
-  const TestPage({Key? key, this.arguments}) : super(key: key);
+  TestPage({Key? key, this.arguments}) : super(key: key) {
+    _channel = const MethodChannel('fusion');
+  }
 
   final Map<String, dynamic>? arguments;
+
+  late final MethodChannel _channel;
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +24,9 @@ class TestPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push /a'),
+              child: const Text('push /normal'),
               onTap: () {
-                FusionNavigator.instance.push('/a', arguments: {'title': '2'});
+                FusionNavigator.instance.push('/normal', arguments: {'title': '12121'});
               },
             ),
             const SizedBox(
@@ -43,6 +48,25 @@ class TestPage extends StatelessWidget {
                 child: const Text('pop /test'),
                 onTap: () {
                   FusionNavigator.instance.pop('我是返回结果');
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('native pop'),
+                onTap: () {
+                  SystemNavigator.pop();
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('plugin'),
+                onTap: () async {
+                  if (kDebugMode) {
+                    final result = await _channel.invokeMethod('getPlatformVersion');
+                    print('result=$result');
+                  }
                 })
           ],
         ),

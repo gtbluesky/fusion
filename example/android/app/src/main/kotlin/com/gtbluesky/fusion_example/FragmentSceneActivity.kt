@@ -1,12 +1,15 @@
 package com.gtbluesky.fusion_example
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.controller.FusionFragment
+import com.gtbluesky.fusion.engine.EngineProvider
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
+import io.flutter.embedding.engine.FlutterEngine
 
-class FragmentSceneActivity : FragmentActivity() {
+class FragmentSceneActivity : FragmentActivity(), EngineProvider {
     private lateinit var binding: ActivityFirstFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,5 +61,9 @@ class FragmentSceneActivity : FragmentActivity() {
                 }
             }
         }
+    }
+
+    override fun onEngineCreated(engine: FlutterEngine) {
+        Log.d("FragmentSceneActivity", "onEngineCreated")
     }
 }

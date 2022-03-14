@@ -12,6 +12,7 @@ open class FusionViewController: FlutterViewController {
     public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
         engineBinding = EngineBinding(routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
+        engineBinding.provideEngine(vc: self)
     }
     
     public required init(coder aDecoder: NSCoder) {
@@ -22,7 +23,6 @@ open class FusionViewController: FlutterViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
-        engineBinding.attach()
     }
     
     deinit {

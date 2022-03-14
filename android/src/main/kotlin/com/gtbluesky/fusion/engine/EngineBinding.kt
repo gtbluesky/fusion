@@ -14,7 +14,7 @@ internal class EngineBinding(
     routeName: String,
     routeArguments: Map<String, Any>?
 ) {
-    private val channel: MethodChannel
+    private var channel: MethodChannel? = null
     internal val engine: FlutterEngine
     init {
         val uriBuilder = Uri.parse(routeName).buildUpon()
@@ -24,10 +24,14 @@ internal class EngineBinding(
         val routeUri = uriBuilder.build().toString()
         engine = Fusion.engineGroup.createAndRunEngine(context, DartExecutor.DartEntrypoint.createDefault(), routeUri)
         channel = MethodChannel(engine.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
+        attach()
+        if (context is EngineProvider) {
+            context.onEngineCreated(engine)
+        }
     }
 
-    fun attach() {
-        channel.setMethodCallHandler { call, result ->
+    private fun attach() {
+        channel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "push" -> {
                     val name = call.argument<String>("name")
@@ -47,6 +51,7 @@ internal class EngineBinding(
     }
 
     fun detach() {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
+        channel = null
     }
 }

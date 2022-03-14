@@ -16,8 +16,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AActivity"
-            android:label="AActivity"
+            android:name=".CustomFusionActivity"
+            android:label="CustomFusionActivity"
+            android:theme="@style/Theme.AppCompat.Light"/>
+        <activity
+            android:name=".NormalActivity"
+            android:label="NormalActivity"
             android:theme="@style/Theme.AppCompat.Light"/>
         <activity
             android:name=".FragmentSceneActivity"

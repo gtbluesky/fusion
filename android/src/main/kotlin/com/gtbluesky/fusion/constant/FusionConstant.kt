@@ -1,6 +1,6 @@
 package com.gtbluesky.fusion.constant
 
-internal object FusionConstant {
+object FusionConstant {
     const val DEFAULT_ENGINE = "DEFAULT_ENGINE"
     const val ROUTE_NAME = "ROUTE_NAME"
     const val ROUTE_ARGUMENTS = "ROUTE_ARGUMENTS"

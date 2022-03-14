@@ -7,13 +7,20 @@
 
 import Foundation
 class EngineBinding {
-    private let channel: FlutterMethodChannel
+    private var channel: FlutterMethodChannel? = nil
     let engine: FlutterEngine
     
     init(routeName: String, routeArguments: Dictionary<String, Any>?) {
         let initialRoute = EngineBinding.convert2Uri(routeName, routeArguments)
         engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        attach()
+    }
+    
+    func provideEngine(vc: UIViewController) {
+        if let provider = vc as? EngineProvider {
+            provider.onEngineCreated(engine: engine)
+        }
     }
     
     private static func convert2Uri(_ name: String, _ arguments: Dictionary<String, Any>?) -> String {
@@ -27,8 +34,8 @@ class EngineBinding {
         }
     }
     
-    func attach() {
-        channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+    private func attach() {
+        channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
                 case "push":
                     if let dict = call.arguments as? Dictionary<String, Any> {
@@ -47,6 +54,7 @@ class EngineBinding {
     }
     
     func detach() {
-        channel.setMethodCallHandler(nil)
+        channel?.setMethodCallHandler(nil)
+        channel = nil
     }
 }
