@@ -24,6 +24,7 @@ open class FusionViewController: FlutterViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
+        FusionStackManager.instance.add(vc: self)
     }
     
     deinit {

@@ -3,23 +3,22 @@ package com.gtbluesky.fusion.navigator
 import android.app.Activity
 import com.gtbluesky.fusion.Fusion
 import java.lang.ref.WeakReference
-import kotlin.collections.ArrayList
 
 object FusionStackManager {
-    private val stack = ArrayList<WeakReference<Activity>>()
+    private val stack = ArrayList<FusionPageModel>()
 
-    fun getTopActivity(): Activity? {
+    private fun getTopPage(): FusionPageModel? {
         if (stack.isEmpty()) return null
-        return stack.last().get()
+        return stack.last()
     }
 
     internal fun add(activity: Activity) {
-        stack.add(WeakReference(activity))
+        stack.add(FusionPageModel(WeakReference(activity)))
     }
 
     internal fun remove(activity: Activity) {
         stack.forEach {
-            if (it.get() == activity) {
+            if (it.nativePage.get() == activity) {
                 stack.remove(it)
                 return
             }
@@ -37,13 +36,19 @@ object FusionStackManager {
      */
     internal fun push(name: String?, arguments: Map<String, Any>?) {
         if (arguments?.get("flutter") != null) {
-
+            name?.takeIf { it.isNotEmpty() }?.let {
+                getTopPage()?.flutterPages?.add(it)
+            }
         } else {
             Fusion.delegate.pushNativeRoute(name, arguments)
         }
     }
 
     internal fun pop() {
-
+        if (getTopPage()?.flutterPages?.size ?: 0 > 1) {
+            getTopPage()?.flutterPages?.removeLast()
+        } else {
+            getTopPage()?.nativePage?.get()?.finish()
+        }
     }
 }

@@ -97,7 +97,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
       print('_history.length=${_history.length}');
     }
     if (_history.length == 1) {
-      await SystemNavigator.pop(animated: true);
+      await FusionChannel.pop();
       return;
     }
     _history.removeLast();
