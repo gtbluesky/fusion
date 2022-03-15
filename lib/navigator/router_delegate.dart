@@ -93,8 +93,11 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
+    if (kDebugMode) {
+      print('_history.length=${_history.length}');
+    }
     if (_history.length == 1) {
-      SystemNavigator.pop(animated: true);
+      await SystemNavigator.pop(animated: true);
       return;
     }
     _history.removeLast();

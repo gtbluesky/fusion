@@ -30,7 +30,6 @@ import fusion
             return
         }
         let navController = self.window?.rootViewController as? UINavigationController
-        print("navigator stack size=\(navController?.viewControllers.count)")
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         GeneratedPluginRegistrant.register(with: fusionVc.engine!)
         navController?.pushViewController(fusionVc, animated: true)

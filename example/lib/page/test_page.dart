@@ -53,14 +53,6 @@ class TestPage extends StatelessWidget {
               height: 20,
             ),
             InkWell(
-                child: const Text('native pop'),
-                onTap: () {
-                  SystemNavigator.pop(animated: true);
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            InkWell(
                 child: const Text('plugin'),
                 onTap: () async {
                   if (kDebugMode) {
