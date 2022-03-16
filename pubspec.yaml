@@ -1,7 +1,7 @@
 name: fusion
-description: A new flutter plugin project.
-version: 0.0.2
-homepage:
+description: A Flutter plugin that manages hybrid stack on Android and iOS.
+version: 1.0.0
+homepage: https://github.com/gtbluesky/fusion
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
