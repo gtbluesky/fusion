@@ -36,8 +36,8 @@ object FusionStackManager {
     }
 
     /**
-     * 表示打开的是Flutter页面，Native测只需同步Flutter栈信息
-     * 表示打开的是Native页面
+     * flutter 表示打开的是Flutter页面，Native测只需同步Flutter栈信息
+     * 否则表示打开的是Native页面
      */
     internal fun push(name: String?, arguments: Map<String, Any>?) {
         if (arguments?.get("flutter") != null) {

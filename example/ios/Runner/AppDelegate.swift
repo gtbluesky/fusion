@@ -22,6 +22,16 @@ import fusion
     
     func pushNativeRoute(name: String?, arguments: Dictionary<String, Any>?) {
         print("pushNativeRoute: name=\(name), arguments=\(arguments)")
+        guard let name = name else {
+            return
+        }
+        let navController = self.window?.rootViewController as? UINavigationController
+        if name == "/normal" {
+            let vc = NormalViewController()
+            navController?.pushViewController(vc, animated: true)
+//            vc.modalPresentationStyle = .fullScreen
+//            navController?.present(vc, animated: true)
+        }
     }
     
     func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?) {
@@ -32,6 +42,8 @@ import fusion
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         GeneratedPluginRegistrant.register(with: fusionVc.engine!)
-        navController?.pushViewController(fusionVc, animated: true)
+//        navController?.pushViewController(fusionVc, animated: true)
+        fusionVc.modalPresentationStyle = .fullScreen
+        navController?.present(fusionVc, animated: true)
     }
 }

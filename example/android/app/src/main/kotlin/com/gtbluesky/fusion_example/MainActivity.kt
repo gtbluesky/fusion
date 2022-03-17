@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
         activityMainBinding.tvFlutterActivity.setOnClickListener {
-            FusionNavigator.push("/test", mapOf("title" to "1"))
+            FusionNavigator.push("/test", mapOf("title" to "Android Flutter Page"))
         }
         activityMainBinding.tvFlutterFragment.setOnClickListener {
             startActivity(Intent(this, FragmentSceneActivity::class.java))

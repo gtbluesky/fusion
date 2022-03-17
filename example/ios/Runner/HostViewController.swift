@@ -12,13 +12,13 @@ class HostViewController: UIViewController {
     
     @IBOutlet weak var myButton: UIButton!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
     }
     
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
