@@ -26,8 +26,13 @@ object FusionStackManager {
     }
 
     internal fun move2Top(activity: Activity) {
-        remove(activity)
-        add(activity)
+        stack.forEach {
+            if (it.nativePage.get() == activity) {
+                stack.remove(it)
+                stack.add(it)
+                return
+            }
+        }
     }
 
     /**

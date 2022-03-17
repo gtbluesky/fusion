@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fusion/channel/fusion_channel.dart';
 import 'package:fusion/navigator/fusion_navigator.dart';
 
