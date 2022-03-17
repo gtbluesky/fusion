@@ -42,8 +42,8 @@ import fusion
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         GeneratedPluginRegistrant.register(with: fusionVc.engine!)
-//        navController?.pushViewController(fusionVc, animated: true)
-        fusionVc.modalPresentationStyle = .fullScreen
-        navController?.present(fusionVc, animated: true)
+        navController?.pushViewController(fusionVc, animated: true)
+//        fusionVc.modalPresentationStyle = .fullScreen
+//        navController?.present(fusionVc, animated: true)
     }
 }

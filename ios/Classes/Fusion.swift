@@ -7,12 +7,14 @@
 
 import Foundation
 import UIKit
-public class Fusion {
+@objc public class Fusion: NSObject {
     public static let instance = Fusion()
     let engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
     var delegate: FusionRouteDelegate? = nil
     
-    private init() {}
+    private override init() {
+        super.init()
+    }
     
     public func install(delegate: FusionRouteDelegate) {
         self.delegate = delegate
