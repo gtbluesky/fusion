@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 @objc public protocol FusionRouteDelegate {
     func pushNativeRoute(name: String?, arguments: Dictionary<String, Any>?)
     func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?)

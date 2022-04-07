@@ -7,12 +7,13 @@
 
 import Foundation
 import UIKit
+
 class FusionPageModel {
-    
-    let nativePage: UIViewController
+
+    weak var nativePage: UIViewController?
     var flutterPages = [String]()
-    
-    init(nativePage: UIViewController) {
-        self.nativePage = nativePage
+
+    init(_ page: UIViewController) {
+        nativePage = page
     }
 }

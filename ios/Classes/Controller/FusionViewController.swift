@@ -6,27 +6,32 @@
 //
 
 import Foundation
+
 open class FusionViewController: FlutterViewController {
     private let engineBinding: FusionEngineBinding
-    
-    public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
-        engineBinding = FusionEngineBinding(routeName: routeName, routeArguments: routeArguments)
+    private var childMode = false
+
+    public init(childMode: Bool = false, routeName: String, routeArguments: Dictionary<String, Any>?) {
+        self.childMode = childMode
+        engineBinding = FusionEngineBinding(childMode: childMode, routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
         engineBinding.provideMessenger(vc: self)
     }
-    
+
     public required init(coder aDecoder: NSCoder) {
-        engineBinding = FusionEngineBinding(routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
+        engineBinding = FusionEngineBinding(childMode: false, routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
         engineBinding.provideMessenger(vc: self)
     }
-    
+
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
-        FusionStackManager.instance.add(vc: self)
+        if (!childMode) {
+            FusionStackManager.instance.add(vc: self)
+        }
     }
-    
+
     deinit {
         engineBinding.detach()
     }

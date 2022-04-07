@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 struct FusionConstant {
     static let ROUTE_NAME = "ROUTE_NAME"
     static let ROUTE_ARGUMENTS = "ROUTE_ARGUMENTS"

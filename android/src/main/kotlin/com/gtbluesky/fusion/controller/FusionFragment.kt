@@ -30,7 +30,7 @@ class FusionFragment : FlutterFragment() {
         val routeName = arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        engineBinding = FusionEngineBinding(context, routeName, routeArguments)
+        engineBinding = FusionEngineBinding(context, true, routeName, routeArguments)
         super.onAttach(context)
     }
 

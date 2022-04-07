@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 @objc public protocol FusionMessengerProvider {
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger)
 }

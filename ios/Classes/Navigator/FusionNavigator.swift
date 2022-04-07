@@ -6,10 +6,13 @@
 //
 
 import Foundation
+
 @objc public class FusionNavigator: NSObject {
     public static let instance = FusionNavigator()
-    private override init() {}
-    
+
+    private override init() {
+    }
+
     public func push(name: String, arguments: Dictionary<String, Any>?) {
         Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
     }

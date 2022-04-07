@@ -2,6 +2,7 @@ package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
 import com.gtbluesky.fusion.Fusion
+import com.gtbluesky.fusion.controller.FusionActivity
 import java.lang.ref.WeakReference
 
 object FusionStackManager {
@@ -36,21 +37,27 @@ object FusionStackManager {
     }
 
     /**
-     * flutter 表示打开的是Flutter页面，Native测只需同步Flutter栈信息
-     * 否则表示打开的是Native页面
+     * 0表示打开Native页面
+     * 1表示在新Flutter容器打开Flutter页面
+     * null表示在原Flutter容器打开Flutter页面，Native只需同步Flutter栈信息
      */
-    internal fun push(name: String?, arguments: Map<String, Any>?) {
-        if (arguments?.get("flutter") != null) {
-            name?.takeIf { it.isNotEmpty() }?.let {
-                getTopPage()?.flutterPages?.add(it)
+    internal fun push(name: String?, arguments: MutableMap<String, Any>?) {
+        if (name.isNullOrEmpty()) return
+        when (arguments?.remove("fusion_push_mode")) {
+            0 -> {
+                Fusion.delegate.pushNativeRoute(name, arguments)
             }
-        } else {
-            Fusion.delegate.pushNativeRoute(name, arguments)
+            1 -> {
+                Fusion.delegate.pushFlutterRoute(name, arguments)
+            }
+            else -> {
+                getTopPage()?.flutterPages?.add(name)
+            }
         }
     }
 
     internal fun pop() {
-        if (getTopPage()?.flutterPages?.size ?: 0 > 1) {
+        if (getTopPage()?.nativePage?.get() is FusionActivity && getTopPage()?.flutterPages?.size ?: 0 > 1) {
             getTopPage()?.flutterPages?.removeLast()
         } else {
             getTopPage()?.nativePage?.get()?.finish()

@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 
 internal class FusionEngineBinding(
     context: Context,
+    childMode: Boolean,
     routeName: String,
     routeArguments: Map<String, Any>?
 ) {
@@ -22,6 +23,7 @@ internal class FusionEngineBinding(
         routeArguments?.forEach {
             uriBuilder.appendQueryParameter(it.key, it.value.toString())
         }
+        uriBuilder.appendQueryParameter("fusion_child_mode", childMode.toString())
         val routeUri = uriBuilder.build().toString()
         engine = Fusion.engineGroup.createAndRunEngine(context, DartExecutor.DartEntrypoint.createDefault(), routeUri)
         channel = MethodChannel(engine.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
@@ -36,7 +38,7 @@ internal class FusionEngineBinding(
             when (call.method) {
                 "push" -> {
                     val name = call.argument<String>("name")
-                    val arguments = call.argument<Map<String, Any>?>("arguments")
+                    val arguments = call.argument<MutableMap<String, Any>?>("arguments")
                     FusionStackManager.push(name, arguments)
                     result.success(null)
                 }

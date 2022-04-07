@@ -7,43 +7,64 @@
 
 import Foundation
 import UIKit
+
 class FusionStackManager {
     private var stack = [FusionPageModel]()
     static let instance = FusionStackManager()
-    private init() {}
-    
-    private func getTopPage(_ remove: Bool = false) -> FusionPageModel? {
+
+    private init() {
+    }
+
+    private func getTopPage() -> FusionPageModel? {
+        stack = stack.filter {
+            $0.nativePage != nil
+        }
         if stack.isEmpty {
             return nil
         }
-        if remove {
-            return stack.removeLast()
-        }
         return stack.last
     }
-    
-    func add(vc: UIViewController) {
-        stack.append(FusionPageModel(nativePage: vc))
+
+    private func removeTopPage() {
+        stack.removeLast()
     }
-    
-    func push(name: String?, arguments: Dictionary<String, Any>?) {
-        if arguments?["flutter"] != nil {
-            if let name = name {
-                getTopPage()?.flutterPages.append(name)
-            }
-        } else {
-            Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+
+    func add(vc: UIViewController) {
+        if !stack.map({ model in
+                    model.nativePage
+                })
+                .contains(vc) {
+            stack.append(FusionPageModel(vc))
         }
     }
-    
+
+    func push(name: String?, arguments: inout Dictionary<String, Any>?) {
+        guard let name = name else {
+            return
+        }
+        let mode = arguments?.removeValue(forKey: "fusion_push_mode") as? Int
+        switch mode {
+        case 0:
+            Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+        case 1:
+            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+        default:
+            getTopPage()?.flutterPages.append(name)
+        }
+    }
+
     func pop() {
-        if getTopPage()?.flutterPages.count ?? 0 > 1 {
+        let nativePage = UIApplication.topmostViewController
+        if getTopPage()?.nativePage == nativePage && getTopPage()?.flutterPages.count ?? 0 > 1 {
             getTopPage()?.flutterPages.removeLast()
         } else {
-            let nativePage = getTopPage(true)?.nativePage
-            if let count = nativePage?.navigationController?.viewControllers.count {
+            if getTopPage()?.nativePage == nativePage && getTopPage()?.flutterPages.count == 1 {
+                removeTopPage()
+            }
+            let navigationController = UIApplication.topmostNavigationController
+            if let count = navigationController?.viewControllers.count {
                 if count > 1 {
-                    nativePage?.navigationController?.popViewController(animated: true)
+                    navigationController?.popViewController(animated: true)
                 }
             } else {
                 nativePage?.dismiss(animated: true)

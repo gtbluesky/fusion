@@ -18,7 +18,7 @@ open class FusionActivity : FlutterActivity() {
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        engineBinding = FusionEngineBinding(context, routeName, routeArguments)
+        engineBinding = FusionEngineBinding(context, false, routeName, routeArguments)
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT

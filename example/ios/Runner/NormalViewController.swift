@@ -7,9 +7,10 @@
 
 import Foundation
 class NormalViewController : UIViewController {
-    var button: UIButton?
+    private var button: UIButton?
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = UIColor.white
         button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
         button?.center = view.center
