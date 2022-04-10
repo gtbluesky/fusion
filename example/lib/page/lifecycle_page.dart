@@ -55,6 +55,23 @@ class _LifecyclePageState extends State<LifecyclePage>
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return Container(
+                  child: GestureDetector(
+                    child: const Text('我是弹窗'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              });
+        },
+      ),
     );
   }
 

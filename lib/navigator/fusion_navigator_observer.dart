@@ -10,9 +10,14 @@ class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
+    // FusionLog.log(
+    //     "didPush route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
     PageLifecycleBinding.instance.topRoute = route;
     if (isInitial) {
       isInitial = false;
+      return;
+    }
+    if (route is! PageRoute) {
       return;
     }
     PageLifecycleBinding.instance.dispatchPageVisibleEvent(route, isFirstTime: true);
@@ -24,9 +29,16 @@ class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+    // FusionLog.log(
+    //     "didPop route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
     if (previousRoute != null) {
       PageLifecycleBinding.instance.topRoute = previousRoute;
+    }
+    if (route is! PageRoute) {
+      return;
+    }
+    PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+    if (previousRoute != null) {
       PageLifecycleBinding.instance.dispatchPageVisibleEvent(previousRoute);
     }
   }
