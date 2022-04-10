@@ -34,20 +34,15 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
     }
 
     override fun pushFlutterRoute(name: String?, arguments: Map<String, Any>?) {
-        when (name) {
-            "/test" -> {
-                startActivity(
-                    buildFusionIntent(
-                        applicationContext,
-                        CustomFusionActivity::class.java,
-                        name,
-                        arguments
-                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            }
-            else -> {
-                Log.e(TAG, "pushFlutterRoute error, name=$name")
-            }
-        }
+        Log.d(TAG, "pushFlutterRoute: name=${name}, arguments=${arguments}")
+        if (name.isNullOrEmpty()) return
+        startActivity(
+            buildFusionIntent(
+                applicationContext,
+                CustomFusionActivity::class.java,
+                name,
+                arguments
+            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 }

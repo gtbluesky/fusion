@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-@objc public class Fusion: NSObject {
-    public static let instance = Fusion()
+public class Fusion: NSObject {
+    @objc public static let instance = Fusion()
     let engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
     var delegate: FusionRouteDelegate? = nil
 
@@ -17,7 +17,20 @@ import UIKit
         super.init()
     }
 
-    public func install(delegate: FusionRouteDelegate) {
+    @objc public func install(delegate: FusionRouteDelegate) {
         self.delegate = delegate
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+    }
+
+    /**
+     应用首次启动不会收到该通知
+     */
+    @objc func willEnterForeground() {
+        FusionStackManager.instance.notifyEnterForeground()
+    }
+
+    @objc func didEnterBackground() {
+        FusionStackManager.instance.notifyEnterBackground()
     }
 }

@@ -56,4 +56,20 @@ class FusionEngineBinding {
         channel?.setMethodCallHandler(nil)
         channel = nil
     }
+
+    func notifyPageVisible() {
+        channel?.invokeMethod("onPageVisible", arguments: nil)
+    }
+
+    func notifyPageInvisible() {
+        channel?.invokeMethod("onPageInvisible", arguments: nil)
+    }
+
+    func notifyEnterForeground() {
+        channel?.invokeMethod("onForeground", arguments: nil)
+    }
+
+    func notifyEnterBackground() {
+        channel?.invokeMethod("onBackground", arguments: nil)
+    }
 }

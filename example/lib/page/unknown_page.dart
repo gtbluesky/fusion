@@ -9,7 +9,8 @@ class UnknownPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(arguments?['title'] ?? '未知页面', style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(arguments?['title'] ?? '未知页面',
+            style: AppBarTheme.of(context).titleTextStyle),
       ),
       body: const Center(
         child: Text('请检查路由'),

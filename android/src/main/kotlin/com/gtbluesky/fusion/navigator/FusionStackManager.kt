@@ -5,7 +5,7 @@ import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.controller.FusionActivity
 import java.lang.ref.WeakReference
 
-object FusionStackManager {
+internal object FusionStackManager {
     private val stack = ArrayList<FusionPageModel>()
 
     private fun getTopPage(): FusionPageModel? {
@@ -13,11 +13,11 @@ object FusionStackManager {
         return stack.last()
     }
 
-    internal fun add(activity: Activity) {
+    fun add(activity: Activity) {
         stack.add(FusionPageModel(WeakReference(activity)))
     }
 
-    internal fun remove(activity: Activity) {
+    fun remove(activity: Activity) {
         stack.forEach {
             if (it.nativePage.get() == activity) {
                 stack.remove(it)
@@ -26,7 +26,7 @@ object FusionStackManager {
         }
     }
 
-    internal fun move2Top(activity: Activity) {
+    fun move2Top(activity: Activity) {
         stack.forEach {
             if (it.nativePage.get() == activity) {
                 stack.remove(it)
@@ -41,7 +41,7 @@ object FusionStackManager {
      * 1表示在新Flutter容器打开Flutter页面
      * null表示在原Flutter容器打开Flutter页面，Native只需同步Flutter栈信息
      */
-    internal fun push(name: String?, arguments: MutableMap<String, Any>?) {
+    fun push(name: String?, arguments: MutableMap<String, Any>?) {
         if (name.isNullOrEmpty()) return
         when (arguments?.remove("fusion_push_mode")) {
             0 -> {
@@ -56,11 +56,23 @@ object FusionStackManager {
         }
     }
 
-    internal fun pop() {
+    fun pop() {
         if (getTopPage()?.nativePage?.get() is FusionActivity && getTopPage()?.flutterPages?.size ?: 0 > 1) {
             getTopPage()?.flutterPages?.removeLast()
         } else {
             getTopPage()?.nativePage?.get()?.finish()
+        }
+    }
+
+    fun notifyEnterForeground() {
+        stack.forEach {
+            (it.nativePage.get() as? FusionActivity)?.engineBinding?.notifyEnterForeground()
+        }
+    }
+
+    fun notifyEnterBackground() {
+        stack.forEach {
+            (it.nativePage.get() as? FusionActivity)?.engineBinding?.notifyEnterBackground()
         }
     }
 }

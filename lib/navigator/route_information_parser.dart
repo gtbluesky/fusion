@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../log/fusion_log.dart';
+
 class FusionRouteInformationParser
     extends RouteInformationParser<RouteSettings> {
   FusionRouteInformationParser();
@@ -8,9 +10,7 @@ class FusionRouteInformationParser
   @override
   Future<RouteSettings> parseRouteInformation(
       RouteInformation routeInformation) {
-    if (kDebugMode) {
-      print('routeInformation.location=${routeInformation.location}');
-    }
+    // FusionLog.log('routeInformation.location=${routeInformation.location}');
     final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? '/'));
     final initialRoute =
         RouteSettings(name: parse.getName(), arguments: parse.getArguments());

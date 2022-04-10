@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Adds lifecycle observer for flutter pages.
+
 ## 1.0.1
 
 * Adds support for child mode.

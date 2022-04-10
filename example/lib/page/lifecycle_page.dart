@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion/log/fusion_log.dart';
 
-class TestPage extends StatefulWidget {
-  TestPage({Key? key, this.arguments}) : super(key: key) {
-    _channel = const MethodChannel('fusion');
-  }
+class LifecyclePage extends StatefulWidget {
+  const LifecyclePage({Key? key, this.arguments}) : super(key: key);
 
   final Map<String, dynamic>? arguments;
 
-  late final MethodChannel _channel;
-
   @override
-  State<TestPage> createState() => _TestPageState();
+  State<LifecyclePage> createState() => _LifecyclePageState();
 }
 
-class _TestPageState extends State<TestPage> {
-  int _count = 0;
-
+class _LifecyclePageState extends State<LifecyclePage>
+    implements PageLifecycleObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,17 +45,6 @@ class _TestPageState extends State<TestPage> {
               height: 20,
             ),
             InkWell(
-                child: const Text('push /lifecycle'),
-                onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
-                      '/lifecycle',
-                      arguments: {'title': 'Lifecycle Test'});
-                  FusionLog.log('result=$result');
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            InkWell(
                 child: const Text('pop'),
                 onTap: () {
                   FusionNavigator.instance.pop('我是返回结果');
@@ -69,26 +52,55 @@ class _TestPageState extends State<TestPage> {
             const SizedBox(
               height: 20,
             ),
-            InkWell(
-                child: const Text('plugin'),
-                onTap: () async {
-                  final result =
-                      await widget._channel.invokeMethod('getPlatformVersion');
-                  FusionLog.log('result=$result');
-                }),
-            Text('$_count')
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FusionLog.log('${ModalRoute.of(context).hashCode}');
-          // setState(() {
-          //   ++_count;
-          // });
-        },
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  @override
+  void onBackground() {
+    FusionLog.log('${runtimeType}@${hashCode}:onBackground');
+  }
+
+  @override
+  void onForeground() {
+    FusionLog.log('${runtimeType}@${hashCode}:onForeground');
+  }
+
+  @override
+  void onPageInvisible() {
+    FusionLog.log('${runtimeType}@${hashCode}:onPageInvisible');
+  }
+
+  @override
+  void onPageVisible() {
+    FusionLog.log('${runtimeType}@${hashCode}:onPageVisible');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    FusionLog.log('${runtimeType}@${hashCode}:initState');
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    FusionLog.log('${runtimeType}@${hashCode}:deactivate');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    PageLifecycleBinding.instance.register(this);
+    FusionLog.log('${runtimeType}@${hashCode}:didChangeDependencies');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    PageLifecycleBinding.instance.unregister(this);
+    FusionLog.log('${runtimeType}@${hashCode}:dispose');
   }
 }

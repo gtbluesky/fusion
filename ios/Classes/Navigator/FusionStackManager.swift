@@ -71,4 +71,20 @@ class FusionStackManager {
             }
         }
     }
+
+    func notifyEnterForeground() {
+        stack.forEach {
+            if let nativePage = $0.nativePage as? FusionViewController {
+                nativePage.engineBinding.notifyEnterForeground()
+            }
+        }
+    }
+
+    func notifyEnterBackground() {
+        stack.forEach {
+            if let nativePage = $0.nativePage as? FusionViewController {
+                nativePage.engineBinding.notifyEnterBackground()
+            }
+        }
+    }
 }

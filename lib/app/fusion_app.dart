@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/navigator/fusion_navigator.dart';
-import 'package:fusion/navigator/route_information_parser.dart';
-import 'package:fusion/navigator/router_delegate.dart';
+
+import '../channel/fusion_channel.dart';
+import '../navigator/fusion_navigator.dart';
+import '../navigator/route_information_parser.dart';
+import '../navigator/router_delegate.dart';
 
 class FusionApp extends StatelessWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
@@ -73,6 +75,7 @@ class FusionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FusionChannel.register();
     return MaterialApp.router(
         routeInformationParser: FusionNavigator.instance.routeInformationParser,
         routerDelegate: FusionNavigator.instance.routerDelegate,

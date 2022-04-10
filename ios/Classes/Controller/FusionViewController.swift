@@ -8,7 +8,7 @@
 import Foundation
 
 open class FusionViewController: FlutterViewController {
-    private let engineBinding: FusionEngineBinding
+    let engineBinding: FusionEngineBinding
     private var childMode = false
 
     public init(childMode: Bool = false, routeName: String, routeArguments: Dictionary<String, Any>?) {
@@ -27,9 +27,24 @@ open class FusionViewController: FlutterViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
-        if (!childMode) {
-            FusionStackManager.instance.add(vc: self)
+        if (childMode) {
+            return
         }
+        FusionStackManager.instance.add(vc: self)
+    }
+
+    open override func viewDidAppear(_ animated: Bool) {
+        if (childMode) {
+            return
+        }
+        engineBinding.notifyPageVisible()
+    }
+
+    open override func viewDidDisappear(_ animated: Bool) {
+        if (childMode) {
+            return
+        }
+        engineBinding.notifyPageInvisible()
     }
 
     deinit {

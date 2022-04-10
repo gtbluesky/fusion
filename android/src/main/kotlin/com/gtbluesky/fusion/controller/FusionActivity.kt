@@ -11,7 +11,7 @@ import io.flutter.embedding.engine.FlutterEngine
 
 open class FusionActivity : FlutterActivity() {
 
-    private lateinit var engineBinding: FusionEngineBinding
+    internal lateinit var engineBinding: FusionEngineBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val routeName =

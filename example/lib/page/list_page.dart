@@ -15,7 +15,8 @@ class ListPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 50,
         itemBuilder: (context, index) {
-          return Text('第$index项', style: const TextStyle(fontSize: 16, color: Colors.black));
+          return Text('第$index项',
+              style: const TextStyle(fontSize: 16, color: Colors.black));
         },
       ),
     );

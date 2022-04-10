@@ -57,4 +57,20 @@ internal class FusionEngineBinding(
         channel?.setMethodCallHandler(null)
         channel = null
     }
+
+    fun notifyPageVisible() {
+        channel?.invokeMethod("onPageVisible", null)
+    }
+
+    fun notifyPageInvisible() {
+        channel?.invokeMethod("onPageInvisible", null)
+    }
+
+    fun notifyEnterForeground() {
+        channel?.invokeMethod("onForeground", null)
+    }
+
+    fun notifyEnterBackground() {
+        channel?.invokeMethod("onBackground", null)
+    }
 }

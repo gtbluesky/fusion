@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/channel/fusion_channel.dart';
 import 'package:fusion/navigator/fusion_navigator.dart';
+import 'package:fusion/navigator/fusion_navigator_observer.dart';
+
+import '../log/fusion_log.dart';
 
 class FusionRouterDelegate extends RouterDelegate<RouteSettings>
     with ChangeNotifier {
@@ -13,6 +15,8 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
 
   GlobalKey<NavigatorState>? get navigatorKey => FusionNavigator.instance.key;
 
+  final navigatorObserver = FusionNavigatorObserver();
+
   @override
   Widget build(BuildContext context) {
     return Navigator(
@@ -21,13 +25,12 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
         if (!route.didPop(result)) {
           return false;
         }
-        if (kDebugMode) {
-          print('onPopPage');
-        }
+        FusionLog.log('onPopPage');
         pop(result);
         return true;
       },
       pages: _buildHistoryPages(),
+      observers: <NavigatorObserver>[navigatorObserver],
     );
   }
 
@@ -46,9 +49,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   /// false: 表示交由 Flutter 系统处理
   @override
   Future<bool> popRoute() async {
-    if (kDebugMode) {
-      print('popRoute');
-    }
+    FusionLog.log('popRoute');
     await pop();
     return true;
   }
@@ -59,9 +60,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
       final arguments = configuration.arguments as Map<String, dynamic>;
       _childMode = arguments['fusion_child_mode'] == 'true';
     }
-    if (kDebugMode) {
-      print('_childMode=$_childMode');
-    }
+    FusionLog.log('_childMode=$_childMode');
     await _pushHistory(configuration);
   }
 
@@ -102,9 +101,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
-    if (kDebugMode) {
-      print('_history.length=${_history.length}');
-    }
+    FusionLog.log('_history.length=${_history.length}');
     if (_history.length == 1) {
       await FusionChannel.pop();
       return;

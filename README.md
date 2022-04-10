@@ -19,9 +19,10 @@ Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可�
 
 ## 开始使用
 
-0、在开始前需要按照 [Flutter 官方文档](https://docs.flutter.dev/development/add-to-app)，将 Flutter Module 项目接入到 Android 和 iOS 工程中。
+### 0、准备
+在开始前需要按照 [Flutter 官方文档](https://docs.flutter.dev/development/add-to-app)，将 Flutter Module 项目接入到 Android 和 iOS 工程中。
 
-1、初始化
+### 1、初始化
 
 Flutter 侧
 
@@ -105,25 +106,25 @@ iOS 侧
 }
 ```
 
+### 2、Flutter 容器
+
+#### 页面模式
+
+Android 使用 FusionActivty，启动 FusionActivty（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法。
+
+iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController。
 
 
-2、Flutter 容器选择
+#### 子页面模式
 
-Android 侧
+Android 使用 FusionFragment 支持子页面模式，创建 FusionFragment 对象需要使用 `FusionFragment.buildFragment` 方法。
 
-多数情况下，应当直接使用 FusionActivty，除非存在 Flutter 页面和 Native 页面同时作为子页面存在，比如通过顶部或底部 Tab 切换的场景，这时就需要用到 FusionFragment。另外与其他类似框架相比，Fusion 可支持多 FusionFragment。
+iOS 使用 FusionViewController 并传入 `childMode: true` 以支持子页面模式。
 
-启动 FusionActivty（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法，创建 FusionFragment 对象需要使用 `FusionFragment.buildFragment` 方法。
-
-
-
-iOS侧
-
-iOS中只有一种容器，即 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController。
+另外与其他类似框架相比，Fusion 支持在同一父页面下可使用多个 Flutter 子页面。
 
 
-
-3、路由API（FusionNavigator）
+### 3、路由API（FusionNavigator）
 
 ✅ push：指定页入栈，支持获取返回值
 
@@ -131,15 +132,15 @@ iOS中只有一种容器，即 FusionViewController，可以直接使用，也�
 
 **TODO**
 
-❎ popUtil
+❎ popTo
 
 ❎ remove
 
-❎ repalce
+❎ replace
 
 
 
-4、Flutter Plugin 注册
+### 4、Flutter Plugin 注册
 
 如果 Flutter Module 中依赖了 Flutter Plugin，需要按照以下步骤进行注册。
 
@@ -170,7 +171,7 @@ GeneratedPluginRegistrant.register(with: fusionVc.engine!)
 
 
 
-5、自定义 Channel
+### 5、自定义 Channel
 
 如果需要 Native 与 Flutter 进行通信，则需要自行创建 Channel，创建 Channel 方式如下（以 MethodChannel 为例）：
 
@@ -183,7 +184,7 @@ class MyActivity : FragmentActivity(), FusionMessengerProvider {
   
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ...
+        //...
         //加载 FusionFragment
     }
   
@@ -266,3 +267,53 @@ deinit {
 }
 ```
 
+### 6、生命周期
+支持 `页面模式` 下监听 Flutter 页面的生命周期。
+- ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleObserver
+- ②、在 didChangeDependencies 中注册监听
+- ③、在 dispose 中注销监听
+```dart
+class LifecyclePage extends StatefulWidget {
+  const LifecyclePage({Key? key}) : super(key: key);
+
+  @override
+  State<LifecyclePage> createState() => _LifecyclePageState();
+}
+
+class _LifecyclePageState extends State<LifecyclePage>
+    implements PageLifecycleObserver {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    PageLifecycleBinding.instance.register(this);
+  }
+
+  @override
+  void onPageVisible() {}
+
+  @override
+  void onPageInvisible() {}
+
+  @override
+  void onForeground() {}
+
+  @override
+  void onBackground() {}
+
+  @override
+  void dispose() {
+    super.dispose();
+    PageLifecycleBinding.instance.unregister(this);
+  }
+}
+```
+PageLifecycleObserver 生命周期回调函数：
+- onForeground: 应用进入前台会被调用，所有注册了生命周期监听的页面都会收到
+- onBackground: 应用退到前台会被调用，所有注册了生命周期监听的页面都会收到
+- onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；但当应用进入前台时不会被调用，与 iOS 的 `viewDidAppear` 类似，与 Android 的 `onResume` 稍有差异
+- onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；但当应用退到后台时不会被调用，与 iOS 的 `viewDidDisappear` 类似，与 Android 的 `onStop` 稍有差异
