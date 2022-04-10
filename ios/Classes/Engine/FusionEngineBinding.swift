@@ -10,8 +10,10 @@ import Foundation
 class FusionEngineBinding {
     private var channel: FlutterMethodChannel? = nil
     let engine: FlutterEngine
+    private let childMode: Bool
 
     init(childMode: Bool, routeName: String, routeArguments: Dictionary<String, Any>?) {
+        self.childMode = childMode
         let initialRoute = FusionEngineBinding.convert2Uri(childMode, routeName, routeArguments)
         engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
@@ -40,7 +42,9 @@ class FusionEngineBinding {
                 if let dict = call.arguments as? Dictionary<String, Any> {
                     let name = dict["name"] as? String
                     var arguments = dict["arguments"] as? Dictionary<String, Any>
-                    FusionStackManager.instance.push(name: name, arguments: &arguments)
+                    if arguments?["fusion_push_mode"] != nil || !self.childMode {
+                        FusionStackManager.instance.push(name: name, arguments: &arguments)
+                    }
                 }
                 result(nil)
             case "pop":

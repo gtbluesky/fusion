@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 
 internal class FusionEngineBinding(
     context: Context,
-    childMode: Boolean,
+    private val childMode: Boolean,
     routeName: String,
     routeArguments: Map<String, Any>?
 ) {
@@ -39,7 +39,9 @@ internal class FusionEngineBinding(
                 "push" -> {
                     val name = call.argument<String>("name")
                     val arguments = call.argument<MutableMap<String, Any>?>("arguments")
-                    FusionStackManager.push(name, arguments)
+                    if (arguments?.get("fusion_push_mode") != null || !childMode) {
+                        FusionStackManager.push(name, arguments)
+                    }
                     result.success(null)
                 }
                 "pop" -> {

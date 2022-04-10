@@ -24,15 +24,28 @@ class NormalViewController : UIViewController {
     
     @objc func btnClick(btn: UIButton) {
         if let count = navigationController?.viewControllers.count {
-            print("count=\(count)")
-        }
-        if let count = navigationController?.viewControllers.count {
             if count > 1 {
                 navigationController?.popViewController(animated: true)
             }
         } else {
             dismiss(animated: true)
         }
+//        let alert = UIAlertController(title: "Hello!", message: "Message", preferredStyle: UIAlertController.Style.alert)
+//        let alertAction = UIAlertAction(title: "OK!", style: UIAlertAction.Style.default)
+//        alert.addAction(alertAction)
+//        present(alert, animated: true)
+
+//        let vc = MultiViewController()
+//        vc.modalPresentationStyle = .fullScreen
+//        present(vc, animated: true)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        print("viewDidAppear")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        print("viewDidDisappear")
     }
     
     override func viewWillAppear(_ animated: Bool) {
