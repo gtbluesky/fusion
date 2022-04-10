@@ -61,7 +61,7 @@ class FusionStackManager {
             if getTopPage()?.nativePage == nativePage && getTopPage()?.flutterPages.count == 1 {
                 removeTopPage()
             }
-            let navigationController = UIApplication.topmostNavigationController
+            let navigationController = nativePage?.navigationController
             if let count = navigationController?.viewControllers.count {
                 if count > 1 {
                     navigationController?.popViewController(animated: true)
