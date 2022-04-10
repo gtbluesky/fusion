@@ -25,7 +25,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
         if (!route.didPop(result)) {
           return false;
         }
-        FusionLog.log('onPopPage');
+        // FusionLog.log('onPopPage');
         pop(result);
         return true;
       },
@@ -39,7 +39,9 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
     return _history
         .map((e) => MaterialPage(
             child: FusionNavigator.instance
-                .routeMap[e.name]!(e.arguments as Map<String, dynamic>)))
+                .routeMap[e.name]!(e.arguments as Map<String, dynamic>),
+            name: e.name,
+            arguments: e.arguments))
         .toList();
   }
 
@@ -49,7 +51,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   /// false: 表示交由 Flutter 系统处理
   @override
   Future<bool> popRoute() async {
-    FusionLog.log('popRoute');
+    // FusionLog.log('popRoute');
     await pop();
     return true;
   }
@@ -60,7 +62,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
       final arguments = configuration.arguments as Map<String, dynamic>;
       _childMode = arguments['fusion_child_mode'] == 'true';
     }
-    FusionLog.log('_childMode=$_childMode');
+    // FusionLog.log('_childMode=$_childMode');
     await _pushHistory(configuration);
   }
 
@@ -101,7 +103,7 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
-    FusionLog.log('_history.length=${_history.length}');
+    // FusionLog.log('_history.length=${_history.length}');
     if (_history.length == 1) {
       await FusionChannel.pop();
       return;

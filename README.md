@@ -314,6 +314,6 @@ class _LifecyclePageState extends State<LifecyclePage>
 ```
 PageLifecycleObserver 生命周期回调函数：
 - onForeground: 应用进入前台会被调用，所有注册了生命周期监听的页面都会收到
-- onBackground: 应用退到前台会被调用，所有注册了生命周期监听的页面都会收到
+- onBackground: 应用退到后台会被调用，所有注册了生命周期监听的页面都会收到
 - onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；但当应用进入前台时不会被调用，与 iOS 的 `viewDidAppear` 类似，与 Android 的 `onResume` 稍有差异
 - onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；但当应用退到后台时不会被调用，与 iOS 的 `viewDidDisappear` 类似，与 Android 的 `onStop` 稍有差异
