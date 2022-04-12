@@ -13,27 +13,25 @@ open class FusionViewController: FlutterViewController {
 
     public init(childMode: Bool = false, routeName: String, routeArguments: Dictionary<String, Any>?) {
         self.childMode = childMode
-        engineBinding = FusionEngineBinding(childMode: childMode, routeName: routeName, routeArguments: routeArguments)
+        self.engineBinding = FusionEngineBinding(childMode: childMode, routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
-        engineBinding.provideMessenger(vc: self)
+        self.engineBinding.provideMessenger(vc: self)
+        if (!childMode) {
+            FusionStackManager.instance.add(self)
+        }
     }
 
-    public required init(coder aDecoder: NSCoder) {
-        engineBinding = FusionEngineBinding(childMode: false, routeName: FusionConstant.INITIAL_ROUTE, routeArguments: nil)
-        super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
-        engineBinding.provideMessenger(vc: self)
+    public required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
-        if (childMode) {
-            return
-        }
-        FusionStackManager.instance.add(vc: self)
     }
 
     open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         if (childMode) {
             return
         }
@@ -41,6 +39,7 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         if (childMode) {
             return
         }
@@ -48,6 +47,9 @@ open class FusionViewController: FlutterViewController {
     }
 
     deinit {
+        if (!childMode) {
+            FusionStackManager.instance.remove()
+        }
         engineBinding.detach()
     }
 }

@@ -47,7 +47,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('pop'),
                 onTap: () {
-                  FusionNavigator.instance.pop('我是返回结果');
+                  FusionNavigator.instance.pop('Lifecycle返回结果');
                 }),
             const SizedBox(
               height: 20,

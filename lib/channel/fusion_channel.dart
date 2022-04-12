@@ -1,8 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 
-import '../log/fusion_log.dart';
-
 class FusionChannel {
   static const MethodChannel _channel = MethodChannel('fusion_channel');
 
@@ -11,7 +9,6 @@ class FusionChannel {
       switch (call.method) {
         case 'onPageVisible':
           final route = PageLifecycleBinding.instance.topRoute;
-          // FusionLog.log('toproute:${route.runtimeType}@${route.hashCode}');
           PageLifecycleBinding.instance.dispatchPageVisibleEvent(route);
           // FusionLog.log(call.method);
           break;
@@ -34,11 +31,24 @@ class FusionChannel {
     });
   }
 
-  static Future<void> push(String name, [dynamic arguments]) async {
-    await _channel.invokeMethod('push', {'name': name, 'arguments': arguments});
+  static Future<List<Map<String, dynamic>>?> push(
+      String name, dynamic arguments) async {
+    final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
+    final List<dynamic>? result = await _channel.invokeMethod('push',
+        {'name': name, 'arguments': arguments, 'isFlutterPage': isFlutterPage});
+    final List<Map<String, dynamic>> list = [];
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list.add(element.cast<String, dynamic>());
+    });
+    return list;
   }
 
-  static Future<void> pop() async {
-    await _channel.invokeMethod('pop');
+  static Future<List<Map<String, dynamic>>?> pop() async {
+    final List<dynamic>? result = await _channel.invokeMethod('pop');
+    final List<Map<String, dynamic>> list = [];
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list.add(element.cast<String, dynamic>());
+    });
+    return list;
   }
 }

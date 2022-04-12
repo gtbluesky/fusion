@@ -5,13 +5,10 @@ import 'package:fusion/channel/fusion_channel.dart';
 import 'package:fusion/navigator/fusion_navigator.dart';
 import 'package:fusion/navigator/fusion_navigator_observer.dart';
 
-import '../log/fusion_log.dart';
-
-class FusionRouterDelegate extends RouterDelegate<RouteSettings>
+class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     with ChangeNotifier {
-  final _history = <RouteSettings>[];
-  final _callback = <RouteSettings, Completer<dynamic>>{};
-  bool _childMode = false;
+  final _history = <Map<String, dynamic>>[];
+  final _callback = <String, Completer<dynamic>>{};
 
   GlobalKey<NavigatorState>? get navigatorKey => FusionNavigator.instance.key;
 
@@ -25,7 +22,6 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
         if (!route.didPop(result)) {
           return false;
         }
-        // FusionLog.log('onPopPage');
         pop(result);
         return true;
       },
@@ -36,13 +32,13 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
 
   List<Page> _buildHistoryPages() {
     if (currentConfiguration == null) return <Page>[];
-    return _history
-        .map((e) => MaterialPage(
-            child: FusionNavigator.instance
-                .routeMap[e.name]!(e.arguments as Map<String, dynamic>),
-            name: e.name,
-            arguments: e.arguments))
-        .toList();
+    return _history.map((e) {
+      final arguments = (e["arguments"] as Map?)?.cast<String, dynamic>();
+      return MaterialPage(
+          child: FusionNavigator.instance.routeMap[e['name']]!(arguments),
+          name: e['name'],
+          arguments: e["arguments"]);
+    }).toList();
   }
 
   /// popRoute: 点击物理按键返回时被调用
@@ -51,66 +47,50 @@ class FusionRouterDelegate extends RouterDelegate<RouteSettings>
   /// false: 表示交由 Flutter 系统处理
   @override
   Future<bool> popRoute() async {
-    // FusionLog.log('popRoute');
     await pop();
     return true;
   }
 
   @override
-  Future<void> setNewRoutePath(RouteSettings configuration) async {
-    if (configuration.arguments is Map<String, dynamic>) {
-      final arguments = configuration.arguments as Map<String, dynamic>;
-      _childMode = arguments['fusion_child_mode'] == 'true';
-    }
-    // FusionLog.log('_childMode=$_childMode');
-    await _pushHistory(configuration);
+  Future<void> setNewRoutePath(Map<String, dynamic> configuration) async {
+    _history.add(configuration);
+    notifyListeners();
   }
 
   @override
-  RouteSettings? get currentConfiguration {
+  Map<String, dynamic>? get currentConfiguration {
     if (_history.isEmpty) {
       return null;
     }
     return _history.last;
   }
 
-  Future<void> _pushHistory(RouteSettings routeSettings) async {
-    _history.add(routeSettings);
-    await FusionChannel.push(routeSettings.name!, routeSettings.arguments);
-    notifyListeners();
-  }
-
   Future<T?> push<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArguments,
   ]) async {
-    final completer = Completer<T>();
-    final arguments = routeArguments ?? {};
-    if (FusionNavigator.instance.isFlutterPage(routeName)) {
-      if (_childMode) {
-        arguments['fusion_push_mode'] = 1;
-        await FusionChannel.push(routeName, arguments);
-      } else {
-        _callback[_history.last] = completer;
-        await _pushHistory(
-            RouteSettings(name: routeName, arguments: arguments));
-      }
+    final history = await FusionChannel.push(routeName, routeArguments ?? {});
+    if (history != null && history.isNotEmpty) {
+      final completer = Completer<T>();
+      _callback[_history.last['uniqueId']] = completer;
+      refreshHistory(history);
+      return completer.future;
     } else {
-      arguments['fusion_push_mode'] = 0;
-      await FusionChannel.push(routeName, arguments);
+      return null;
     }
-    return completer.future;
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
-    // FusionLog.log('_history.length=${_history.length}');
-    if (_history.length == 1) {
-      await FusionChannel.pop();
-      return;
+    final history = await FusionChannel.pop();
+    if (history != null && history.isNotEmpty) {
+      refreshHistory(history);
     }
-    _history.removeLast();
-    _callback[_history.last]?.complete(result);
-    await FusionChannel.pop();
+    _callback.remove(_history.last['uniqueId'])?.complete(result);
+  }
+
+  void refreshHistory(List<Map<String, dynamic>> history) {
+    _history.clear();
+    _history.addAll(history);
     notifyListeners();
   }
 }

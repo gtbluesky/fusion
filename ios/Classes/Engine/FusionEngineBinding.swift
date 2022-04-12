@@ -11,10 +11,17 @@ class FusionEngineBinding {
     private var channel: FlutterMethodChannel? = nil
     let engine: FlutterEngine
     private let childMode: Bool
+    private var history: [Dictionary<String, Any?>] = []
 
     init(childMode: Bool, routeName: String, routeArguments: Dictionary<String, Any>?) {
         self.childMode = childMode
-        let initialRoute = FusionEngineBinding.convert2Uri(childMode, routeName, routeArguments)
+        let uniqueId = UUID().uuidString
+        let initialRoute = FusionEngineBinding.convert2Uri(uniqueId, routeName, routeArguments)
+        history.append([
+            "name": routeName,
+            "arguments": routeArguments,
+            "uniqueId": uniqueId
+        ])
         engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
         attach()
@@ -26,11 +33,11 @@ class FusionEngineBinding {
         }
     }
 
-    private static func convert2Uri(_ childMode: Bool, _ name: String, _ arguments: Dictionary<String, Any>?) -> String {
+    private static func convert2Uri(_ uniqueId: String, _ name: String, _ arguments: Dictionary<String, Any>?) -> String {
         var queryParameterArr = arguments?.map { (k: String, v: Any) -> String in
-            return String(format: "%@=%@", k, String(describing: v))
+            String(format: "%@=%@", k, String(describing: v))
         } ?? []
-        queryParameterArr.append(String(describing: "fusion_child_mode=\(childMode)"))
+        queryParameterArr.append(String(describing: "uniqueId=\(uniqueId)"))
         let queryParametersStr = queryParameterArr.joined(separator: "&")
         return String(describing: "\(name)?\(queryParametersStr)")
     }
@@ -41,24 +48,41 @@ class FusionEngineBinding {
             case "push":
                 if let dict = call.arguments as? Dictionary<String, Any> {
                     let name = dict["name"] as? String
-                    var arguments = dict["arguments"] as? Dictionary<String, Any>
-                    if arguments?["fusion_push_mode"] != nil || !self.childMode {
-                        FusionStackManager.instance.push(name: name, arguments: &arguments)
+                    let arguments = dict["arguments"] as? Dictionary<String, Any>
+                    let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
+                    if isFlutterPage {
+                        if self.childMode == true {
+                            //在新Flutter容器打开Flutter页面
+                            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+                            result(nil)
+                        } else {
+                            //在原Flutter容器打开Flutter页面
+                            self.history.append([
+                                "name": name,
+                                "arguments": arguments,
+                                "uniqueId": UUID().uuidString
+                            ])
+                            result(self.history)
+                        }
+                    } else {
+                        //打开Native页面
+                        Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+                        result(nil)
                     }
                 }
                 result(nil)
             case "pop":
-                FusionStackManager.instance.pop()
-                result(nil)
+                if self.history.count > 1 {
+                    self.history.removeLast()
+                    result(self.history)
+                } else {
+                    FusionStackManager.instance.closeTopContainer()
+                    result(nil)
+                }
             default:
                 result(FlutterMethodNotImplemented)
             }
         }
-    }
-
-    func detach() {
-        channel?.setMethodCallHandler(nil)
-        channel = nil
     }
 
     func notifyPageVisible() {
@@ -75,5 +99,10 @@ class FusionEngineBinding {
 
     func notifyEnterBackground() {
         channel?.invokeMethod("onBackground", arguments: nil)
+    }
+
+    func detach() {
+        channel?.setMethodCallHandler(nil)
+        channel = nil
     }
 }

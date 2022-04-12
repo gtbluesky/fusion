@@ -21,4 +21,8 @@ class CustomViewController : FusionViewController, FusionMessengerProvider {
    
         }
     }
+
+    deinit {
+        print("\(self) deinit")
+    }
 }

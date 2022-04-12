@@ -64,7 +64,7 @@ class _TestPageState extends State<TestPage> {
             InkWell(
                 child: const Text('pop'),
                 onTap: () {
-                  FusionNavigator.instance.pop('我是返回结果');
+                  FusionNavigator.instance.pop('test返回结果');
                 }),
             const SizedBox(
               height: 20,

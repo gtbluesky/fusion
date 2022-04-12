@@ -1,19 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../log/fusion_log.dart';
-
 class FusionRouteInformationParser
-    extends RouteInformationParser<RouteSettings> {
+    extends RouteInformationParser<Map<String, dynamic>> {
   FusionRouteInformationParser();
 
   @override
-  Future<RouteSettings> parseRouteInformation(
+  Future<Map<String, dynamic>> parseRouteInformation(
       RouteInformation routeInformation) {
-    // FusionLog.log('routeInformation.location=${routeInformation.location}');
     final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? '/'));
-    final initialRoute =
-        RouteSettings(name: parse.getName(), arguments: parse.getArguments());
+    final arguments = parse.getArguments();
+    final initialRoute = {
+      'name': parse.getName(),
+      'arguments': arguments,
+      'uniqueId': arguments?['uniqueId']
+    };
     return SynchronousFuture(initialRoute);
   }
 }
