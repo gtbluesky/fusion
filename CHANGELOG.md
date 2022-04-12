@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fixes some known bugs.
+
 ## 1.0.2
 
 * Adds lifecycle observer for flutter pages.
