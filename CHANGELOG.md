@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Modify cocopods configuration.
+
 ## 1.0.3
 
 * Fixes some known bugs.
