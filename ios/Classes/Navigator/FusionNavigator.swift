@@ -13,7 +13,7 @@ import Foundation
     private override init() {
     }
 
-    public func push(name: String, arguments: Dictionary<String, Any>?) {
+    public func push(name: String, arguments: Dictionary<String, Any>? = nil) {
         Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
     }
 }

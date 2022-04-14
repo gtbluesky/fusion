@@ -14,6 +14,6 @@ fun <T : FusionActivity> buildFusionIntent(
 ): Intent {
     return FlutterActivity.NewEngineIntentBuilder(clz).build(context).also {
         it.putExtra(FusionConstant.ROUTE_NAME, routeName)
-        it.putExtra(FusionConstant.ROUTE_ARGUMENTS, routeArguments as Serializable)
+        it.putExtra(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
     }
 }
