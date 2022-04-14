@@ -17,7 +17,7 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
         Fusion.install(this, this)
     }
 
-    override fun pushNativeRoute(name: String?, arguments: Map<String, Any>?) {
+    override fun pushNativeRoute(name: String, arguments: Map<String, Any>?) {
         when (name) {
             "/normal" -> {
                 val intent = Intent(applicationContext, NormalActivity::class.java)
@@ -33,9 +33,8 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
         }
     }
 
-    override fun pushFlutterRoute(name: String?, arguments: Map<String, Any>?) {
+    override fun pushFlutterRoute(name: String, arguments: Map<String, Any>?) {
         Log.d(TAG, "pushFlutterRoute: name=${name}, arguments=${arguments}")
-        if (name.isNullOrEmpty()) return
         startActivity(
             buildFusionIntent(
                 applicationContext,

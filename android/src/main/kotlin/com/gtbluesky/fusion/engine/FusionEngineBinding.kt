@@ -54,6 +54,10 @@ internal class FusionEngineBinding(
             when (call.method) {
                 "push" -> {
                     val name = call.argument<String>("name")
+                    if (name.isNullOrEmpty()) {
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
                     val arguments = call.argument<Map<String, Any>?>("arguments")
                     val isFlutterPage = call.argument<Boolean>("isFlutterPage") ?: false
                     if (isFlutterPage) {

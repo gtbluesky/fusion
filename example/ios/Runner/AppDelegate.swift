@@ -20,11 +20,8 @@ import fusion
     return true
   }
     
-    func pushNativeRoute(name: String?, arguments: Dictionary<String, Any>?) {
+    func pushNativeRoute(name: String, arguments: Dictionary<String, Any>?) {
         print("pushNativeRoute: name=\(name), arguments=\(arguments)")
-        guard let name = name else {
-            return
-        }
         let navController = self.window?.rootViewController as? UINavigationController
         if name == "/normal" {
             let vc = NormalViewController()
@@ -34,11 +31,8 @@ import fusion
         }
     }
     
-    func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?) {
+    func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?) {
         print("pushFlutterRoute: name=\(name), arguments=\(arguments)")
-        guard let name = name else {
-            return
-        }
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         GeneratedPluginRegistrant.register(with: fusionVc.engine!)

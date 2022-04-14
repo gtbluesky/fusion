@@ -46,8 +46,7 @@ class FusionEngineBinding {
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
             case "push":
-                if let dict = call.arguments as? Dictionary<String, Any> {
-                    let name = dict["name"] as? String
+                if let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String {
                     let arguments = dict["arguments"] as? Dictionary<String, Any>
                     let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
                     if isFlutterPage {
