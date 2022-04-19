@@ -9,12 +9,13 @@ import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import java.io.Serializable
 
-class FusionFragment : FlutterFragment() {
+class FusionFragment : FlutterFragment(), FusionContainer {
 
     private lateinit var engineBinding: FusionEngineBinding
 
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun buildFragment(
             routeName: String,
             routeArguments: Map<String, Any>? = null
@@ -59,5 +60,14 @@ class FusionFragment : FlutterFragment() {
                 it.putSerializable(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
             }
         }
+    }
+
+    override fun provideEngineBinding(): FusionEngineBinding {
+        return engineBinding
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        engineBinding.detach()
     }
 }

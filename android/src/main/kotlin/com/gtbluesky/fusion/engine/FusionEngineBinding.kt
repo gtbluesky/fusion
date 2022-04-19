@@ -11,7 +11,7 @@ import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-internal class FusionEngineBinding(
+class FusionEngineBinding(
     context: Context,
     private val childMode: Boolean,
     routeName: String,

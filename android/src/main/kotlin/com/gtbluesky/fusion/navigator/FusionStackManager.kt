@@ -1,7 +1,7 @@
 package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
-import com.gtbluesky.fusion.controller.FusionActivity
+import com.gtbluesky.fusion.controller.FusionContainer
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
@@ -41,13 +41,13 @@ internal object FusionStackManager {
 
     fun notifyEnterForeground() {
         stack.forEach {
-            (it.get() as? FusionActivity)?.engineBinding?.notifyEnterForeground()
+            (it.get() as? FusionContainer)?.provideEngineBinding()?.notifyEnterForeground()
         }
     }
 
     fun notifyEnterBackground() {
         stack.forEach {
-            (it.get() as? FusionActivity)?.engineBinding?.notifyEnterBackground()
+            (it.get() as? FusionContainer)?.provideEngineBinding()?.notifyEnterBackground()
         }
     }
 }

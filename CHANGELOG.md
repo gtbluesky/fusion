@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Add FusionFragmentActivity for Android.
+
 ## 1.0.4
 
 * Modify cocopods configuration.

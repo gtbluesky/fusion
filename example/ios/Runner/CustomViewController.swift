@@ -13,7 +13,17 @@ class CustomViewController : FusionViewController, FusionMessengerProvider {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print("viewWillDisappear")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("viewDidDisappear")
+    }
+
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         print("CustomViewController, configureFlutterChannel")
         let channel = FlutterMethodChannel(name: "channel名", binaryMessenger: binaryMessenger)

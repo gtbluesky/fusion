@@ -6,10 +6,10 @@ import android.os.Build
 import android.os.Bundle
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 
-open class FusionActivity : FlutterActivity(), FusionContainer {
+open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     private lateinit var engineBinding: FusionEngineBinding
 

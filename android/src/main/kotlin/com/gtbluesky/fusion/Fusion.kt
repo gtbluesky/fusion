@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import com.gtbluesky.fusion.controller.FusionActivity
+import com.gtbluesky.fusion.controller.FusionContainer
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngineGroup
 
@@ -22,8 +23,8 @@ object Fusion {
 
 internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
-    var activityReferences = 0
-    var isActivityChangingConfigurations = false
+    private var activityReferences = 0
+    private var isActivityChangingConfigurations = false
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         FusionStackManager.add(activity)
@@ -32,8 +33,8 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     override fun onActivityStarted(activity: Activity) {
         if (++activityReferences == 1 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterForeground()
-        } else if (activity is FusionActivity) {
-            activity.engineBinding.notifyPageVisible()
+        } else if (activity is FusionContainer) {
+            activity.provideEngineBinding().notifyPageVisible()
         }
     }
 
@@ -49,8 +50,8 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
         isActivityChangingConfigurations = activity.isChangingConfigurations
         if (--activityReferences == 0 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterBackground()
-        } else if (activity is FusionActivity) {
-            activity.engineBinding.notifyPageInvisible()
+        } else if (activity is FusionContainer) {
+            activity.provideEngineBinding().notifyPageInvisible()
         }
     }
 
