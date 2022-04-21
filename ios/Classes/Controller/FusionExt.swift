@@ -19,6 +19,8 @@ public extension UIApplication {
             } else if topmostViewController is UITabBarController {
                 let tabBarController = topmostViewController as? UITabBarController
                 topmostViewController = tabBarController?.selectedViewController
+            } else if topmostViewController?.children.isEmpty == false {
+                topmostViewController = topmostViewController?.children[0]
             } else {
                 break
             }
@@ -38,6 +40,8 @@ public extension UIApplication {
             } else if topmostViewController is UITabBarController {
                 let tabBarController = topmostViewController as? UITabBarController
                 topmostViewController = tabBarController?.selectedViewController
+            } else if topmostViewController?.children.isEmpty == false {
+                topmostViewController = topmostViewController?.children[0]
             } else {
                 break
             }

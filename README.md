@@ -138,7 +138,7 @@ iOS 使用 FusionViewController 并传入 `childMode: true` 以支持子页面�
 
 ❎ replace
 
-
+P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 
 ### 4、Flutter Plugin 注册
 

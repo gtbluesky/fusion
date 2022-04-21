@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Improve compatibility for iOS.
+
 ## 1.0.5
 
 * Add FusionFragmentActivity for Android.
