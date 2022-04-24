@@ -19,26 +19,35 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SRh-hL-fLP">
-                                <rect key="frame" x="158" y="407" width="77" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="ButtonA"/>
-                                <connections>
-                                    <action selector="clickButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="g7y-Yr-gzG"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wYC-6C-J6o">
-                                <rect key="frame" x="168" y="462" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="click2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Xkj-Xt-HQq"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="LC4-xr-4pj">
+                                <rect key="frame" x="76" y="391" width="238" height="62"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SRh-hL-fLP">
+                                        <rect key="frame" x="0.0" y="0.0" width="238" height="31"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 页面模式"/>
+                                        <connections>
+                                            <action selector="clickButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="g7y-Yr-gzG"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wYC-6C-J6o">
+                                        <rect key="frame" x="0.0" y="31" width="238" height="31"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 子页面模式"/>
+                                        <connections>
+                                            <action selector="click2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Xkj-Xt-HQq"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="LC4-xr-4pj" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="60" id="C0V-DT-RiQ"/>
+                            <constraint firstItem="LC4-xr-4pj" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jtl-EB-Dgs"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="LC4-xr-4pj" secondAttribute="trailing" constant="60" id="lNb-NC-Daf"/>
+                            <constraint firstItem="LC4-xr-4pj" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="pju-6U-0cd"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="HhW-aG-tu4"/>
                     <connections>

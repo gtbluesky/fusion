@@ -16,15 +16,16 @@ class MultiViewController : UITabBarController {
         addChildVC(childVC: FusionViewController(childMode: true, routeName: "/list", routeArguments: ["title": "b"]), title: "我的")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     private func addChildVC(childVC: FusionViewController, title: String) {
         tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : UIColor.red], for: .highlighted)
         childVC.title = title
         GeneratedPluginRegistrant.register(with: childVC.engine!)
 //        let nav = UINavigationController(rootViewController: childVC)
         addChild(childVC)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 }

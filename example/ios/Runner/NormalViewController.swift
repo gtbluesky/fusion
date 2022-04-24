@@ -21,6 +21,11 @@ class NormalViewController : UIViewController {
             view.addSubview(button)
         }
     }
+
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
     
     @objc func btnClick(btn: UIButton) {
         if let count = navigationController?.viewControllers.count {
@@ -38,18 +43,5 @@ class NormalViewController : UIViewController {
 //        let vc = MultiViewController()
 //        vc.modalPresentationStyle = .fullScreen
 //        present(vc, animated: true)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        print("viewDidAppear")
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        print("viewDidDisappear")
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 }

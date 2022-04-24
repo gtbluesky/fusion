@@ -42,7 +42,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
   }
 
   /// popRoute: 点击物理按键返回时被调用
-  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键时被调用
+  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键时被调用，或右滑返回时被调用
   /// true: 表示自行处理
   /// false: 表示交由 Flutter 系统处理
   @override

@@ -112,8 +112,12 @@ iOS 侧
 
 Android 使用 FusionActivty，启动 FusionActivty（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法。
 
-iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController。
+iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController。FusionViewController 默认隐藏了 UINavigationController，并且将 iOS 和 Flutter 右滑手势返回兼容，使得 iOS 原生页面和 Flutter 页面都可通过手势返回。
 
+P.S: 如果存在手势冲突，可以关闭手势自适应模式
+```swift
+Fusion.instance.adaptiveGesture = false
+```
 
 #### 子页面模式
 

@@ -26,11 +26,11 @@ class FusionStackManager {
     }
 
     func closeTopContainer() {
-        let vc = UIApplication.topmostViewController
-        let navigationController = vc?.navigationController
-        if let count = navigationController?.viewControllers.count {
+        let vc = UIApplication.roofViewController
+        let nc = vc?.navigationController
+        if let count = nc?.viewControllers.count {
             if count > 1 {
-                navigationController?.popViewController(animated: true)
+                nc?.popViewController(animated: true)
             }
         } else {
             vc?.dismiss(animated: true)

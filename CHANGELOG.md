@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Adds adaptive pop gesture for iOS.
+
 ## 1.0.6
 
 * Improve compatibility for iOS.

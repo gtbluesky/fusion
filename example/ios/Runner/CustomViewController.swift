@@ -7,29 +7,16 @@
 
 import Foundation
 import fusion
-class CustomViewController : FusionViewController, FusionMessengerProvider {
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        print("viewWillDisappear")
-    }
+class CustomViewController: FusionViewController, FusionMessengerProvider {
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        print("viewDidDisappear")
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor.white
     }
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
-        print("CustomViewController, configureFlutterChannel")
-        let channel = FlutterMethodChannel(name: "channel名", binaryMessenger: binaryMessenger)
-        channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-   
-        }
+        print("\(self) configureFlutterChannel")
     }
 
     deinit {

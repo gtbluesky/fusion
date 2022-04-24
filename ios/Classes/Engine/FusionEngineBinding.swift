@@ -62,6 +62,7 @@ class FusionEngineBinding {
                                 "uniqueId": UUID().uuidString
                             ])
                             result(self.history)
+                            self.removePopGesture()
                         }
                     } else {
                         //打开Native页面
@@ -74,6 +75,7 @@ class FusionEngineBinding {
                 if self.history.count > 1 {
                     self.history.removeLast()
                     result(self.history)
+                    self.addPopGesture()
                 } else {
                     FusionStackManager.instance.closeTopContainer()
                     result(nil)
@@ -82,6 +84,48 @@ class FusionEngineBinding {
                 result(FlutterMethodNotImplemented)
             }
         }
+    }
+
+    func addPopGesture() {
+        if (childMode) {
+            return
+        }
+        if !Fusion.instance.adaptiveGesture {
+            return
+        }
+        if history.count > 1 {
+            return
+        }
+        let vc = UIApplication.roofViewController
+        if !(vc is FusionViewController) {
+            return
+        }
+        let nc = vc?.navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.addPopGesture()
+    }
+
+    func removePopGesture() {
+        if (childMode) {
+            return
+        }
+        if !Fusion.instance.adaptiveGesture {
+            return
+        }
+        let vc = UIApplication.roofViewController
+        let nc = vc?.navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.removePopGesture()
     }
 
     func notifyPageVisible() {
