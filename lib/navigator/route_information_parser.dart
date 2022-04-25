@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 class FusionRouteInformationParser
     extends RouteInformationParser<Map<String, dynamic>> {
-  FusionRouteInformationParser();
 
   @override
   Future<Map<String, dynamic>> parseRouteInformation(

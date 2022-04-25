@@ -41,16 +41,10 @@ extension UINavigationController {
     }
 
     func addPopGesture() {
-        interactivePopGestureRecognizer?.view?.gestureRecognizers?.forEach { recognizer in
-            print("addPopGesture before recognizer=\(recognizer)")
-        }
         if interactivePopGestureRecognizer?.view?.gestureRecognizers?.contains(popGestureRecognizer()) == false {
             interactivePopGestureRecognizer?.view?.addGestureRecognizer(popGestureRecognizer())
         }
         interactivePopGestureRecognizer?.isEnabled = false
-        interactivePopGestureRecognizer?.view?.gestureRecognizers?.forEach { recognizer in
-            print("addPopGesture recognizer=\(recognizer)")
-        }
     }
 
     func removePopGesture() {
@@ -58,8 +52,5 @@ extension UINavigationController {
             interactivePopGestureRecognizer?.view?.removeGestureRecognizer(popGestureRecognizer())
         }
         interactivePopGestureRecognizer?.isEnabled = true
-        interactivePopGestureRecognizer?.view?.gestureRecognizers?.forEach { recognizer in
-            print("removePopGesture recognizer=\(recognizer)")
-        }
     }
 }

@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Fixes the bug 'The Navigator.pages must not be empty to use the Navigator.pages API' when debugging.
+
 ## 1.0.7
 
 * Adds adaptive pop gesture for iOS.

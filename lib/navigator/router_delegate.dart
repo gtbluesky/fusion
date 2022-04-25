@@ -7,8 +7,14 @@ import 'package:fusion/navigator/fusion_navigator_observer.dart';
 
 class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     with ChangeNotifier {
+  FusionRouterDelegate._();
+
+  static final FusionRouterDelegate _instance = FusionRouterDelegate._();
+
   final _history = <Map<String, dynamic>>[];
   final _callback = <String, Completer<dynamic>>{};
+
+  static FusionRouterDelegate get instance => _instance;
 
   GlobalKey<NavigatorState>? get navigatorKey => FusionNavigator.instance.key;
 

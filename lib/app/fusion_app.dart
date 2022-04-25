@@ -69,7 +69,7 @@ class FusionApp extends StatelessWidget {
   }) : super(key: key) {
     FusionNavigator.instance.routeInformationParser =
         FusionRouteInformationParser();
-    FusionNavigator.instance.routerDelegate = FusionRouterDelegate();
+    FusionNavigator.instance.routerDelegate = FusionRouterDelegate.instance;
     FusionNavigator.instance.routeMap = routeMap;
   }
 
