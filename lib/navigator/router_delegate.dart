@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fusion/channel/fusion_channel.dart';
-import 'package:fusion/navigator/fusion_navigator.dart';
-import 'package:fusion/navigator/fusion_navigator_observer.dart';
+
+import '../channel/fusion_channel.dart';
+import '../page/unknown_page.dart';
+import '../route/fusion_page.dart';
+import 'fusion_navigator.dart';
+import 'fusion_navigator_observer.dart';
 
 class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     with ChangeNotifier {
@@ -40,15 +43,17 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     if (currentConfiguration == null) return <Page>[];
     return _history.map((e) {
       final arguments = (e["arguments"] as Map?)?.cast<String, dynamic>();
-      return MaterialPage(
-          child: FusionNavigator.instance.routeMap[e['name']]!(arguments),
-          name: e['name'],
-          arguments: e["arguments"]);
+      PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
+          FusionNavigator.instance.routeMap['/404'];
+      final page =
+          pageFactory != null ? pageFactory(arguments) : const UnknownPage();
+      return FusionPage(
+          child: page, name: e['name'], arguments: e["arguments"]);
     }).toList();
   }
 
   /// popRoute: 点击物理按键返回时被调用
-  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键时被调用，或右滑返回时被调用
+  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键或 iOS 右滑返回时被调用
   /// true: 表示自行处理
   /// false: 表示交由 Flutter 系统处理
   @override

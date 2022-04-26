@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
-import 'package:fusion/fusion.dart';
+
+import '../lifecycle/page_lifecycle.dart';
+import '../navigator/fusion_navigator.dart';
 
 class FusionChannel {
   static const MethodChannel _channel = MethodChannel('fusion_channel');

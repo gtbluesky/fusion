@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../channel/fusion_channel.dart';
+import '../data/fusion_data.dart';
 import '../navigator/fusion_navigator.dart';
 import '../navigator/route_information_parser.dart';
 import '../navigator/router_delegate.dart';
@@ -66,11 +67,15 @@ class FusionApp extends StatelessWidget {
     this.restorationScopeId,
     this.scrollBehavior,
     this.useInheritedMediaQuery = false,
+    Duration transitionDuration = const Duration(milliseconds: 300),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
     FusionNavigator.instance.routeInformationParser =
         FusionRouteInformationParser();
     FusionNavigator.instance.routerDelegate = FusionRouterDelegate.instance;
     FusionNavigator.instance.routeMap = routeMap;
+    FusionData.transitionDuration = transitionDuration;
+    FusionData.reverseTransitionDuration = reverseTransitionDuration;
   }
 
   @override

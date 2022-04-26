@@ -1,3 +1,8 @@
+## 1.0.9
+
+* Adds custom prompt page when the route isn't in route map.
+* Adds custom duration for page transition animation.
+
 ## 1.0.8
 
 * Fixes the bug 'The Navigator.pages must not be empty to use the Navigator.pages API' when debugging.

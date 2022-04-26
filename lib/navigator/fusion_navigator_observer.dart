@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/fusion.dart';
 
-import '../log/fusion_log.dart';
+import '../lifecycle/page_lifecycle.dart';
 
 class FusionNavigatorObserver extends NavigatorObserver {
-
   bool isInitial = true;
 
   @override
@@ -20,7 +18,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
     if (route is! PageRoute) {
       return;
     }
-    PageLifecycleBinding.instance.dispatchPageVisibleEvent(route, isFirstTime: true);
+    PageLifecycleBinding.instance
+        .dispatchPageVisibleEvent(route, isFirstTime: true);
     if (previousRoute != null) {
       PageLifecycleBinding.instance.dispatchPageInvisibleEvent(previousRoute);
     }
