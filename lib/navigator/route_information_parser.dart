@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 
 class FusionRouteInformationParser
     extends RouteInformationParser<Map<String, dynamic>> {
-
   @override
   Future<Map<String, dynamic>> parseRouteInformation(
       RouteInformation routeInformation) {
     final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? '/'));
-    final arguments = parse.getArguments();
+    final arguments = Map<String, String>.from(parse.getArguments()!);
     final initialRoute = {
       'name': parse.getName(),
       'arguments': arguments,
-      'uniqueId': arguments?['uniqueId']
+      'uniqueId': arguments.remove('uniqueId')
     };
     return SynchronousFuture(initialRoute);
   }

@@ -19,7 +19,7 @@ class FragmentSceneActivity : FragmentActivity(), FusionMessengerProvider {
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
         val fragment0 = FusionFragment.buildFragment("/test", mapOf("title" to "f0"))
-        val fragment1 = FusionFragment.buildFragment("/list", mapOf("title" to "f1"))
+        val fragment1 = FusionFragment.buildFragment("/lifecycle", mapOf("title" to "f1"))
         val fragment2 = FusionFragment.buildFragment("/list", mapOf("title" to "f2"))
         adapter.addFragment(fragment0)
         adapter.addFragment(fragment1)

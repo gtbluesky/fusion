@@ -6,7 +6,7 @@ import '../navigator/fusion_navigator.dart';
 import '../navigator/route_information_parser.dart';
 import '../navigator/router_delegate.dart';
 
-class FusionApp extends StatelessWidget {
+class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
   final RouteInformationProvider? routeInformationProvider;
   final BackButtonDispatcher? backButtonDispatcher;
@@ -79,38 +79,49 @@ class FusionApp extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  State<FusionApp> createState() => _FusionAppState();
+}
+
+class _FusionAppState extends State<FusionApp> {
+
+  @override
+  void initState() {
+    super.initState();
     FusionChannel.register();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
         routeInformationParser: FusionNavigator.instance.routeInformationParser,
         routerDelegate: FusionNavigator.instance.routerDelegate,
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        routeInformationProvider: routeInformationProvider,
-        backButtonDispatcher: backButtonDispatcher,
-        builder: builder,
-        title: title,
-        onGenerateTitle: onGenerateTitle,
-        color: color,
-        theme: theme,
-        darkTheme: darkTheme,
-        highContrastTheme: highContrastTheme,
-        highContrastDarkTheme: highContrastDarkTheme,
-        themeMode: themeMode,
-        locale: locale,
-        localizationsDelegates: localizationsDelegates,
-        localeListResolutionCallback: localeListResolutionCallback,
-        localeResolutionCallback: localeResolutionCallback,
-        supportedLocales: supportedLocales,
-        debugShowMaterialGrid: debugShowMaterialGrid,
-        showPerformanceOverlay: showPerformanceOverlay,
-        checkerboardRasterCacheImages: checkerboardRasterCacheImages,
-        checkerboardOffscreenLayers: checkerboardOffscreenLayers,
-        showSemanticsDebugger: showSemanticsDebugger,
-        debugShowCheckedModeBanner: debugShowCheckedModeBanner,
-        shortcuts: shortcuts,
-        actions: actions,
-        restorationScopeId: restorationScopeId,
-        scrollBehavior: scrollBehavior,
-        useInheritedMediaQuery: useInheritedMediaQuery);
+        scaffoldMessengerKey: widget.scaffoldMessengerKey,
+        routeInformationProvider: widget.routeInformationProvider,
+        backButtonDispatcher: widget.backButtonDispatcher,
+        builder: widget.builder,
+        title: widget.title,
+        onGenerateTitle: widget.onGenerateTitle,
+        color: widget.color,
+        theme: widget.theme,
+        darkTheme: widget.darkTheme,
+        highContrastTheme: widget.highContrastTheme,
+        highContrastDarkTheme: widget.highContrastDarkTheme,
+        themeMode: widget.themeMode,
+        locale: widget.locale,
+        localizationsDelegates: widget.localizationsDelegates,
+        localeListResolutionCallback: widget.localeListResolutionCallback,
+        localeResolutionCallback: widget.localeResolutionCallback,
+        supportedLocales: widget.supportedLocales,
+        debugShowMaterialGrid: widget.debugShowMaterialGrid,
+        showPerformanceOverlay: widget.showPerformanceOverlay,
+        checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
+        checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
+        showSemanticsDebugger: widget.showSemanticsDebugger,
+        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+        shortcuts: widget.shortcuts,
+        actions: widget.actions,
+        restorationScopeId: widget.restorationScopeId,
+        scrollBehavior: widget.scrollBehavior,
+        useInheritedMediaQuery: widget.useInheritedMediaQuery);
   }
 }

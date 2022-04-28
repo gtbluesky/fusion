@@ -15,8 +15,10 @@ open class FusionViewController: FlutterViewController {
         self.childMode = childMode
         engineBinding = FusionEngineBinding(childMode: childMode, routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
-        engineBinding.provideMessenger(vc: self)
-        if (!childMode) {
+        engineBinding.provideMessenger(self)
+        if (childMode) {
+            FusionStackManager.instance.addChild(self)
+        } else {
             FusionStackManager.instance.add(self)
         }
     }
@@ -52,7 +54,9 @@ open class FusionViewController: FlutterViewController {
     }
 
     deinit {
-        if (!childMode) {
+        if (childMode) {
+            FusionStackManager.instance.removeChild()
+        } else {
             FusionStackManager.instance.remove()
         }
         engineBinding.detach()

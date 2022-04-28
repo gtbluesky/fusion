@@ -6,18 +6,30 @@
 //
 
 import Foundation
-class NormalViewController : UIViewController {
+import fusion
+
+class NormalViewController: UIViewController {
     private var button: UIButton?
-    
+    private var button2: UIButton?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
-        button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
+        button = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         button?.center = view.center
         button?.setTitle("返回", for: .normal)
         button?.backgroundColor = UIColor.blue
         button?.addTarget(self, action: #selector(btnClick(btn:)), for: .touchUpInside)
         if let button = button {
+            view.addSubview(button)
+        }
+
+        button2 = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        button2?.center = CGPoint(x: view.center.x, y: view.center.y + 60)
+        button2?.setTitle("发送消息", for: .normal)
+        button2?.backgroundColor = UIColor.gray
+        button2?.addTarget(self, action: #selector(btnClick2(btn:)), for: .touchUpInside)
+        if let button = button2 {
             view.addSubview(button)
         }
     }
@@ -26,7 +38,7 @@ class NormalViewController : UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
-    
+
     @objc func btnClick(btn: UIButton) {
         if let count = navigationController?.viewControllers.count {
             if count > 1 {
@@ -35,13 +47,9 @@ class NormalViewController : UIViewController {
         } else {
             dismiss(animated: true)
         }
-//        let alert = UIAlertController(title: "Hello!", message: "Message", preferredStyle: UIAlertController.Style.alert)
-//        let alertAction = UIAlertAction(title: "OK!", style: UIAlertAction.Style.default)
-//        alert.addAction(alertAction)
-//        present(alert, animated: true)
+    }
 
-//        let vc = MultiViewController()
-//        vc.modalPresentationStyle = .fullScreen
-//        present(vc, animated: true)
+    @objc func btnClick2(btn: UIButton) {
+        FusionNavigator.instance.sendMessage(msgName: "msg3", msgBody: ["time": "\(Int64(round(Date().timeIntervalSince1970 * 1000)))"])
     }
 }

@@ -7,11 +7,13 @@
 
 import Foundation
 
-class FusionEngineBinding {
+class FusionEngineBinding: NSObject {
     private var channel: FlutterMethodChannel? = nil
     let engine: FlutterEngine
     private let childMode: Bool
     private var history: [Dictionary<String, Any?>] = []
+    private var eventChannel: FlutterEventChannel? = nil
+    private var events: FlutterEventSink? = nil
 
     init(childMode: Bool, routeName: String, routeArguments: Dictionary<String, Any>?) {
         self.childMode = childMode
@@ -24,10 +26,12 @@ class FusionEngineBinding {
         ])
         engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        eventChannel = FlutterEventChannel(name: FusionConstant.FUSION_EVENT_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        super.init()
         attach()
     }
 
-    func provideMessenger(vc: FusionViewController) {
+    func provideMessenger(_ vc: FusionViewController) {
         if let provider = vc as? FusionMessengerProvider {
             provider.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
         }
@@ -69,8 +73,9 @@ class FusionEngineBinding {
                         Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
                         result(nil)
                     }
+                } else {
+                    result(nil)
                 }
-                result(nil)
             case "pop":
                 if self.history.count > 1 {
                     self.history.removeLast()
@@ -80,10 +85,17 @@ class FusionEngineBinding {
                     FusionStackManager.instance.closeTopContainer()
                     result(nil)
                 }
+            case "sendMessage":
+                if let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String {
+                    let msgBody = dict["msgBody"] as? Dictionary<String, Any>
+                    FusionStackManager.instance.sendMessage(msgName, msgBody)
+                }
+                result(nil)
             default:
                 result(FlutterMethodNotImplemented)
             }
         }
+        eventChannel?.setStreamHandler(self)
     }
 
     func addPopGesture() {
@@ -129,23 +141,41 @@ class FusionEngineBinding {
     }
 
     func notifyPageVisible() {
-        channel?.invokeMethod("onPageVisible", arguments: nil)
+        channel?.invokeMethod("notifyPageVisible", arguments: nil)
     }
 
     func notifyPageInvisible() {
-        channel?.invokeMethod("onPageInvisible", arguments: nil)
+        channel?.invokeMethod("notifyPageInvisible", arguments: nil)
     }
 
     func notifyEnterForeground() {
-        channel?.invokeMethod("onForeground", arguments: nil)
+        channel?.invokeMethod("notifyEnterForeground", arguments: nil)
     }
 
     func notifyEnterBackground() {
-        channel?.invokeMethod("onBackground", arguments: nil)
+        channel?.invokeMethod("notifyEnterBackground", arguments: nil)
     }
 
     func detach() {
         channel?.setMethodCallHandler(nil)
         channel = nil
+        eventChannel?.setStreamHandler(nil)
+        eventChannel = nil
+    }
+}
+
+extension FusionEngineBinding: FlutterStreamHandler {
+    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        self.events = events
+        return nil
+    }
+
+    func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        events = nil
+        return nil
+    }
+
+    func sendMessage(_ msg: Dictionary<String, Any?>) {
+        events?(msg)
     }
 }

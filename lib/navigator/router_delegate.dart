@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../channel/fusion_channel.dart';
+import '../constant/fusion_constant.dart';
 import '../page/unknown_page.dart';
 import '../route/fusion_page.dart';
 import 'fusion_navigator.dart';
@@ -42,13 +43,13 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
   List<Page> _buildHistoryPages() {
     if (currentConfiguration == null) return <Page>[];
     return _history.map((e) {
-      final arguments = (e["arguments"] as Map?)?.cast<String, dynamic>();
+      final arguments = (e['arguments'] as Map?)?.cast<String, dynamic>();
       PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
-          FusionNavigator.instance.routeMap['/404'];
+          FusionNavigator.instance.routeMap[FusionConstant.unknownRoute];
       final page =
           pageFactory != null ? pageFactory(arguments) : const UnknownPage();
       return FusionPage(
-          child: page, name: e['name'], arguments: e["arguments"]);
+          child: page, name: e['name'], arguments: e['arguments']);
     }).toList();
   }
 

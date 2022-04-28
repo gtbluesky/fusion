@@ -16,8 +16,28 @@ class TestPage extends StatefulWidget {
   State<TestPage> createState() => _TestPageState();
 }
 
-class _TestPageState extends State<TestPage> {
+class _TestPageState extends State<TestPage> implements PageNotificationListener {
   int _count = 0;
+  String? msg;
+
+  @override
+  void onReceive(String msgName, Map<String, dynamic>? msgBody) {
+    setState(() {
+      msg = '$runtimeType@$hashCode, $msgName, $msgBody';
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    PageNotificationBinding.instance.register(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    PageNotificationBinding.instance.unregister(this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +96,8 @@ class _TestPageState extends State<TestPage> {
                       await widget._channel.invokeMethod('getPlatformVersion');
                   FusionLog.log('result=$result');
                 }),
-            Text('$_count')
+            Text('$_count'),
+            Text('onReceive=$msg')
           ],
         ),
       ),

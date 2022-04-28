@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../log/fusion_log.dart';
 
-class PageLifecycleObserver {
+class PageLifecycleListener {
   void onPageVisible() {}
 
   void onPageInvisible() {}
@@ -19,29 +19,29 @@ class PageLifecycleBinding {
 
   static PageLifecycleBinding get instance => _instance;
 
-  final _listeners = <Route<dynamic>, PageLifecycleObserver>{};
+  final _listeners = <Route<dynamic>, PageLifecycleListener>{};
 
   late Route topRoute;
 
-  void register(PageLifecycleObserver observer) {
-    if (observer is! State) {
+  void register(PageLifecycleListener listener) {
+    if (listener is! State) {
       return;
     }
-    final context = (observer as State).context;
+    final context = (listener as State).context;
     Route<dynamic>? route = ModalRoute.of(context);
     if (route == null) {
       return;
     }
-    _listeners[route] = observer;
+    _listeners[route] = listener;
     // FusionLog.log('addObserver.route:${route.runtimeType}@${route.hashCode}');
     // FusionLog.log('addObserver.state:${observer.runtimeType}@${observer.hashCode}');
   }
 
-  void unregister(PageLifecycleObserver observer) {
-    if (observer is! State) {
+  void unregister(PageLifecycleListener listener) {
+    if (listener is! State) {
       return;
     }
-    _listeners.removeWhere((key, value) => value == observer);
+    _listeners.removeWhere((key, value) => value == listener);
   }
 
   void dispatchPageVisibleEvent(Route<dynamic> route,

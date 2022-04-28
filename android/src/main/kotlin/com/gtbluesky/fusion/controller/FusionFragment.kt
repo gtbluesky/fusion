@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.constant.FusionConstant
+import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
@@ -33,6 +34,11 @@ class FusionFragment : FlutterFragment(), FusionContainer {
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         engineBinding = FusionEngineBinding(context, true, routeName, routeArguments)
         super.onAttach(context)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        FusionStackManager.addChild(this)
     }
 
     override fun provideFlutterEngine(context: Context): FlutterEngine? {
@@ -69,5 +75,6 @@ class FusionFragment : FlutterFragment(), FusionContainer {
     override fun onDestroy() {
         super.onDestroy()
         engineBinding.detach()
+        FusionStackManager.removeChild(this)
     }
 }

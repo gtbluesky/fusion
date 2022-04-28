@@ -2,6 +2,7 @@ package com.gtbluesky.fusion_example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion_example.databinding.ActivityABinding
 
 class NormalActivity : AppCompatActivity() {
@@ -13,5 +14,8 @@ class NormalActivity : AppCompatActivity() {
         setContentView(binding.root)
         val title = intent.getStringExtra("title")
         binding.tvA.text = title
+        binding.tvB.setOnClickListener {
+            FusionNavigator.sendMessage("msg2")
+        }
     }
 }

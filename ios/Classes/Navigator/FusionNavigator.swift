@@ -16,4 +16,8 @@ import Foundation
     public func push(name: String, arguments: Dictionary<String, Any>? = nil) {
         Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
     }
+
+    public func sendMessage(msgName: String, msgBody: Dictionary<String, Any>? = nil) {
+        FusionStackManager.instance.sendMessage(msgName, msgBody)
+    }
 }

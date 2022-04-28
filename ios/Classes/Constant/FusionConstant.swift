@@ -12,4 +12,5 @@ struct FusionConstant {
     static let ROUTE_ARGUMENTS = "ROUTE_ARGUMENTS"
     static let INITIAL_ROUTE = "/"
     static let FUSION_CHANNEL = "fusion_channel"
+    static let FUSION_EVENT_CHANNEL = "fusion_event_channel"
 }

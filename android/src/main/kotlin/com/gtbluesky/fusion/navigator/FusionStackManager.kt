@@ -2,10 +2,12 @@ package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
 import com.gtbluesky.fusion.controller.FusionContainer
+import com.gtbluesky.fusion.notification.FusionNotificationListener
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
     private val stack = mutableListOf<WeakReference<Activity>>()
+    private val childPageStack = mutableListOf<WeakReference<FusionContainer>>()
 
     private fun getTopContainer(): Activity? {
         if (stack.isEmpty()) return null
@@ -17,26 +19,24 @@ internal object FusionStackManager {
     }
 
     fun remove(activity: Activity) {
-        stack.forEach {
-            if (it.get() == activity) {
-                stack.remove(it)
-                return
-            }
-        }
+        stack.removeAll { it.get() == activity }
     }
 
     fun move2Top(activity: Activity) {
-        stack.forEach {
-            if (it.get() == activity) {
-                stack.remove(it)
-                stack.add(it)
-                return
-            }
-        }
+        remove(activity)
+        add(activity)
     }
 
     fun closeTopContainer() {
         getTopContainer()?.finish()
+    }
+
+    fun addChild(container: FusionContainer) {
+        childPageStack.add(WeakReference(container))
+    }
+
+    fun removeChild(container: FusionContainer) {
+        childPageStack.removeAll { it.get() == container }
     }
 
     fun notifyEnterForeground() {
@@ -48,6 +48,18 @@ internal object FusionStackManager {
     fun notifyEnterBackground() {
         stack.forEach {
             (it.get() as? FusionContainer)?.provideEngineBinding()?.notifyEnterBackground()
+        }
+    }
+
+    fun sendMessage(msgName: String, msgBody: Map<String, Any>?) {
+        val msg = mutableMapOf<String, Any?>("msgName" to msgName)
+        msg["msgBody"] = msgBody
+        stack.forEach {
+            (it.get() as? FusionContainer)?.provideEngineBinding()?.sendMessage(msg)
+            (it.get() as? FusionNotificationListener)?.onReceive(msgName, msgBody)
+        }
+        childPageStack.forEach {
+            it.get()?.provideEngineBinding()?.sendMessage(msg)
         }
     }
 }

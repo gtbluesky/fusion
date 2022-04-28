@@ -38,7 +38,7 @@ void main() {
 // 路由表
 final Map<String, PageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
-  '/404': (arguments) => UnknownPage(arguments: arguments),
+  FusionConstant.unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 ```
 
@@ -273,7 +273,7 @@ deinit {
 
 ### 6、生命周期
 支持 `页面模式` 下监听 Flutter 页面的生命周期。
-- ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleObserver
+- ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听
 ```dart
@@ -285,7 +285,7 @@ class LifecyclePage extends StatefulWidget {
 }
 
 class _LifecyclePageState extends State<LifecyclePage>
-    implements PageLifecycleObserver {
+    implements PageLifecycleListener {
   @override
   Widget build(BuildContext context) {
     return Container();
@@ -316,8 +316,57 @@ class _LifecyclePageState extends State<LifecyclePage>
   }
 }
 ```
-PageLifecycleObserver 生命周期回调函数：
+PageLifecycleListener 生命周期回调函数：
 - onForeground: 应用进入前台会被调用，所有注册了生命周期监听的页面都会收到
 - onBackground: 应用退到后台会被调用，所有注册了生命周期监听的页面都会收到
 - onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；但当应用进入前台时不会被调用，与 iOS 的 `viewDidAppear` 类似，与 Android 的 `onResume` 稍有差异
 - onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；但当应用退到后台时不会被调用，与 iOS 的 `viewDidDisappear` 类似，与 Android 的 `onStop` 稍有差异
+
+### 7、页面通信
+支持多种情况下页面消息传递：
+- Flutter -> Flutter
+- Flutter -> Native 
+- Native -> Flutter
+- Native -> Native
+
+#### 注册消息监听
+Flutter侧
+- ①、在需要监听消息的页面的 State 中 `implements` PageNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ②、在 didChangeDependencies 中注册监听
+- ③、在 dispose 中注销监听
+```dart
+class TestPage extends StatefulWidget {
+
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
+
+class _TestPageState extends State<TestPage> implements PageNotificationListener {
+
+  @override
+  void onReceive(String msgName, Map<String, dynamic>? msgBody) {
+    
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    PageNotificationBinding.instance.register(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    PageNotificationBinding.instance.unregister(this);
+  }
+}
+```
+
+Android侧
+- 在需要监听页面消息的 Activity 中 实现 PageNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+
+iOS侧
+- 在需要监听页面消息的 ViewController（不支持子VC） 中 实现 PageNotificationListener 协议，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+
+#### 发送消息
+三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息。

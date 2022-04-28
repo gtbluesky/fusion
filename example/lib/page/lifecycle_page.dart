@@ -12,7 +12,7 @@ class LifecyclePage extends StatefulWidget {
 }
 
 class _LifecyclePageState extends State<LifecyclePage>
-    implements PageLifecycleObserver {
+    implements PageLifecycleListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,18 +58,18 @@ class _LifecyclePageState extends State<LifecyclePage>
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return Container(
-                  child: GestureDetector(
-                    child: const Text('我是弹窗'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                );
-              });
+          FusionNavigator.instance.sendMessage(
+              'msg1', msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
+          // showDialog(
+          //     context: context,
+          //     builder: (context) {
+          //       return GestureDetector(
+          //         child: const Text('我是弹窗'),
+          //         onTap: () {
+          //           Navigator.of(context).pop();
+          //         },
+          //       );
+          //     });
         },
       ),
     );
@@ -77,47 +77,47 @@ class _LifecyclePageState extends State<LifecyclePage>
 
   @override
   void onBackground() {
-    FusionLog.log('${runtimeType}@${hashCode}:onBackground');
+    FusionLog.log('$runtimeType@$hashCode:onBackground');
   }
 
   @override
   void onForeground() {
-    FusionLog.log('${runtimeType}@${hashCode}:onForeground');
+    FusionLog.log('$runtimeType@$hashCode:onForeground');
   }
 
   @override
   void onPageInvisible() {
-    FusionLog.log('${runtimeType}@${hashCode}:onPageInvisible');
+    FusionLog.log('$runtimeType@$hashCode:onPageInvisible');
   }
 
   @override
   void onPageVisible() {
-    FusionLog.log('${runtimeType}@${hashCode}:onPageVisible');
+    FusionLog.log('$runtimeType@$hashCode:onPageVisible');
   }
 
   @override
   void initState() {
     super.initState();
-    FusionLog.log('${runtimeType}@${hashCode}:initState');
+    FusionLog.log('$runtimeType@$hashCode:initState');
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    FusionLog.log('${runtimeType}@${hashCode}:deactivate');
+    FusionLog.log('$runtimeType@$hashCode:deactivate');
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     PageLifecycleBinding.instance.register(this);
-    FusionLog.log('${runtimeType}@${hashCode}:didChangeDependencies');
+    FusionLog.log('$runtimeType@$hashCode:didChangeDependencies');
   }
 
   @override
   void dispose() {
     super.dispose();
     PageLifecycleBinding.instance.unregister(this);
-    FusionLog.log('${runtimeType}@${hashCode}:dispose');
+    FusionLog.log('$runtimeType@$hashCode:dispose');
   }
 }

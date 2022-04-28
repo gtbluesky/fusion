@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../channel/fusion_channel.dart';
 import '../navigator/route_information_parser.dart';
 import '../navigator/router_delegate.dart';
 
@@ -32,5 +33,9 @@ class FusionNavigator {
 
   Future<void> pop<T extends Object>([T? result]) async {
     return await routerDelegate.pop(result);
+  }
+
+  void sendMessage(String msgName, {Map<String, dynamic>? msgBody}) {
+    return FusionChannel.sendMessage(msgName, msgBody: msgBody);
   }
 }
