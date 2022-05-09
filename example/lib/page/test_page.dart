@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
-import 'package:fusion/log/fusion_log.dart';
 
 class TestPage extends StatefulWidget {
   TestPage({Key? key, this.arguments}) : super(key: key) {
@@ -65,7 +65,9 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
                 onTap: () async {
                   final result = await FusionNavigator.instance
                       .push<String?>('/test', arguments: {'title': '2'});
-                  FusionLog.log('result=$result');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             const SizedBox(
               height: 20,
@@ -76,7 +78,9 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
                   final result = await FusionNavigator.instance.push<String?>(
                       '/lifecycle',
                       arguments: {'title': 'Lifecycle Test'});
-                  FusionLog.log('result=$result');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             const SizedBox(
               height: 20,
@@ -94,7 +98,9 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
                 onTap: () async {
                   final result =
                       await widget._channel.invokeMethod('getPlatformVersion');
-                  FusionLog.log('result=$result');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             Text('$_count'),
             Text('onReceive=$msg')
@@ -103,7 +109,9 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          FusionLog.log('${ModalRoute.of(context).hashCode}');
+          if (kDebugMode) {
+            print('${ModalRoute.of(context).hashCode}');
+          }
           // setState(() {
           //   ++_count;
           // });

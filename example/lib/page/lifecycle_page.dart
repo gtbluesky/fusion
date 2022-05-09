@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
-import 'package:fusion/log/fusion_log.dart';
 
 class LifecyclePage extends StatefulWidget {
   const LifecyclePage({Key? key, this.arguments}) : super(key: key);
@@ -39,7 +39,9 @@ class _LifecyclePageState extends State<LifecyclePage>
                 onTap: () async {
                   final result = await FusionNavigator.instance
                       .push<String?>('/test', arguments: {'title': '2'});
-                  FusionLog.log('result=$result');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             const SizedBox(
               height: 20,
@@ -77,47 +79,63 @@ class _LifecyclePageState extends State<LifecyclePage>
 
   @override
   void onBackground() {
-    FusionLog.log('$runtimeType@$hashCode:onBackground');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onBackground');
+    }
   }
 
   @override
   void onForeground() {
-    FusionLog.log('$runtimeType@$hashCode:onForeground');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onForeground');
+    }
   }
 
   @override
   void onPageInvisible() {
-    FusionLog.log('$runtimeType@$hashCode:onPageInvisible');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
   }
 
   @override
   void onPageVisible() {
-    FusionLog.log('$runtimeType@$hashCode:onPageVisible');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    FusionLog.log('$runtimeType@$hashCode:initState');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:initState');
+    }
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    FusionLog.log('$runtimeType@$hashCode:deactivate');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:deactivate');
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     PageLifecycleBinding.instance.register(this);
-    FusionLog.log('$runtimeType@$hashCode:didChangeDependencies');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:didChangeDependencies');
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     PageLifecycleBinding.instance.unregister(this);
-    FusionLog.log('$runtimeType@$hashCode:dispose');
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:dispose');
+    }
   }
 }

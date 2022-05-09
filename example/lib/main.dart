@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/constant/fusion_constant.dart';
 import 'package:fusion/fusion.dart';
-import 'package:fusion_example/page/lifecycle_page.dart';
 
+import 'page/lifecycle_page.dart';
 import 'page/list_page.dart';
 import 'page/test_page.dart';
 import 'page/unknown_page.dart';
 
 void main() {
-  runApp(FusionApp(
-    routeMap,
-    debugShowCheckedModeBanner: false,
-    transitionDuration: const Duration(milliseconds: 400),
-    reverseTransitionDuration: const Duration(milliseconds: 400),
-    theme: ThemeData(
-        pageTransitionsTheme:
-            const PageTransitionsTheme(builders: _defaultBuilders)),
-  ));
+  runApp(const MyApp());
 }
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FusionApp(
+      routeMap,
+      debugShowCheckedModeBanner: false,
+      transitionDuration: const Duration(milliseconds: 400),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
+      theme: ThemeData(
+          pageTransitionsTheme:
+          const PageTransitionsTheme(builders: _defaultBuilders)),
+    );
+  }
+}
+
 
 final Map<String, PageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
@@ -25,7 +34,7 @@ final Map<String, PageFactory> routeMap = {
   '/lifecycle': ((arguments) => LifecyclePage(
         arguments: arguments,
       )),
-  FusionConstant.unknownRoute: (arguments) => UnknownPage(arguments: arguments),
+  unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 
 const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =

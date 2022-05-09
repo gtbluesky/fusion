@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../channel/fusion_channel.dart';
-import '../navigator/route_information_parser.dart';
-import '../navigator/router_delegate.dart';
+import 'route_information_parser.dart';
+import 'router_delegate.dart';
 
 typedef PageFactory = Widget Function(Map<String, dynamic>? arguments);
 

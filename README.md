@@ -38,7 +38,7 @@ void main() {
 // 路由表
 final Map<String, PageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
-  FusionConstant.unknownRoute: (arguments) => UnknownPage(arguments: arguments),
+  unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 ```
 
@@ -125,8 +125,7 @@ Android 使用 FusionFragment 支持子页面模式，创建 FusionFragment 对�
 
 iOS 使用 FusionViewController 并传入 `childMode: true` 以支持子页面模式。
 
-另外与其他类似框架相比，Fusion 支持在同一父页面下可使用多个 Flutter 子页面。
-
+Fusion 支持多个 Flutter 页面以 Tab 形式嵌入一个 Native 容器中
 
 ### 3、路由API（FusionNavigator）
 
