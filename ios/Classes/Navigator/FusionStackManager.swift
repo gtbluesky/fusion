@@ -74,7 +74,7 @@ class FusionStackManager {
             ($0.value as? FusionViewController)?.engineBinding.sendMessage(msg)
         }
         UIApplication.roofNavigationController?.viewControllers.forEach {
-            ($0 as? FusionNotificationListener)?.onReceive(msgName: msgName, msgBody: msgBody)
+            ($0 as? PageNotificationListener)?.onReceive(msgName: msgName, msgBody: msgBody)
         }
     }
 }

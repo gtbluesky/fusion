@@ -16,7 +16,8 @@ class TestPage extends StatefulWidget {
   State<TestPage> createState() => _TestPageState();
 }
 
-class _TestPageState extends State<TestPage> implements PageNotificationListener {
+class _TestPageState extends State<TestPage>
+    implements PageNotificationListener {
   int _count = 0;
   String? msg;
 
@@ -36,6 +37,7 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
   @override
   void dispose() {
     super.dispose();
+    FusionNavigator.instance.sendMessage("close");
     PageNotificationBinding.instance.unregister(this);
   }
 
@@ -109,9 +111,19 @@ class _TestPageState extends State<TestPage> implements PageNotificationListener
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (kDebugMode) {
-            print('${ModalRoute.of(context).hashCode}');
-          }
+          showModalBottomSheet(
+              context: context,
+              builder: (_) {
+                return SafeArea(
+                  child: Container(
+                    color: Colors.lightBlue,
+                    height: 50,
+                  ),
+                );
+              });
+          // if (kDebugMode) {
+          //   print('${ModalRoute.of(context).hashCode}');
+          // }
           // setState(() {
           //   ++_count;
           // });

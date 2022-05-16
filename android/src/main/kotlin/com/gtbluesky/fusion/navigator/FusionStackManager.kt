@@ -2,7 +2,7 @@ package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
 import com.gtbluesky.fusion.controller.FusionContainer
-import com.gtbluesky.fusion.notification.FusionNotificationListener
+import com.gtbluesky.fusion.notification.PageNotificationListener
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
@@ -56,7 +56,7 @@ internal object FusionStackManager {
         msg["msgBody"] = msgBody
         stack.forEach {
             (it.get() as? FusionContainer)?.provideEngineBinding()?.sendMessage(msg)
-            (it.get() as? FusionNotificationListener)?.onReceive(msgName, msgBody)
+            (it.get() as? PageNotificationListener)?.onReceive(msgName, msgBody)
         }
         childPageStack.forEach {
             it.get()?.provideEngineBinding()?.sendMessage(msg)

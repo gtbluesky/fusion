@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Fixes some known bugs.
+
 ## 1.1.0
 
 * Adds the ability of communication with flutter and native pages.

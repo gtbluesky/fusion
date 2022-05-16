@@ -34,7 +34,7 @@ class HostViewController: UIViewController {
     }
 }
 
-extension HostViewController: FusionNotificationListener {
+extension HostViewController: PageNotificationListener {
     public func onReceive(msgName: String, msgBody: Dictionary<String, Any>?) {
         print("\(msgName), \(msgBody)")
     }

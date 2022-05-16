@@ -1,5 +1,5 @@
 package com.gtbluesky.fusion.notification
 
-interface FusionNotificationListener {
+interface PageNotificationListener {
     fun onReceive(msgName: String, msgBody: Map<String, Any>?)
 }

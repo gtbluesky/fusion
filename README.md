@@ -149,19 +149,8 @@ P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 
 Android 侧
 
-在 AndroidManifest.xml 加入以下代码，Flutter 框架会自动注册插件
+Flutter 框架会自动注册插件，无须手动处理
 
-```xml
-<manifest>
-    ...
-    <application>
-        ...
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
-    </application>
-</manifest>
-```
 
 iOS 侧
 

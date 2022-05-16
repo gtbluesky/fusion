@@ -4,6 +4,6 @@
 
 import Foundation
 
-@objc public protocol FusionNotificationListener {
+@objc public protocol PageNotificationListener {
     func onReceive(msgName: String, msgBody: Dictionary<String, Any>?)
 }
