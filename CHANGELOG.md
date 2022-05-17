@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Flutter Plugins are registered automatically by Fusion.
+
 ## 1.1.1
 
 * Fixes some known bugs.

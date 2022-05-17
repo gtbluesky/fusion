@@ -100,7 +100,6 @@ iOS 侧
         }
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
-        GeneratedPluginRegistrant.register(with: fusionVc.engine!)
         navController?.pushViewController(fusionVc, animated: true)
     }
 }
@@ -145,23 +144,7 @@ P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 
 ### 4、Flutter Plugin 注册
 
-如果 Flutter Module 中依赖了 Flutter Plugin，需要按照以下步骤进行注册。
-
-Android 侧
-
-Flutter 框架会自动注册插件，无须手动处理
-
-
-iOS 侧
-
-每次创建 FusionViewContoller 对象都要通过以下代码注册
-
-```swift
-let fusionVc = FusionViewController(routeName: name, routeArguments: arguments)
-GeneratedPluginRegistrant.register(with: fusionVc.engine!)
-```
-
-
+框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith`
 
 ### 5、自定义 Channel
 

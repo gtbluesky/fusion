@@ -19,7 +19,6 @@ class MultiViewController : UITabBarController {
     private func addChildVC(childVC: FusionViewController, title: String) {
         tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : UIColor.red], for: .highlighted)
         childVC.title = title
-        GeneratedPluginRegistrant.register(with: childVC.engine!)
 //        let nav = UINavigationController(rootViewController: childVC)
         addChild(childVC)
     }

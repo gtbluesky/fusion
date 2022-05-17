@@ -15,6 +15,11 @@ open class FusionViewController: FlutterViewController {
         self.childMode = childMode
         engineBinding = FusionEngineBinding(childMode: childMode, routeName: routeName, routeArguments: routeArguments)
         super.init(engine: engineBinding.engine, nibName: nil, bundle: nil)
+        let clz: AnyClass? = NSClassFromString("GeneratedPluginRegistrant")
+        let sel = NSSelectorFromString("registerWithRegistry:")
+        if clz?.responds(to: sel) == true {
+            clz?.perform(sel, with: engineBinding.engine, afterDelay: 0)
+        }
         engineBinding.provideMessenger(self)
         if (childMode) {
             FusionStackManager.instance.addChild(self)
