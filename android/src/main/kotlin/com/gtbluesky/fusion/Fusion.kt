@@ -2,22 +2,57 @@ package com.gtbluesky.fusion
 
 import android.app.Activity
 import android.app.Application
+import android.net.Uri
 import android.os.Bundle
-import com.gtbluesky.fusion.controller.FusionActivity
-import com.gtbluesky.fusion.controller.FusionContainer
+import com.gtbluesky.fusion.constant.FusionConstant
+import com.gtbluesky.fusion.container.FusionContainer
+import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.navigator.FusionStackManager
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
+import io.flutter.embedding.engine.dart.DartExecutor
+import java.util.*
 
 object Fusion {
-    internal lateinit var engineGroup: FlutterEngineGroup
+    private var engineGroup: FlutterEngineGroup? = null
+    internal var cachedEngine: FlutterEngine? = null
+        private set
+    internal var engineBinding: FusionEngineBinding? = null
         private set
     internal lateinit var delegate: FusionRouteDelegate
         private set
+    private lateinit var context: Application
 
     fun install(context: Application, delegate: FusionRouteDelegate) {
-        engineGroup = FlutterEngineGroup(context)
+        this.context = context
         this.delegate = delegate
+        engineGroup = FlutterEngineGroup(context)
+        cachedEngine = createAndRunEngine()
+        engineBinding = FusionEngineBinding(false)
+        engineBinding?.attach()
         context.registerActivityLifecycleCallbacks(FusionLifecycleCallbacks())
+    }
+
+    fun uninstall() {
+        engineBinding?.detach()
+        engineBinding = null
+        engineGroup = null
+        cachedEngine = null
+    }
+
+    fun createAndRunEngine(): FlutterEngine? {
+        return engineGroup?.createAndRunEngine(
+            context,
+            DartExecutor.DartEntrypoint.createDefault(),
+            initialRouteUri()
+        )
+    }
+
+    private fun initialRouteUri(): String {
+        val uniqueId = UUID.randomUUID().toString()
+        val uriBuilder = Uri.parse(FusionConstant.INITIAL_ROUTE).buildUpon()
+        uriBuilder.appendQueryParameter("uniqueId", uniqueId)
+        return uriBuilder.build().toString()
     }
 }
 
@@ -34,7 +69,7 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
         if (++activityReferences == 1 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterForeground()
         } else if (activity is FusionContainer) {
-            activity.provideEngineBinding().notifyPageVisible()
+            Fusion.engineBinding?.notifyPageVisible()
         }
     }
 
@@ -51,7 +86,7 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
         if (--activityReferences == 0 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterBackground()
         } else if (activity is FusionContainer) {
-            activity.provideEngineBinding().notifyPageInvisible()
+            Fusion.engineBinding?.notifyPageInvisible()
         }
     }
 

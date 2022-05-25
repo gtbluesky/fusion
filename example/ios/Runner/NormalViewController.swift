@@ -11,6 +11,7 @@ import fusion
 class NormalViewController: UIViewController {
     private var button: UIButton?
     private var button2: UIButton?
+    private var button3: UIButton?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +33,15 @@ class NormalViewController: UIViewController {
         if let button = button2 {
             view.addSubview(button)
         }
+
+        button3 = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        button3?.center = CGPoint(x: view.center.x, y: view.center.y + 120)
+        button3?.setTitle("打开Flutter页面", for: .normal)
+        button3?.backgroundColor = UIColor.gray
+        button3?.addTarget(self, action: #selector(btnClick3(btn:)), for: .touchUpInside)
+        if let button = button3 {
+            view.addSubview(button)
+        }
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -51,5 +61,9 @@ class NormalViewController: UIViewController {
 
     @objc func btnClick2(btn: UIButton) {
         FusionNavigator.instance.sendMessage(msgName: "msg3", msgBody: ["time": "\(Int64(round(Date().timeIntervalSince1970 * 1000)))"])
+    }
+
+    @objc func btnClick3(btn: UIButton) {
+        FusionNavigator.instance.push(name: "/test", arguments: ["title": "New Flutter Page"])
     }
 }

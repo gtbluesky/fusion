@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../lifecycle/page_lifecycle.dart';
+import '../log/fusion_log.dart';
 import '../navigator/fusion_navigator.dart';
 import '../notification/page_notification.dart';
 
@@ -11,24 +13,30 @@ class FusionChannel {
 
   static void register() {
     _methodChannel.setMethodCallHandler((call) async {
+      FusionLog.log(call.method);
       switch (call.method) {
+        case 'push':
+          final name = call.arguments['name'];
+          final arguments = Map<String, dynamic>.from(call.arguments['arguments']);
+          FusionNavigator.instance.push(name, arguments: arguments);
+          break;
+        case 'pop':
+          await FusionNavigator.instance.pop();
+          WidgetsBinding.instance?.drawFrame();
+          break;
         case 'notifyPageVisible':
           final route = PageLifecycleBinding.instance.topRoute;
           PageLifecycleBinding.instance.dispatchPageVisibleEvent(route);
-          // FusionLog.log(call.method);
           break;
         case 'notifyPageInvisible':
           final route = PageLifecycleBinding.instance.topRoute;
           PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
-          // FusionLog.log(call.method);
           break;
         case 'notifyEnterForeground':
           PageLifecycleBinding.instance.dispatchPageForegroundEvent();
-          // FusionLog.log(call.method);
           break;
         case 'notifyEnterBackground':
           PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
-          // FusionLog.log(call.method);
           break;
         default:
           break;

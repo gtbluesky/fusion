@@ -3,11 +3,11 @@ package com.gtbluesky.fusion_example
 import android.util.Log
 import android.widget.Toast
 import com.gtbluesky.fusion.channel.FusionMessengerProvider
-import com.gtbluesky.fusion.container.FusionFragmentActivity
+import com.gtbluesky.fusion.container.FusionFragment
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
-class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
+class CustomFusionFragment : FusionFragment(), FusionMessengerProvider {
 
     private var channel: MethodChannel? = null
 
@@ -15,7 +15,7 @@ class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
         Log.d(this.toString(), "configureFlutterChannel")
         channel = MethodChannel(binaryMessenger, "custom_channel")
         channel?.setMethodCallHandler { call, result ->
-            Toast.makeText(this, "${this}_${call.method}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "${this}_${call.method}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -29,5 +29,4 @@ class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
         super.onDestroy()
         Log.d(this::class.java.simpleName, "onDestroy")
     }
-
 }

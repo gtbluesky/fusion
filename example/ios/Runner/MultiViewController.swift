@@ -12,8 +12,8 @@ class MultiViewController : UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        tabBar.isTranslucent = false
-        addChildVC(childVC: FusionViewController(childMode: true, routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
-        addChildVC(childVC: FusionViewController(childMode: true, routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
+        addChildVC(childVC: FusionViewController(isNested: true, routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
+        addChildVC(childVC: FusionViewController(isNested: true, routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
     }
     
     private func addChildVC(childVC: FusionViewController, title: String) {

@@ -1,15 +1,13 @@
 package com.gtbluesky.fusion_example
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
-import com.gtbluesky.fusion.controller.FusionFragment
-import com.gtbluesky.fusion.channel.FusionMessengerProvider
+import com.gtbluesky.fusion.container.FusionFragment
+import com.gtbluesky.fusion.container.buildFragment
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
-import io.flutter.plugin.common.BinaryMessenger
 
-class FragmentSceneActivity : FragmentActivity(), FusionMessengerProvider {
+class FragmentSceneActivity : FragmentActivity() {
     private lateinit var binding: ActivityFirstFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,9 +16,9 @@ class FragmentSceneActivity : FragmentActivity(), FusionMessengerProvider {
         setContentView(binding.root)
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
-        val fragment0 = FusionFragment.buildFragment("/test", mapOf("title" to "f0"))
-        val fragment1 = FusionFragment.buildFragment("/lifecycle", mapOf("title" to "f1"))
-        val fragment2 = FusionFragment.buildFragment("/list", mapOf("title" to "f2"))
+        val fragment0 = buildFragment(CustomFusionFragment::class.java,"/test", mapOf("title" to "f0"))
+        val fragment1 = buildFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "f1"))
+        val fragment2 = buildFragment(FusionFragment::class.java,"/list", mapOf("title" to "f2"))
         adapter.addFragment(fragment0)
         adapter.addFragment(fragment1)
         adapter.addFragment(fragment2)
@@ -61,9 +59,5 @@ class FragmentSceneActivity : FragmentActivity(), FusionMessengerProvider {
                 }
             }
         }
-    }
-
-    override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
-        Log.d("FragmentSceneActivity", "configureFlutterChannel")
     }
 }

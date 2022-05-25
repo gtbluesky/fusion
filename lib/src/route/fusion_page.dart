@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../data/fusion_data.dart';
 
 class FusionPage<T> extends MaterialPage<T> {
-  const FusionPage({required Widget child, name, arguments})
+
+  final bool isFirstPage;
+
+  const FusionPage({required Widget child, name, arguments, this.isFirstPage = false})
       : super(child: child, name: name, arguments: arguments);
 
   @override
@@ -23,10 +26,10 @@ class FusionPageBasedMaterialPageRoute<T> extends PageRoute<T>
   MaterialPage<T> get _page => settings as MaterialPage<T>;
 
   @override
-  Duration get transitionDuration => FusionData.transitionDuration;
+  Duration get transitionDuration => (settings as FusionPage?)?.isFirstPage == true ? const Duration(milliseconds: 0) : FusionData.transitionDuration;
 
   @override
-  Duration get reverseTransitionDuration => FusionData.reverseTransitionDuration;
+  Duration get reverseTransitionDuration => (settings as FusionPage?)?.isFirstPage == true ? const Duration(milliseconds: 0) : FusionData.reverseTransitionDuration;
 
   @override
   Widget buildContent(BuildContext context) {

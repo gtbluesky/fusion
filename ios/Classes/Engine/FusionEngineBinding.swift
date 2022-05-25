@@ -8,45 +8,37 @@
 import Foundation
 
 class FusionEngineBinding: NSObject {
+    private let isNested: Bool
+    weak private var container: FusionViewController? = nil
     private var channel: FlutterMethodChannel? = nil
-    let engine: FlutterEngine
-    private let childMode: Bool
-    private var history: [Dictionary<String, Any?>] = []
+    var engine: FlutterEngine? = nil
     private var eventChannel: FlutterEventChannel? = nil
-    private var events: FlutterEventSink? = nil
-
-    init(childMode: Bool, routeName: String, routeArguments: Dictionary<String, Any>?) {
-        self.childMode = childMode
-        let uniqueId = UUID().uuidString
-        let initialRoute = FusionEngineBinding.convert2Uri(uniqueId, routeName, routeArguments)
-        history.append([
-            "name": routeName,
-            "arguments": routeArguments,
-            "uniqueId": uniqueId
-        ])
-        engine = Fusion.instance.engineGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
-        channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
-        eventChannel = FlutterEventChannel(name: FusionConstant.FUSION_EVENT_CHANNEL, binaryMessenger: engine.binaryMessenger)
-        super.init()
-        attach()
-    }
-
-    func provideMessenger(_ vc: FusionViewController) {
-        if let provider = vc as? FusionMessengerProvider {
-            provider.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+    private var eventSink: FlutterEventSink? = nil
+    private var history: [Dictionary<String, Any?>] {
+        get {
+            FusionStackManager.instance.stack.flatMap {
+                ($0.value)?.history ?? []
+            }
         }
     }
 
-    private static func convert2Uri(_ uniqueId: String, _ name: String, _ arguments: Dictionary<String, Any>?) -> String {
-        var queryParameterArr = arguments?.map { (k: String, v: Any) -> String in
-            String(format: "%@=%@", k, String(describing: v))
-        } ?? []
-        queryParameterArr.append(String(describing: "uniqueId=\(uniqueId)"))
-        let queryParametersStr = queryParameterArr.joined(separator: "&")
-        return String(describing: "\(name)?\(queryParametersStr)")
+    init(_ isNested: Bool) {
+        self.isNested = isNested
+        super.init()
+        if (isNested) {
+            engine = Fusion.instance.createAndRunEngine()
+        } else {
+            engine = Fusion.instance.cachedEngine
+        }
+        guard let engine = engine else {
+            return
+        }
+        channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        eventChannel = FlutterEventChannel(name: FusionConstant.FUSION_EVENT_CHANNEL, binaryMessenger: engine.binaryMessenger)
     }
 
-    private func attach() {
+    internal func attach(_ container: FusionViewController? = nil) {
+        self.container = container
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
             case "push":
@@ -54,16 +46,31 @@ class FusionEngineBinding: NSObject {
                     let arguments = dict["arguments"] as? Dictionary<String, Any>
                     let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
                     if isFlutterPage {
-                        if self.childMode == true {
-                            //在新Flutter容器打开Flutter页面
-                            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
-                            result(nil)
+                        if self.isNested == true {
+                            if self.container?.history.isEmpty == true {
+                                //在原Flutter容器打开Flutter页面
+                                //即用户可见的第一个页面
+                                self.container?.history.append([
+                                    "name": name,
+                                    "arguments": arguments,
+                                    "uniqueId": UUID().uuidString,
+                                    "isFirstPage": true
+                                ])
+                                result(self.container?.history)
+                            } else {
+                                //在新Flutter容器打开Flutter页面
+                                Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+                                result(nil)
+                            }
                         } else {
                             //在原Flutter容器打开Flutter页面
-                            self.history.append([
+                            let topContainer = UIApplication.roofViewController as? FusionViewController
+                            let isFirstPage = topContainer?.history.isEmpty ?? false
+                            topContainer?.history.append([
                                 "name": name,
                                 "arguments": arguments,
-                                "uniqueId": UUID().uuidString
+                                "uniqueId": UUID().uuidString,
+                                "isFirstPage": isFirstPage
                             ])
                             result(self.history)
                             self.removePopGesture()
@@ -77,13 +84,28 @@ class FusionEngineBinding: NSObject {
                     result(nil)
                 }
             case "pop":
-                if self.history.count > 1 {
-                    self.history.removeLast()
-                    result(self.history)
-                    self.addPopGesture()
+                if self.isNested {
+                    if self.container == nil || self.container?.history.isEmpty == true {
+                        result(nil)
+                        self.detach()
+                    } else {
+                        // 在flutter页面中点击pop
+                        FusionStackManager.instance.closeTopContainer()
+                        result(self.container?.history)
+                    }
                 } else {
-                    FusionStackManager.instance.closeTopContainer()
-                    result(nil)
+                    // 1、flutter容器退出
+                    // 2、flutter页面pop
+                    // 3、flutter容器退出后仅刷新history
+                    if let topContainer = UIApplication.roofViewController as? FusionViewController {
+                        if topContainer.history.count == 1 {
+                            FusionStackManager.instance.closeTopContainer()
+                        } else {
+                            topContainer.history.removeLast()
+                            self.addPopGesture()
+                        }
+                    }
+                    result(self.history)
                 }
             case "sendMessage":
                 if let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String {
@@ -98,8 +120,8 @@ class FusionEngineBinding: NSObject {
         eventChannel?.setStreamHandler(self)
     }
 
-    func addPopGesture() {
-        if (childMode) {
+    internal func addPopGesture() {
+        if (isNested) {
             return
         }
         if !Fusion.instance.adaptiveGesture {
@@ -122,8 +144,8 @@ class FusionEngineBinding: NSObject {
         nc?.addPopGesture()
     }
 
-    func removePopGesture() {
-        if (childMode) {
+    internal func removePopGesture() {
+        if (isNested) {
             return
         }
         if !Fusion.instance.adaptiveGesture {
@@ -140,42 +162,59 @@ class FusionEngineBinding: NSObject {
         nc?.removePopGesture()
     }
 
-    func notifyPageVisible() {
+    internal func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {
+        channel?.invokeMethod(
+                "push",
+                arguments: [
+                    "name": name,
+                    "arguments": arguments as Any
+                ]
+        )
+    }
+
+    internal func pop() {
+        channel?.invokeMethod("pop", arguments: nil)
+    }
+
+    internal func notifyPageVisible() {
         channel?.invokeMethod("notifyPageVisible", arguments: nil)
     }
 
-    func notifyPageInvisible() {
+    internal func notifyPageInvisible() {
         channel?.invokeMethod("notifyPageInvisible", arguments: nil)
     }
 
-    func notifyEnterForeground() {
+    internal func notifyEnterForeground() {
         channel?.invokeMethod("notifyEnterForeground", arguments: nil)
     }
 
-    func notifyEnterBackground() {
+    internal func notifyEnterBackground() {
         channel?.invokeMethod("notifyEnterBackground", arguments: nil)
     }
 
-    func detach() {
+    internal func detach() {
         channel?.setMethodCallHandler(nil)
         channel = nil
         eventChannel?.setStreamHandler(nil)
         eventChannel = nil
+        engine?.viewController = nil
+        engine?.destroyContext()
+        engine = nil
     }
 }
 
 extension FusionEngineBinding: FlutterStreamHandler {
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        self.events = events
+        self.eventSink = events
         return nil
     }
 
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        events = nil
+        eventSink = nil
         return nil
     }
 
     func sendMessage(_ msg: Dictionary<String, Any?>) {
-        events?(msg)
+        eventSink?(msg)
     }
 }

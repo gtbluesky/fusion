@@ -13,9 +13,12 @@ class NormalActivity : AppCompatActivity() {
         binding = ActivityABinding.inflate(layoutInflater)
         setContentView(binding.root)
         val title = intent.getStringExtra("title")
-        binding.tvA.text = title
+        binding.tvA.text = "title=$title"
         binding.tvB.setOnClickListener {
             FusionNavigator.sendMessage("msg2")
+        }
+        binding.tvC.setOnClickListener {
+            FusionNavigator.push("/test", mapOf("title" to "New Flutter Page"))
         }
     }
 }

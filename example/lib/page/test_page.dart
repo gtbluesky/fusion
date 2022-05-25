@@ -18,7 +18,6 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage>
     implements PageNotificationListener {
-  int _count = 0;
   String? msg;
 
   @override
@@ -39,6 +38,9 @@ class _TestPageState extends State<TestPage>
     super.dispose();
     FusionNavigator.instance.sendMessage("close");
     PageNotificationBinding.instance.unregister(this);
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:dispose');
+    }
   }
 
   @override
@@ -104,7 +106,24 @@ class _TestPageState extends State<TestPage>
                     print('result=$result');
                   }
                 }),
-            Text('$_count'),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('custom channel'),
+                onTap: () async {
+                  const MethodChannel('custom_channel').invokeMethod('getPlatformVersion');
+                  // if (kDebugMode) {
+                  //   print('result=$result');
+                  // }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            const CircularProgressIndicator(),
+            const SizedBox(
+              height: 20,
+            ),
             Text('onReceive=$msg')
           ],
         ),

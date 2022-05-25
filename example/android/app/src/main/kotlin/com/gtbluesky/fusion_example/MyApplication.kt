@@ -4,7 +4,7 @@ import android.content.Intent
 import android.util.Log
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.FusionRouteDelegate
-import com.gtbluesky.fusion.controller.buildFusionIntent
+import com.gtbluesky.fusion.container.buildFusionIntent
 import io.flutter.app.FlutterApplication
 
 class MyApplication : FlutterApplication(), FusionRouteDelegate {

@@ -5,9 +5,9 @@
 
 Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。
 
-Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可以更加灵活对 Flutter 路由栈进行管理。此外 Fusion 基于 FlutterEngineGroup 实现多 Engine，通过 FlutterEngineGroup 来创建新的 Engine，Flutter 官方宣称内存损耗仅占 180K，其本质是使 Engine 可以共享 GPU 上下文、字形和 isolate group snapshot，从而实现了更快的初始速度和更低的内存占用。这样在保证了性能的前提下混合栈的管理也变得更加便捷。
+Fusion 基于引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终中仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下也拥有媲美原生页面的打开速度。此外 Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可以更加灵活对 Flutter 路由栈进行管理。
 
-不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter， Fusion 未对 Flutter Framework 层进行 Hook，较好的兼容性使得使用者可以更加从容地升级 Flutter。
+不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 较好的兼容性使得使用者可以更加从容地升级 Flutter。
 
 设计严格遵循以下原则：
 
@@ -118,27 +118,18 @@ P.S: 如果存在手势冲突，可以关闭手势自适应模式
 Fusion.instance.adaptiveGesture = false
 ```
 
-#### 子页面模式
+#### 嵌套模式
+嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面以 Tab 形式嵌入同一个 Native 容器中。
 
-Android 使用 FusionFragment 支持子页面模式，创建 FusionFragment 对象需要使用 `FusionFragment.buildFragment` 方法。
+Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `FusionFragment.buildFragment` 方法。
 
-iOS 使用 FusionViewController 并传入 `childMode: true` 以支持子页面模式。
-
-Fusion 支持多个 Flutter 页面以 Tab 形式嵌入一个 Native 容器中
+iOS 使用 FusionViewController 并传入 `isNested: true` 以支持嵌套模式。
 
 ### 3、路由API（FusionNavigator）
 
-✅ push：指定页入栈，支持获取返回值
+push：指定页入栈，支持获取返回值
 
-✅ pop：栈顶页出栈，支持设置返回值
-
-**TODO**
-
-❎ popTo
-
-❎ remove
-
-❎ replace
+pop：栈顶页出栈，支持设置返回值
 
 P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 
@@ -169,12 +160,17 @@ class MyActivity : FragmentActivity(), FusionMessengerProvider {
             
         }
     }
+  
+    override fun releaseFlutterChannel() {
+        channel?.setMethodCallHandler(null)
+        channle = null
+    }
 }
 ```
 
 
 
-②、如果使用的是 FusionActivity 容器，则需要创建一个新的 Activity 并继承 FusionActivity 并实现 FusionMessengerProvider 接口，在接口方法中创建 Channel
+②、如果使用的是 FusionActivity 容器，则需要创建一个新的 Activity 并继承 FusionActivity 并实现 FusionMessengerProvider 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
 
 ```kotlin
 class CustomActivity : FusionActivity(), FusionMessengerProvider {
@@ -184,6 +180,11 @@ class CustomActivity : FusionActivity(), FusionMessengerProvider {
         channel.setMethodCallHandler { call, result -> 
             
         }
+    }
+  
+    override fun releaseFlutterChannel() {
+        channel?.setMethodCallHandler(null)
+        channle = null
     }
 }
 ```
@@ -220,18 +221,6 @@ class CustomViewController : FusionViewController, FusionMessengerProvider {
 ```
 
 > BasicMessageChannel 和 EventChannel 使用也是类似。另外务必确保 Flutter 和 Native 使用的 Channel类型统一。
-
-需要注意的是，自行创建的 Channel，Android 需要在 Activity 的 onDestroy、iOS 需要在 ViewController 的析构函数中对其置空，避免可能的内存泄漏。
-
-Android 侧
-
-```kotlin
-override fun onDestroy() {
-  super.onDestroy()
-  channel?.setMethodCallHandler(null)
-  channle = null
-}
-```
 
 iOS 侧
 

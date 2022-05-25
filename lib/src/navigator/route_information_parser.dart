@@ -7,7 +7,7 @@ class FusionRouteInformationParser
   Future<Map<String, dynamic>> parseRouteInformation(
       RouteInformation routeInformation) {
     final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? '/'));
-    final arguments = Map<String, String>.from(parse.getArguments()!);
+    final arguments = Map<String, String>.from(parse.getArguments() ?? {});
     final initialRoute = {
       'name': parse.getName(),
       'arguments': arguments,

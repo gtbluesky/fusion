@@ -18,6 +18,10 @@ class CustomViewController: FusionViewController, FusionMessengerProvider {
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         print("\(self) configureFlutterChannel")
     }
+    
+    func releaseFlutterChannel() {
+        print("\(self) releaseFlutterChannel")
+    }
 
     deinit {
         print("\(self) deinit")

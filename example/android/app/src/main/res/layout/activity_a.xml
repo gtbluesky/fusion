@@ -13,7 +13,6 @@
             android:id="@+id/tv_a"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="A Activity"
             android:textSize="18sp"/>
 
         <TextView
@@ -21,6 +20,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="发送消息"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开Flutter页面"
             android:textSize="18sp"/>
     </LinearLayout>
 </RelativeLayout>

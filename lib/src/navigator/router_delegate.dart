@@ -15,6 +15,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   static final FusionRouterDelegate _instance = FusionRouterDelegate._();
 
+  late Map<String, dynamic> _home;
   final _history = <Map<String, dynamic>>[];
   final _callback = <String, Completer<dynamic>>{};
 
@@ -29,11 +30,8 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     return Navigator(
       key: navigatorKey,
       onPopPage: (route, result) {
-        if (!route.didPop(result)) {
-          return false;
-        }
         pop(result);
-        return true;
+        return false;
       },
       pages: _buildHistoryPages(),
       observers: <NavigatorObserver>[navigatorObserver],
@@ -42,14 +40,25 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   List<Page> _buildHistoryPages() {
     if (currentConfiguration == null) return <Page>[];
+    _history.forEach((element) {
+      print('element=$element');
+    });
     return _history.map((e) {
       final arguments = (e['arguments'] as Map?)?.cast<String, dynamic>();
       PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
-          FusionNavigator.instance.routeMap[unknownRoute];
+          (e['name'] == '/fusion_initial_route'
+              ? (_) => Container(
+                    color: Colors.white,
+                  )
+              : FusionNavigator.instance.routeMap[unknownRoute]);
       final page =
           pageFactory != null ? pageFactory(arguments) : const UnknownPage();
       return FusionPage(
-          child: page, name: e['name'], arguments: e['arguments']);
+        child: page,
+        name: e['name'],
+        arguments: e['arguments'],
+        isFirstPage: e['isFirstPage'] ?? false,
+      );
     }).toList();
   }
 
@@ -65,7 +74,8 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   @override
   Future<void> setNewRoutePath(Map<String, dynamic> configuration) async {
-    _history.add(configuration);
+    _home = configuration;
+    _history.add(_home);
     notifyListeners();
   }
 
@@ -94,15 +104,16 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   Future<void> pop<T extends Object>([T? result]) async {
     final history = await FusionChannel.pop();
-    if (history != null && history.isNotEmpty) {
-      refreshHistory(history);
-    }
+    refreshHistory(history);
     _callback.remove(_history.last['uniqueId'])?.complete(result);
   }
 
-  void refreshHistory(List<Map<String, dynamic>> history) {
+  void refreshHistory(List<Map<String, dynamic>>? history) {
     _history.clear();
-    _history.addAll(history);
+    _history.add(_home);
+    history?.forEach((element) {
+      _history.add(element);
+    });
     notifyListeners();
   }
 }
