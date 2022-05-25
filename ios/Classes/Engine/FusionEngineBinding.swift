@@ -76,6 +76,20 @@ class FusionEngineBinding: NSObject {
                 } else {
                     result(nil)
                 }
+            case "replace":
+                if let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String {
+                    let arguments = dict["arguments"] as? Dictionary<String, Any>
+                    self.history.removeLast()
+                    self.history.append([
+                        "name": name,
+                        "arguments": arguments,
+                        "uniqueId": UUID().uuidString
+                    ])
+                    result(self.history)
+                    self.removePopGesture()
+                } else {
+                    result(nil)
+                }
             case "pop":
                 if self.history.count > 1 {
                     self.history.removeLast()

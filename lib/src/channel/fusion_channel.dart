@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../lifecycle/page_lifecycle.dart';
@@ -49,6 +50,21 @@ class FusionChannel {
       String name, dynamic arguments) async {
     final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
     final List<dynamic>? result = await _methodChannel.invokeMethod('push',
+        {'name': name, 'arguments': arguments, 'isFlutterPage': isFlutterPage});
+    final List<Map<String, dynamic>> list = [];
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list.add(element.cast<String, dynamic>());
+    });
+    return list;
+  }
+
+  static Future<List<Map<String, dynamic>>?> replace(
+      String name, dynamic arguments) async {
+    final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
+    if (!isFlutterPage) {
+      return null;
+    }
+    final List<dynamic>? result = await _methodChannel.invokeMethod('replace',
         {'name': name, 'arguments': arguments, 'isFlutterPage': isFlutterPage});
     final List<Map<String, dynamic>> list = [];
     result?.cast<Map<dynamic, dynamic>>().forEach((element) {

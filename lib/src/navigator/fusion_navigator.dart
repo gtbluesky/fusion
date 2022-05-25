@@ -31,6 +31,13 @@ class FusionNavigator {
     return await routerDelegate.push(routeName, arguments);
   }
 
+  Future<T?> replace<T extends Object?>(
+      String routeName, {
+        Map<String, dynamic>? arguments,
+      }) async {
+    return await routerDelegate.replace(routeName, arguments);
+  }
+
   Future<void> pop<T extends Object>([T? result]) async {
     return await routerDelegate.pop(result);
   }

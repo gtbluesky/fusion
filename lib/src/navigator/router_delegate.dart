@@ -92,6 +92,21 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     }
   }
 
+  Future<T?> replace<T extends Object?>(
+      String routeName, [
+        Map<String, dynamic>? routeArguments,
+      ]) async {
+    final history = await FusionChannel.replace(routeName, routeArguments ?? {});
+    if (history != null && history.isNotEmpty) {
+      final completer = Completer<T>();
+      _callback[_history.last['uniqueId']] = completer;
+      refreshHistory(history);
+      return completer.future;
+    } else {
+      return null;
+    }
+  }
+
   Future<void> pop<T extends Object>([T? result]) async {
     final history = await FusionChannel.pop();
     if (history != null && history.isNotEmpty) {

@@ -132,13 +132,7 @@ Fusion 支持多个 Flutter 页面以 Tab 形式嵌入一个 Native 容器中
 
 ✅ pop：栈顶页出栈，支持设置返回值
 
-**TODO**
-
-❎ popTo
-
-❎ remove
-
-❎ replace
+✅ replace：替换栈顶页面
 
 P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 

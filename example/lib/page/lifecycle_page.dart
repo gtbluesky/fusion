@@ -54,6 +54,14 @@ class _LifecyclePageState extends State<LifecyclePage>
             const SizedBox(
               height: 20,
             ),
+            InkWell(
+                child: const Text('replace'),
+                onTap: () {
+                  FusionNavigator.instance.replace('/test', arguments: {'title': 'replace success'});
+                }),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),

@@ -87,6 +87,23 @@ class FusionEngineBinding(
                         result.success(null)
                     }
                 }
+                "replace" -> {
+                    val name = call.argument<String>("name")
+                    if (name.isNullOrEmpty()) {
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
+                    val arguments = call.argument<Map<String, Any>?>("arguments")
+                    history.removeLast()
+                    history.add(
+                        mapOf(
+                            "name" to name,
+                            "arguments" to arguments,
+                            "uniqueId" to UUID.randomUUID().toString()
+                        )
+                    )
+                    result.success(history)
+                }
                 "pop" -> {
                     if (history.size > 1) {
                         history.removeLast()

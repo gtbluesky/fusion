@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Adds replace function in FusionNavigator.
+
 ## 1.1.2
 
 * Flutter Plugins are registered automatically by Fusion.
