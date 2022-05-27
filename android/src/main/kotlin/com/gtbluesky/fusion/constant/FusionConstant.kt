@@ -3,7 +3,7 @@ package com.gtbluesky.fusion.constant
 internal object FusionConstant {
     const val ROUTE_NAME = "ROUTE_NAME"
     const val ROUTE_ARGUMENTS = "ROUTE_ARGUMENTS"
-    const val INITIAL_ROUTE = "/fusion_initial_route"
+    const val INITIAL_ROUTE = "/"
     const val FUSION_CHANNEL = "fusion_channel"
     const val FUSION_EVENT_CHANNEL = "fusion_event_channel"
     const val EXTRA_BACKGROUND_MODE = "background_mode"

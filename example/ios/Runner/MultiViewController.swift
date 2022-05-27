@@ -7,17 +7,18 @@
 
 import Foundation
 import fusion
-class MultiViewController : UITabBarController {
-    
+
+class MultiViewController: UITabBarController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
 //        tabBar.isTranslucent = false
-        addChildVC(childVC: FusionViewController(isNested: true, routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
-        addChildVC(childVC: FusionViewController(isNested: true, routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
+        addChildVC(childVC: CustomViewController(isNested: true, routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
+        addChildVC(childVC: CustomViewController(isNested: true, routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
     }
-    
+
     private func addChildVC(childVC: FusionViewController, title: String) {
-        tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : UIColor.red], for: .highlighted)
+        tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.red], for: .highlighted)
         childVC.title = title
 //        let nav = UINavigationController(rootViewController: childVC)
         addChild(childVC)

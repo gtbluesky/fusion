@@ -26,10 +26,32 @@ class FusionPageBasedMaterialPageRoute<T> extends PageRoute<T>
   MaterialPage<T> get _page => settings as MaterialPage<T>;
 
   @override
-  Duration get transitionDuration => (settings as FusionPage?)?.isFirstPage == true ? const Duration(milliseconds: 0) : FusionData.transitionDuration;
+  Duration get transitionDuration {
+    if ((settings as FusionPage?)?.isFirstPage == true) {
+      return const Duration(milliseconds: 0);
+    } else {
+      return FusionData.transitionDuration;
+    }
+  }
 
   @override
-  Duration get reverseTransitionDuration => (settings as FusionPage?)?.isFirstPage == true ? const Duration(milliseconds: 0) : FusionData.reverseTransitionDuration;
+  Duration get reverseTransitionDuration {
+    if ((settings as FusionPage?)?.isFirstPage == true) {
+      return const Duration(milliseconds: 0);
+    } else {
+      return FusionData.reverseTransitionDuration;
+    }
+  }
+
+  @override
+  @protected
+  bool get hasScopedWillPopCallback {
+    if ((settings as FusionPage?)?.isFirstPage == true) {
+      return true;
+    } else {
+      return super.hasScopedWillPopCallback;
+    }
+  }
 
   @override
   Widget buildContent(BuildContext context) {

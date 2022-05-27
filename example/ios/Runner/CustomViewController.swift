@@ -10,17 +10,20 @@ import fusion
 
 class CustomViewController: FusionViewController, FusionMessengerProvider {
 
-    open override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor = UIColor.white
-    }
+    private var channel: FlutterMethodChannel? = nil
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         print("\(self) configureFlutterChannel")
+        channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
+        channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            print("\(self)_call=\(call.method)")
+        }
     }
     
     func releaseFlutterChannel() {
         print("\(self) releaseFlutterChannel")
+        channel?.setMethodCallHandler(nil)
+        channel = nil
     }
 
     deinit {

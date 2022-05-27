@@ -41,6 +41,7 @@ final Map<String, PageFactory> routeMap = {
   unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 ```
+P.S: 请勿使用`/`路由，`unknownRoute`表示未定义路由
 
 Android 侧
 

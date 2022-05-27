@@ -10,11 +10,6 @@ internal object FusionStackManager {
     val stack = mutableListOf<WeakReference<Activity>>()
     private val nestedStack = mutableListOf<WeakReference<FusionContainer>>()
 
-    fun getTopContainer(): Activity? {
-        if (stack.isEmpty()) return null
-        return stack.last().get()
-    }
-
     fun add(activity: Activity) {
         stack.add(WeakReference(activity))
     }
@@ -26,6 +21,11 @@ internal object FusionStackManager {
     fun move2Top(activity: Activity) {
         remove(activity)
         add(activity)
+    }
+
+    fun getTopContainer(): Activity? {
+        if (stack.isEmpty()) return null
+        return stack.last().get()
     }
 
     fun closeTopContainer() {

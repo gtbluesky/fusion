@@ -48,8 +48,8 @@ class FusionEngineBinding: NSObject {
                     if isFlutterPage {
                         if self.isNested == true {
                             if self.container?.history.isEmpty == true {
-                                //在原Flutter容器打开Flutter页面
-                                //即用户可见的第一个页面
+                                // 在原Flutter容器打开Flutter页面
+                                // 即用户可见的第一个页面
                                 self.container?.history.append([
                                     "name": name,
                                     "arguments": arguments,
@@ -58,25 +58,32 @@ class FusionEngineBinding: NSObject {
                                 ])
                                 result(self.container?.history)
                             } else {
-                                //在新Flutter容器打开Flutter页面
+                                // 在新Flutter容器打开Flutter页面
                                 Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
                                 result(nil)
                             }
                         } else {
-                            //在原Flutter容器打开Flutter页面
-                            let topContainer = UIApplication.roofViewController as? FusionViewController
-                            let isFirstPage = topContainer?.history.isEmpty ?? false
-                            topContainer?.history.append([
+                            // 在原Flutter容器打开Flutter页面
+                            guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                                result(self.history)
+                                return
+                            }
+                            let isFirstPage = topContainer.history.isEmpty
+                            topContainer.history.append([
                                 "name": name,
                                 "arguments": arguments,
                                 "uniqueId": UUID().uuidString,
                                 "isFirstPage": isFirstPage
                             ])
                             result(self.history)
-                            self.removePopGesture()
+                            if topContainer.history.count == 1 {
+                                self.addPopGesture(topContainer)
+                            } else {
+                                self.removePopGesture()
+                            }
                         }
                     } else {
-                        //打开Native页面
+                        // 打开Native页面
                         Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
                         result(nil)
                     }
@@ -97,15 +104,21 @@ class FusionEngineBinding: NSObject {
                     // 1、flutter容器退出
                     // 2、flutter页面pop
                     // 3、flutter容器退出后仅刷新history
-                    if let topContainer = UIApplication.roofViewController as? FusionViewController {
-                        if topContainer.history.count == 1 {
-                            FusionStackManager.instance.closeTopContainer()
-                        } else {
-                            topContainer.history.removeLast()
-                            self.addPopGesture()
-                        }
+                    guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                        result(self.history)
+                        return
+                    }
+                    if topContainer.history.count == 1 {
+                        FusionStackManager.instance.closeTopContainer()
+                    } else {
+                        topContainer.history.removeLast()
                     }
                     result(self.history)
+                    if topContainer.history.count == 1 {
+                        self.addPopGesture(topContainer)
+                    } else {
+                        self.removePopGesture()
+                    }
                 }
             case "sendMessage":
                 if let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String {
@@ -120,14 +133,14 @@ class FusionEngineBinding: NSObject {
         eventChannel?.setStreamHandler(self)
     }
 
-    internal func addPopGesture() {
+    internal func addPopGesture(_ vc: FusionViewController) {
         if (isNested) {
             return
         }
         if !Fusion.instance.adaptiveGesture {
             return
         }
-        if history.count > 1 {
+        if vc.history.count > 1 {
             return
         }
         let vc = UIApplication.roofViewController

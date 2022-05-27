@@ -46,7 +46,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     return _history.map((e) {
       final arguments = (e['arguments'] as Map?)?.cast<String, dynamic>();
       PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
-          (e['name'] == '/fusion_initial_route'
+          (e['name'] == Navigator.defaultRouteName
               ? (_) => Container(
                     color: Colors.white,
                   )

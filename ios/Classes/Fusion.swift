@@ -37,24 +37,16 @@ public class Fusion: NSObject {
         cachedEngine = nil
     }
 
-    func createAndRunEngine() -> FlutterEngine? {
-        let engine = engineGroup?.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRouteUri())
+    internal func createAndRunEngine() -> FlutterEngine? {
+        let engine = engineGroup?.makeEngine(withEntrypoint: nil, libraryURI: nil)
         if let engine = engine {
-            let clazz: AnyClass? = NSClassFromString("GeneratedPluginRegistrant")
+            let clazz = NSClassFromString("GeneratedPluginRegistrant") as? NSObject.Type
             let selector = NSSelectorFromString("registerWithRegistry:")
             if clazz?.responds(to: selector) == true {
-                clazz?.perform(selector, with: engine, afterDelay: 0)
+                clazz?.perform(selector, with: engine)
             }
         }
         return engine
-    }
-
-    private func initialRouteUri() -> String {
-        let uniqueId = UUID().uuidString
-        var queryParameterArr: [String] = []
-        queryParameterArr.append(String(describing: "uniqueId=\(uniqueId)"))
-        let queryParametersStr = queryParameterArr.joined(separator: "&")
-        return String(describing: "\(FusionConstant.INITIAL_ROUTE)?\(queryParametersStr)")
     }
 
     /**

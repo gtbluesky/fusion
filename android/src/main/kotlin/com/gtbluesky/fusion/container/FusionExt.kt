@@ -6,6 +6,7 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import java.io.Serializable
 
+@JvmOverloads
 fun <T : FusionContainer> buildFusionIntent(
     context: Context,
     clazz: Class<T>,

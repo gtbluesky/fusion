@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/log/fusion_log.dart';
 
 import '../lifecycle/page_lifecycle.dart';
 
@@ -9,8 +8,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
-    FusionLog.log(
-        "didPush route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
+    // FusionLog.log(
+    //     "didPush route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
     PageLifecycleBinding.instance.topRoute = route;
     if (isInitial) {
       isInitial = false;
@@ -29,8 +28,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    FusionLog.log(
-        "didPop route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
+    // FusionLog.log(
+    //     "didPop route:${route.runtimeType}@${route.hashCode}\npreviousRoute:${previousRoute.runtimeType}@${previousRoute.hashCode}");
     if (previousRoute != null) {
       PageLifecycleBinding.instance.topRoute = previousRoute;
     }

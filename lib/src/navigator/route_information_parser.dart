@@ -6,12 +6,12 @@ class FusionRouteInformationParser
   @override
   Future<Map<String, dynamic>> parseRouteInformation(
       RouteInformation routeInformation) {
-    final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? '/'));
+    final parse = DefaultUriParse(Uri.parse(routeInformation.location ?? Navigator.defaultRouteName));
     final arguments = Map<String, String>.from(parse.getArguments() ?? {});
     final initialRoute = {
       'name': parse.getName(),
       'arguments': arguments,
-      'uniqueId': arguments.remove('uniqueId')
+      'uniqueId': DateTime.now().millisecondsSinceEpoch.toString()
     };
     return SynchronousFuture(initialRoute);
   }

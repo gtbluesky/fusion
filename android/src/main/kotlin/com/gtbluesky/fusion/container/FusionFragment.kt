@@ -1,5 +1,6 @@
 package com.gtbluesky.fusion.container
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import com.gtbluesky.fusion.Fusion
@@ -9,6 +10,8 @@ import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
+import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
 
 open class FusionFragment : FlutterFragment(), FusionContainer {
@@ -16,14 +19,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     private var isNested = true
     private val history = mutableListOf<Map<String, Any?>>()
     private var engineBinding: FusionEngineBinding? = null
+    private var platformPlugin: PlatformPlugin? = null
 
-    override fun provideFlutterEngine(context: Context): FlutterEngine? {
-        return if (isNested) {
-            engineBinding?.engine
-        } else {
-            super.provideFlutterEngine(context)
-        }
-    }
+    override fun engineBinding() = engineBinding
+
+    override fun history() = history
 
     override fun onAttach(context: Context) {
         isNested = arguments?.getBoolean(FusionConstant.NESTED_MODE) ?: true
@@ -35,20 +35,22 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         super.onAttach(context)
         if (isNested) {
             engineBinding?.attach(this)
+        } else {
+            configurePlatformChannel()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (isNested) {
-            val routeName =
-                arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
-            val routeArguments =
-                arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-            engineBinding?.push(routeName, routeArguments)
-        }
+        val routeName =
+            arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
+        val routeArguments =
+            arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
+        engineBinding?.push(routeName, routeArguments)
         super.onCreate(savedInstanceState)
         if (isNested) {
             FusionStackManager.addChild(this)
+        } else {
+            updateSystemUiOverlays()
         }
     }
 
@@ -58,6 +60,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             if (isNested) {
                 (this as? FusionMessengerProvider)?.configureFlutterChannel(it.dartExecutor.binaryMessenger)
             } else {
+                configurePlatformChannel()
                 (activity as? FusionMessengerProvider)?.configureFlutterChannel(it.dartExecutor.binaryMessenger)
             }
         }
@@ -68,7 +71,39 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (isNested) {
             (this as? FusionMessengerProvider)?.releaseFlutterChannel()
         } else {
+            releasePlatformChannel()
             (activity as? FusionMessengerProvider)?.releaseFlutterChannel()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isNested) {
+            history.clear()
+            FusionStackManager.removeChild(this)
+        }
+        engineBinding?.pop()
+        engineBinding = null
+    }
+
+    override fun provideFlutterEngine(context: Context) = engineBinding?.engine
+
+    override fun providePlatformPlugin(
+        activity: Activity?,
+        flutterEngine: FlutterEngine
+    ): PlatformPlugin? {
+        return if (isNested) {
+            super.providePlatformPlugin(activity, flutterEngine)
+        } else {
+            null
+        }
+    }
+
+    override fun updateSystemUiOverlays() {
+        if (isNested) {
+            super.updateSystemUiOverlays()
+        } else {
+            platformPlugin?.updateSystemUiOverlays()
         }
     }
 
@@ -78,19 +113,29 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isNested) {
-            history.clear()
-            engineBinding?.pop()
-            engineBinding = null
-            FusionStackManager.removeChild(this)
+    private fun configurePlatformChannel() {
+        if (platformPlugin != null) {
+            return
+        }
+        platformPlugin = PlatformPlugin(activity, engineBinding?.engine?.platformChannel)
+        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
+        val field = clazz.getDeclaredField("currentTheme")
+        field.isAccessible = true
+        Fusion.currentTheme?.let {
+            field.set(platformPlugin, it)
         }
     }
 
-    override fun engineBinding() = engineBinding
-
-    override fun history() = history
+    private fun releasePlatformChannel() {
+        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
+        val field = clazz.getDeclaredField("currentTheme")
+        field.isAccessible = true
+        (field.get(platformPlugin) as? PlatformChannel.SystemChromeStyle)?.let {
+            Fusion.currentTheme = it
+        }
+        platformPlugin?.destroy()
+        platformPlugin = null
+    }
 
     internal class FusionFlutterFragmentBuilder(fragmentClass: Class<out FusionFragment>) :
         FlutterFragment.NewEngineFragmentBuilder(fragmentClass) {

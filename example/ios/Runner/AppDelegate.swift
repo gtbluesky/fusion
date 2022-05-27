@@ -11,7 +11,7 @@ import fusion
             didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Fusion.instance.install(delegate: self)
-//        Fusion.instance.adaptiveGesture = false
+        Fusion.instance.adaptiveGesture = true
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "HostVC")
         window = UIWindow()
@@ -27,8 +27,6 @@ import fusion
         if name == "/normal" {
             let vc = NormalViewController()
             navController?.pushViewController(vc, animated: true)
-//            vc.modalPresentationStyle = .fullScreen
-//            navController?.present(vc, animated: true)
         }
     }
 
@@ -37,7 +35,6 @@ import fusion
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         navController?.pushViewController(fusionVc, animated: true)
-//        fusionVc.modalPresentationStyle = .fullScreen
 //        navController?.present(fusionVc, animated: true)
     }
 }

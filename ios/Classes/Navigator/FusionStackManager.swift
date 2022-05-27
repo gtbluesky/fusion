@@ -26,6 +26,16 @@ class FusionStackManager {
         }
     }
 
+    func getTopContainer() -> UIViewController? {
+        let vc = UIApplication.roofViewController
+        let nc = vc?.navigationController
+        if nc?.viewControllers.count ?? 0 > 0 {
+            return nc?.topViewController
+        } else {
+            return vc
+        }
+    }
+
     func closeTopContainer() {
         let vc = UIApplication.roofViewController
         let nc = vc?.navigationController

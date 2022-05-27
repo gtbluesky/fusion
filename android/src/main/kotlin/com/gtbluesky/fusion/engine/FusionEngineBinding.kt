@@ -50,9 +50,9 @@ class FusionEngineBinding(
                     if (isFlutterPage) {
                         if (isNested) {
                             if (container?.history()?.isEmpty() == true) {
-                                //在原Flutter容器打开Flutter页面
-                                //即用户可见的第一个页面
-                                container?.history()?.add(
+                                // 在原Flutter容器打开Flutter页面
+                                // 即用户可见的第一个页面
+                                container.history().add(
                                     mapOf(
                                         "name" to name,
                                         "arguments" to arguments,
@@ -60,14 +60,14 @@ class FusionEngineBinding(
                                         "isFirstPage" to true
                                     )
                                 )
-                                result.success(container?.history())
+                                result.success(container.history())
                             } else {
-                                //在新Flutter容器打开Flutter页面
+                                // 在新Flutter容器打开Flutter页面
                                 Fusion.delegate.pushFlutterRoute(name, arguments)
                                 result.success(null)
                             }
                         } else {
-                            //在原Flutter容器打开Flutter页面
+                            // 在原Flutter容器打开Flutter页面
                             val topContainer =
                                 FusionStackManager.getTopContainer() as? FusionContainer
                             val isFirstPage = topContainer?.history()?.isEmpty() ?: false
@@ -82,7 +82,7 @@ class FusionEngineBinding(
                             result.success(history)
                         }
                     } else {
-                        //打开Native页面
+                        // 打开Native页面
                         Fusion.delegate.pushNativeRoute(name, arguments)
                         result.success(null)
                     }

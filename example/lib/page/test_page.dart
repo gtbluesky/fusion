@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,6 +49,7 @@ class _TestPageState extends State<TestPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(widget.arguments?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
       ),
@@ -98,7 +101,19 @@ class _TestPageState extends State<TestPage>
               height: 20,
             ),
             InkWell(
-                child: const Text('plugin'),
+                child: const Text('platform plugin'),
+                onTap: () async {
+                  if (Platform.isAndroid) {
+                    SystemChannels.platform.invokeMethod('HapticFeedback.vibrate', 'HapticFeedbackType.mediumImpact');
+                  } else {
+                    SystemChannels.platform.invokeMethod('SystemSound.play', 'SystemSoundType.click');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('fusion plugin'),
                 onTap: () async {
                   final result =
                       await widget._channel.invokeMethod('getPlatformVersion');
@@ -117,6 +132,10 @@ class _TestPageState extends State<TestPage>
                   //   print('result=$result');
                   // }
                 }),
+            const SizedBox(
+              height: 20,
+            ),
+            const TextField(),
             const SizedBox(
               height: 20,
             ),

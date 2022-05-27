@@ -2,16 +2,14 @@ package com.gtbluesky.fusion
 
 import android.app.Activity
 import android.app.Application
-import android.net.Uri
 import android.os.Bundle
-import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
-import java.util.*
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
 
 object Fusion {
     private var engineGroup: FlutterEngineGroup? = null
@@ -22,6 +20,7 @@ object Fusion {
     internal lateinit var delegate: FusionRouteDelegate
         private set
     private lateinit var context: Application
+    internal var currentTheme: PlatformChannel.SystemChromeStyle? = null
 
     fun install(context: Application, delegate: FusionRouteDelegate) {
         this.context = context
@@ -43,16 +42,8 @@ object Fusion {
     fun createAndRunEngine(): FlutterEngine? {
         return engineGroup?.createAndRunEngine(
             context,
-            DartExecutor.DartEntrypoint.createDefault(),
-            initialRouteUri()
+            DartExecutor.DartEntrypoint.createDefault()
         )
-    }
-
-    private fun initialRouteUri(): String {
-        val uniqueId = UUID.randomUUID().toString()
-        val uriBuilder = Uri.parse(FusionConstant.INITIAL_ROUTE).buildUpon()
-        uriBuilder.appendQueryParameter("uniqueId", uniqueId)
-        return uriBuilder.build().toString()
     }
 }
 

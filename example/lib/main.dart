@@ -16,10 +16,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const channel = MethodChannel('fusion');
-    channel.invokeMethod('getPlatformVersion').then((value) {
-      print('value=$value');
-    });
     return FusionApp(
       routeMap,
       debugShowCheckedModeBanner: false,

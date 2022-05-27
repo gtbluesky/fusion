@@ -15,15 +15,10 @@ class HostViewController: UIViewController {
 
     @IBOutlet weak var button2: UIButton!
 
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-
-//    override var preferredStatusBarStyle: UIStatusBarStyle {
-//        return .lightContent
-//    }
 
     @IBAction func clickButton(_ sender: UIButton) {
         FusionNavigator.instance.push(name: "/test", arguments: ["title": "iOS Flutter Page"])

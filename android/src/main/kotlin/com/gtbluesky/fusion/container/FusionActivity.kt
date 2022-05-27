@@ -1,5 +1,6 @@
 package com.gtbluesky.fusion.container
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -9,16 +10,21 @@ import com.gtbluesky.fusion.channel.FusionMessengerProvider
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
+import io.flutter.plugin.platform.PlatformPlugin
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private val history = mutableListOf<Map<String, Any?>>()
     private var engineBinding: FusionEngineBinding? = null
+    private var platformPlugin: PlatformPlugin? = null
 
-    override fun provideFlutterEngine(context: Context) = engineBinding?.engine
+    override fun history() = history
 
     override fun onCreate(savedInstanceState: Bundle?) {
         engineBinding = Fusion.engineBinding
+        configurePlatformChannel()
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
@@ -28,12 +34,12 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
+        updateSystemUiOverlays()
     }
-
-    override fun detachFromFlutterEngine() {}
 
     override fun onStart() {
         super.onStart()
+        configurePlatformChannel()
         if (this !is FusionMessengerProvider) {
             return
         }
@@ -44,6 +50,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun onStop() {
         super.onStop()
+        releasePlatformChannel()
         if (this !is FusionMessengerProvider) {
             return
         }
@@ -56,5 +63,42 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding = null
     }
 
-    override fun history() = history
+    override fun provideFlutterEngine(context: Context) = engineBinding?.engine
+
+    override fun providePlatformPlugin(
+        activity: Activity?,
+        flutterEngine: FlutterEngine
+    ): PlatformPlugin? {
+        return null
+    }
+
+    override fun updateSystemUiOverlays() {
+        platformPlugin?.updateSystemUiOverlays()
+    }
+
+    override fun detachFromFlutterEngine() {}
+
+    private fun configurePlatformChannel() {
+        if (platformPlugin != null) {
+            return
+        }
+        platformPlugin = PlatformPlugin(this, engineBinding?.engine?.platformChannel)
+        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
+        val field = clazz.getDeclaredField("currentTheme")
+        field.isAccessible = true
+        Fusion.currentTheme?.let {
+            field.set(platformPlugin, it)
+        }
+    }
+
+    private fun releasePlatformChannel() {
+        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
+        val field = clazz.getDeclaredField("currentTheme")
+        field.isAccessible = true
+        (field.get(platformPlugin) as? PlatformChannel.SystemChromeStyle)?.let {
+            Fusion.currentTheme = it
+        }
+        platformPlugin?.destroy()
+        platformPlugin = null
+    }
 }

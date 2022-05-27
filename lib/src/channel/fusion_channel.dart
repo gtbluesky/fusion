@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../lifecycle/page_lifecycle.dart';
-import '../log/fusion_log.dart';
 import '../navigator/fusion_navigator.dart';
 import '../notification/page_notification.dart';
 
@@ -13,7 +12,7 @@ class FusionChannel {
 
   static void register() {
     _methodChannel.setMethodCallHandler((call) async {
-      FusionLog.log(call.method);
+      // FusionLog.log('method=${call.method}');
       switch (call.method) {
         case 'push':
           final name = call.arguments['name'];
