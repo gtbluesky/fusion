@@ -20,6 +20,7 @@ class FusionChannel {
           FusionNavigator.instance.push(name, arguments: arguments);
           break;
         case 'pop':
+          FocusManager.instance.primaryFocus?.unfocus();
           await FusionNavigator.instance.pop();
           WidgetsBinding.instance?.drawFrame();
           break;

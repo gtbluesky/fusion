@@ -18,7 +18,12 @@
         <activity
             android:name=".CustomFusionActivity"
             android:label="CustomFusionActivity"
-            android:theme="@style/FusionTheme" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:theme="@style/FusionTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".NormalActivity"
             android:label="NormalActivity"
