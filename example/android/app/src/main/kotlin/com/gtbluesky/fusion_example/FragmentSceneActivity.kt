@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.container.FusionFragment
-import com.gtbluesky.fusion.container.buildFragment
+import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
 
 class FragmentSceneActivity : FragmentActivity() {
@@ -16,9 +16,9 @@ class FragmentSceneActivity : FragmentActivity() {
         setContentView(binding.root)
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
-        val fragment0 = buildFragment(CustomFusionFragment::class.java,"/test", mapOf("title" to "f0"))
-        val fragment1 = buildFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "f1"))
-        val fragment2 = buildFragment(FusionFragment::class.java,"/list", mapOf("title" to "f2"))
+        val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/test", mapOf("title" to "f0"))
+        val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "f1"))
+        val fragment2 = buildFusionFragment(FusionFragment::class.java,"/list", mapOf("title" to "f2"))
         adapter.addFragment(fragment0)
         adapter.addFragment(fragment1)
         adapter.addFragment(fragment2)

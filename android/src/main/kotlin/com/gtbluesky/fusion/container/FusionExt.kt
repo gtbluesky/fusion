@@ -22,7 +22,7 @@ fun <T : FusionContainer> buildFusionIntent(
 }
 
 @JvmOverloads
-fun <T : FusionFragment> buildFragment(
+fun <T : FusionFragment> buildFusionFragment(
     clazz: Class<T>,
     routeName: String,
     routeArguments: Map<String, Any>? = null
