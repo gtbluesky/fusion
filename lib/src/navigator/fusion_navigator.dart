@@ -10,13 +10,14 @@ class FusionNavigator {
   FusionNavigator._();
 
   static final FusionNavigator _instance = FusionNavigator._();
+
+  static FusionNavigator get instance => _instance;
+
   final _key = GlobalKey<NavigatorState>();
 
   late FusionRouterDelegate routerDelegate;
   late FusionRouteInformationParser routeInformationParser;
   late Map<String, PageFactory> routeMap;
-
-  static FusionNavigator get instance => _instance;
 
   GlobalKey<NavigatorState> get key => _key;
 
@@ -24,18 +25,25 @@ class FusionNavigator {
     return routeMap.containsKey(routeName);
   }
 
-  Future<T?> push<T extends Object?>(
-    String routeName, {
-    Map<String, dynamic>? arguments,
-  }) async {
-    return await routerDelegate.push(routeName, arguments);
+  Future<T?> push<T extends Object?>(String routeName,
+      [Map<String, dynamic>? arguments]) {
+    return routerDelegate.push(routeName, arguments);
   }
 
-  Future<void> pop<T extends Object>([T? result]) async {
-    return await routerDelegate.pop(result);
+  Future<void> replace(String routeName,
+      [Map<String, dynamic>? arguments]) {
+    return routerDelegate.replace(routeName, arguments);
   }
 
-  void sendMessage(String msgName, {Map<String, dynamic>? msgBody}) {
-    return FusionChannel.sendMessage(msgName, msgBody: msgBody);
+  Future<void> pop<T extends Object>([T? result]) {
+    return routerDelegate.pop(result);
+  }
+
+  Future<void> remove(String routeName, [bool all = false]) {
+    return routerDelegate.remove(routeName, all);
+  }
+
+  void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {
+    return FusionChannel.instance.sendMessage(msgName, msgBody);
   }
 }

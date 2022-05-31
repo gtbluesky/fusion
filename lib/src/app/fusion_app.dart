@@ -87,7 +87,7 @@ class _FusionAppState extends State<FusionApp> {
   @override
   void initState() {
     super.initState();
-    FusionChannel.register();
+    FusionChannel.instance.register();
   }
 
   @override

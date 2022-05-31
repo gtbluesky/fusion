@@ -6,23 +6,49 @@ import '../navigator/fusion_navigator.dart';
 import '../notification/page_notification.dart';
 
 class FusionChannel {
-  static const MethodChannel _methodChannel = MethodChannel('fusion_channel');
-  static const EventChannel _eventChannel =
-      EventChannel('fusion_event_channel');
+  FusionChannel._();
 
-  static void register() {
+  static final FusionChannel _instance = FusionChannel._();
+
+  static FusionChannel get instance => _instance;
+
+  final MethodChannel _methodChannel = const MethodChannel('fusion_channel');
+  final EventChannel _eventChannel = const EventChannel('fusion_event_channel');
+
+  void register() {
     _methodChannel.setMethodCallHandler((call) async {
       // FusionLog.log('method=${call.method}');
       switch (call.method) {
         case 'push':
           final name = call.arguments['name'];
-          final arguments = Map<String, dynamic>.from(call.arguments['arguments']);
-          FusionNavigator.instance.push(name, arguments: arguments);
+          final arguments =
+              Map<String, dynamic>.from(call.arguments['arguments']);
+          FusionNavigator.instance.push(name, arguments);
+          break;
+        case 'replace':
+          final name = call.arguments['name'];
+          final arguments =
+              Map<String, dynamic>.from(call.arguments['arguments']);
+          FusionNavigator.instance.replace(name, arguments);
           break;
         case 'pop':
-          FocusManager.instance.primaryFocus?.unfocus();
-          await FusionNavigator.instance.pop();
-          WidgetsBinding.instance?.drawFrame();
+          final active = call.arguments['active'];
+          // 主动
+          if (active) {
+            final result = call.arguments['result'];
+            FusionNavigator.instance.pop(result);
+          } else {
+            // 被动
+            // 即容器销毁后处理Flutter路由战
+            FocusManager.instance.primaryFocus?.unfocus();
+            await FusionNavigator.instance.pop();
+            WidgetsBinding.instance?.drawFrame();
+          }
+          break;
+        case 'remove':
+          final name = call.arguments['name'];
+          final all = call.arguments['all'];
+          FusionNavigator.instance.remove(name, all);
           break;
         case 'notifyPageVisible':
           final route = PageLifecycleBinding.instance.topRoute;
@@ -53,28 +79,65 @@ class FusionChannel {
     });
   }
 
-  static Future<List<Map<String, dynamic>>?> push(
+  Future<List<Map<String, dynamic>>?> push(
       String name, dynamic arguments) async {
     final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
     final List<dynamic>? result = await _methodChannel.invokeMethod('push',
         {'name': name, 'arguments': arguments, 'isFlutterPage': isFlutterPage});
-    final List<Map<String, dynamic>> list = [];
+    List<Map<String, dynamic>>? list;
+    if (result != null) {
+      list = [];
+    }
     result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list.add(element.cast<String, dynamic>());
+      list?.add(element.cast<String, dynamic>());
     });
     return list;
   }
 
-  static Future<List<Map<String, dynamic>>?> pop() async {
+  Future<List<Map<String, dynamic>>?> replace(
+      String name, dynamic arguments) async {
+    final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
+    if (!isFlutterPage) {
+      throw Exception('Route name is not found in route map!');
+    }
+    final List<dynamic>? result = await _methodChannel
+        .invokeMethod('replace', {'name': name, 'arguments': arguments});
+    List<Map<String, dynamic>>? list;
+    if (result != null) {
+      list = [];
+    }
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list?.add(element.cast<String, dynamic>());
+    });
+    return list;
+  }
+
+  Future<List<Map<String, dynamic>>?> pop() async {
     final List<dynamic>? result = await _methodChannel.invokeMethod('pop');
-    final List<Map<String, dynamic>> list = [];
+    List<Map<String, dynamic>>? list;
+    if (result != null) {
+      list = [];
+    }
     result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list.add(element.cast<String, dynamic>());
+      list?.add(element.cast<String, dynamic>());
     });
     return list;
   }
 
-  static void sendMessage(String msgName, {Map<String, dynamic>? msgBody}) {
+  Future<List<Map<String, dynamic>>?> remove(String name, bool all) async {
+    final List<dynamic>? result =
+        await _methodChannel.invokeMethod('remove', {'name': name, 'all': all});
+    List<Map<String, dynamic>>? list;
+    if (result != null) {
+      list = [];
+    }
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list?.add(element.cast<String, dynamic>());
+    });
+    return list;
+  }
+
+  void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {
     _methodChannel
         .invokeMethod('sendMessage', {'msgName': msgName, 'msgBody': msgBody});
   }

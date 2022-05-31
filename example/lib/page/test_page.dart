@@ -61,7 +61,7 @@ class _TestPageState extends State<TestPage>
               child: const Text('push /normal'),
               onTap: () {
                 FusionNavigator.instance
-                    .push('/normal', arguments: {'title': '12121'});
+                    .push('/normal', {'title': '12121'});
               },
             ),
             const SizedBox(
@@ -71,7 +71,7 @@ class _TestPageState extends State<TestPage>
                 child: const Text('push /test'),
                 onTap: () async {
                   final result = await FusionNavigator.instance
-                      .push<String?>('/test', arguments: {'title': '2'});
+                      .push<String?>('/test', {'title': '2'});
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -84,7 +84,7 @@ class _TestPageState extends State<TestPage>
                 onTap: () async {
                   final result = await FusionNavigator.instance.push<String?>(
                       '/lifecycle',
-                      arguments: {'title': 'Lifecycle Test'});
+                      {'title': 'Lifecycle Test'});
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -96,6 +96,22 @@ class _TestPageState extends State<TestPage>
                 child: const Text('pop'),
                 onTap: () {
                   FusionNavigator.instance.pop('test返回结果');
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('replace /list'),
+                onTap: () {
+                  FusionNavigator.instance.replace('/list', {'title': 'replace success'});
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('remove /lifecycle'),
+                onTap: () {
+                  FusionNavigator.instance.remove('/lifecycle');
                 }),
             const SizedBox(
               height: 20,
@@ -159,12 +175,6 @@ class _TestPageState extends State<TestPage>
                   ),
                 );
               });
-          // if (kDebugMode) {
-          //   print('${ModalRoute.of(context).hashCode}');
-          // }
-          // setState(() {
-          //   ++_count;
-          // });
         },
         child: const Icon(Icons.add),
       ),

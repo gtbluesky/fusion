@@ -28,7 +28,7 @@ class _LifecyclePageState extends State<LifecyclePage>
               child: const Text('push /normal'),
               onTap: () {
                 FusionNavigator.instance
-                    .push('/normal', arguments: {'title': '12121'});
+                    .push('/normal', {'title': '12121'});
               },
             ),
             const SizedBox(
@@ -38,7 +38,7 @@ class _LifecyclePageState extends State<LifecyclePage>
                 child: const Text('push /test'),
                 onTap: () async {
                   final result = await FusionNavigator.instance
-                      .push<String?>('/test', arguments: {'title': '2'});
+                      .push<String?>('/test', {'title': '2'});
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -61,7 +61,7 @@ class _LifecyclePageState extends State<LifecyclePage>
         child: const Icon(Icons.add),
         onPressed: () {
           FusionNavigator.instance.sendMessage(
-              'msg1', msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
+              'msg1', {'time': DateTime.now().millisecondsSinceEpoch});
           // showDialog(
           //     context: context,
           //     builder: (context) {

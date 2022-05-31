@@ -59,6 +59,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun onDestroy() {
         super.onDestroy()
+        history.clear()
         engineBinding?.pop()
         engineBinding = null
     }

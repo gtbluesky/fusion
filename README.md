@@ -5,15 +5,11 @@
 
 Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。
 
-Fusion 基于引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终中仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下也拥有媲美原生页面的打开速度。此外 Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可以更加灵活对 Flutter 路由栈进行管理。
+Fusion 基于引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。此外 Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可以更加灵活对 Flutter 路由栈进行管理。
 
-不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 较好的兼容性使得使用者可以更加从容地升级 Flutter。
+不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 较好的兼容性使得使用者可以更加从容地升级 Flutter 版本。
 
-设计严格遵循以下原则：
-
-- 轻量化
-- 最小侵入
-- 三端一致API
+此外，Fusion 针对状态栏图标颜色做了精心适配，使得在Flutter页面时状态栏图标颜色完全由自身控制，拥有和纯Flutter应用一样的体验，在Flutter页面与Native页面多次跳转的情况下状态栏图标颜色也可正常展示。
 
 
 
@@ -122,7 +118,7 @@ Fusion.instance.adaptiveGesture = false
 #### 嵌套模式
 嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面以 Tab 形式嵌入同一个 Native 容器中。
 
-Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `FusionFragment.buildFragment` 方法。
+Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
 iOS 使用 FusionViewController 并传入 `isNested: true` 以支持嵌套模式。
 
@@ -131,6 +127,10 @@ iOS 使用 FusionViewController 并传入 `isNested: true` 以支持嵌套模式
 push：指定页入栈，支持获取返回值
 
 pop：栈顶页出栈，支持设置返回值
+
+replace：替换栈顶路由
+
+remove：移除栈中指定路由
 
 P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
 
@@ -221,7 +221,7 @@ class CustomViewController : FusionViewController, FusionMessengerProvider {
 }
 ```
 
-> BasicMessageChannel 和 EventChannel 使用也是类似。另外务必确保 Flutter 和 Native 使用的 Channel类型统一。
+> BasicMessageChannel 和 EventChannel 使用也是类似
 
 iOS 侧
 

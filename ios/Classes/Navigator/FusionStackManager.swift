@@ -36,6 +36,10 @@ class FusionStackManager {
         }
     }
 
+    func topIsFusionContainer() -> Bool {
+        getTopContainer() is FusionViewController
+    }
+
     func closeTopContainer() {
         let vc = UIApplication.roofViewController
         let nc = vc?.navigationController

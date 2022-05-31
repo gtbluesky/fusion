@@ -18,7 +18,7 @@ class NormalActivity : AppCompatActivity() {
             FusionNavigator.sendMessage("msg2")
         }
         binding.tvC.setOnClickListener {
-            FusionNavigator.push("/test", mapOf("title" to "New Flutter Page"))
+            FusionNavigator.open("/test", mapOf("title" to "New Flutter Page"))
         }
     }
 }

@@ -64,6 +64,6 @@ class NormalViewController: UIViewController {
     }
 
     @objc func btnClick3(btn: UIButton) {
-        FusionNavigator.instance.push(name: "/test", arguments: ["title": "New Flutter Page"])
+        FusionNavigator.instance.open(name: "/test", arguments: ["title": "New Flutter Page"])
     }
 }

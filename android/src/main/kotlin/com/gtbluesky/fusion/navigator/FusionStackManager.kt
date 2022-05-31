@@ -28,6 +28,8 @@ internal object FusionStackManager {
         return stack.last().get()
     }
 
+    fun topIsFusionContainer() = getTopContainer() is FusionContainer
+
     fun closeTopContainer() {
         getTopContainer()?.finish()
     }

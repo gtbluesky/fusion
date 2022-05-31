@@ -42,89 +42,148 @@ class FusionEngineBinding: NSObject {
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
             case "push":
-                if let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String {
-                    let arguments = dict["arguments"] as? Dictionary<String, Any>
-                    let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
-                    if isFlutterPage {
-                        if self.isNested == true {
-                            if self.container?.history.isEmpty == true {
-                                // 在原Flutter容器打开Flutter页面
-                                // 即用户可见的第一个页面
-                                self.container?.history.append([
-                                    "name": name,
-                                    "arguments": arguments,
-                                    "uniqueId": UUID().uuidString,
-                                    "isFirstPage": true
-                                ])
-                                result(self.container?.history)
-                            } else {
-                                // 在新Flutter容器打开Flutter页面
-                                Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
-                                result(nil)
-                            }
-                        } else {
+                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                    result(nil)
+                    return
+                }
+                let arguments = dict["arguments"] as? Dictionary<String, Any>
+                let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
+                if isFlutterPage {
+                    if self.isNested == true {
+                        if self.container?.history.isEmpty == true {
                             // 在原Flutter容器打开Flutter页面
-                            guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                                result(self.history)
-                                return
-                            }
-                            let isFirstPage = topContainer.history.isEmpty
-                            topContainer.history.append([
+                            // 即用户可见的第一个页面
+                            self.container?.history.append([
                                 "name": name,
                                 "arguments": arguments,
                                 "uniqueId": UUID().uuidString,
-                                "isFirstPage": isFirstPage
+                                "home": true
                             ])
-                            result(self.history)
-                            if topContainer.history.count == 1 {
-                                self.addPopGesture(topContainer)
-                            } else {
-                                self.removePopGesture()
-                            }
+                            result(self.container?.history)
+                        } else {
+                            // 在新Flutter容器打开Flutter页面
+                            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+                            result(nil)
                         }
                     } else {
-                        // 打开Native页面
-                        Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
-                        result(nil)
+                        // 在原Flutter容器打开Flutter页面
+                        guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                            result(nil)
+                            return
+                        }
+                        let home = topContainer.history.isEmpty
+                        topContainer.history.append([
+                            "name": name,
+                            "arguments": arguments,
+                            "uniqueId": UUID().uuidString,
+                            "home": home
+                        ])
+                        result(self.history)
+                        if topContainer.history.count == 1 {
+                            self.addPopGesture(topContainer)
+                        } else {
+                            self.removePopGesture()
+                        }
                     }
                 } else {
+                    // 打开Native页面
+                    Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
                     result(nil)
                 }
+            case "replace":
+                if self.isNested {
+                    result(nil)
+                    return
+                }
+                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                    result(nil)
+                    return
+                }
+                let arguments = dict["arguments"] as? Dictionary<String, Any>
+                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                    result(nil)
+                    return
+                }
+                topContainer.history.removeLast()
+                let home = topContainer.history.isEmpty
+                topContainer.history.append([
+                    "name": name,
+                    "arguments": arguments,
+                    "uniqueId": UUID().uuidString,
+                    "home": home
+                ])
+                result(self.history)
             case "pop":
                 if self.isNested {
                     if self.container == nil || self.container?.history.isEmpty == true {
-                        result(nil)
+                        result([])
                         self.detach()
                     } else {
-                        // 在flutter页面中点击pop
+                        // 在flutter页面中点击pop，仅关闭容器
                         FusionStackManager.instance.closeTopContainer()
-                        result(self.container?.history)
+                        result(nil)
                     }
                 } else {
-                    // 1、flutter容器退出
-                    // 2、flutter页面pop
-                    // 3、flutter容器退出后仅刷新history
                     guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                        // flutter容器关闭后
+                        // 仅刷新history，让容器第一个可见Flutter页面出栈
                         result(self.history)
                         return
                     }
                     if topContainer.history.count == 1 {
+                        // 仅关闭flutter容器
                         FusionStackManager.instance.closeTopContainer()
+                        result(nil)
                     } else {
+                        // flutter页面pop
                         topContainer.history.removeLast()
+                        result(self.history)
                     }
-                    result(self.history)
                     if topContainer.history.count == 1 {
                         self.addPopGesture(topContainer)
                     } else {
                         self.removePopGesture()
                     }
                 }
-            case "sendMessage":
-                if let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String {
-                    let msgBody = dict["msgBody"] as? Dictionary<String, Any>
-                    FusionStackManager.instance.sendMessage(msgName, msgBody)
+            case "remove":
+                if self.isNested {
+                    result(nil)
+                    return
                 }
+                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                    result(nil)
+                    return
+                }
+                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                    result(nil)
+                    return
+                }
+                let all = dict["all"] as? Bool ?? false
+                if all {
+                    topContainer.history.removeAll {
+                        $0["name"] as? String == name
+                    }
+                } else {
+                    let index = topContainer.history.lastIndex {
+                        $0["name"] as? String == name
+                    } ?? -1
+                    if index >= 0 {
+                        topContainer.history.remove(at: index)
+                    }
+                }
+                result(self.history)
+                if topContainer.history.count == 1 {
+                    self.addPopGesture(topContainer)
+                } else {
+                    self.removePopGesture()
+                }
+            case "sendMessage":
+                guard let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String else {
+                    result(nil)
+                    return
+                }
+                let msgBody = dict["msgBody"] as? Dictionary<String, Any>
+                FusionStackManager.instance.sendMessage(msgName, msgBody)
                 result(nil)
             default:
                 result(FlutterMethodNotImplemented)
@@ -185,8 +244,34 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func pop() {
-        channel?.invokeMethod("pop", arguments: nil)
+    internal func replace(_ name: String, _ arguments: Dictionary<String, Any>?) {
+        channel?.invokeMethod(
+                "replace",
+                arguments: [
+                    "name": name,
+                    "arguments": arguments as Any
+                ]
+        )
+    }
+
+    internal func pop(_ active: Bool = false, _ result: Any? = nil) {
+        channel?.invokeMethod(
+                "pop",
+                arguments: [
+                    "active": active,
+                    "result": result
+                ]
+        )
+    }
+
+    internal func remove(name: String, all: Bool) {
+        channel?.invokeMethod(
+                "remove",
+                arguments: [
+                    "name": name,
+                    "all": all
+                ]
+        )
     }
 
     internal func notifyPageVisible() {

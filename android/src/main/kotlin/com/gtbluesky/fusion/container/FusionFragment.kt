@@ -78,8 +78,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onDestroy() {
         super.onDestroy()
+        history.clear()
         if (isNested) {
-            history.clear()
             FusionStackManager.removeChild(this)
         }
         engineBinding?.pop()

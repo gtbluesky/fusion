@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../channel/fusion_channel.dart';
@@ -15,7 +16,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   static final FusionRouterDelegate _instance = FusionRouterDelegate._();
 
-  late Map<String, dynamic> _home;
+  late Map<String, dynamic> _root;
   final _history = <Map<String, dynamic>>[];
   final _callback = <String, Completer<dynamic>>{};
 
@@ -23,7 +24,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   GlobalKey<NavigatorState>? get navigatorKey => FusionNavigator.instance.key;
 
-  final navigatorObserver = FusionNavigatorObserver();
+  final _navigatorObserver = FusionNavigatorObserver();
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +35,17 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
         return false;
       },
       pages: _buildHistoryPages(),
-      observers: <NavigatorObserver>[navigatorObserver],
+      observers: <NavigatorObserver>[_navigatorObserver],
     );
   }
 
   List<Page> _buildHistoryPages() {
     if (currentConfiguration == null) return <Page>[];
-    _history.forEach((element) {
-      print('element=$element');
-    });
+    for (var element in _history) {
+      if (kDebugMode) {
+        print('element=$element');
+      }
+    }
     return _history.map((e) {
       final arguments = (e['arguments'] as Map?)?.cast<String, dynamic>();
       PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
@@ -57,7 +60,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
         child: page,
         name: e['name'],
         arguments: e['arguments'],
-        isFirstPage: e['isFirstPage'] ?? false,
+        home: e['home'] ?? false,
       );
     }).toList();
   }
@@ -74,8 +77,8 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
 
   @override
   Future<void> setNewRoutePath(Map<String, dynamic> configuration) async {
-    _home = configuration;
-    _history.add(_home);
+    _root = configuration;
+    _history.add(_root);
     notifyListeners();
   }
 
@@ -91,26 +94,55 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     String routeName, [
     Map<String, dynamic>? routeArguments,
   ]) async {
-    final history = await FusionChannel.push(routeName, routeArguments ?? {});
-    if (history != null && history.isNotEmpty) {
-      final completer = Completer<T>();
-      _callback[_history.last['uniqueId']] = completer;
-      refreshHistory(history);
-      return completer.future;
-    } else {
+    final history =
+        await FusionChannel.instance.push(routeName, routeArguments ?? {});
+    if (history == null || history.isEmpty) {
       return null;
     }
+    final completer = Completer<T>();
+    _callback[_history.last['uniqueId']] = completer;
+    refreshHistory(history);
+    return completer.future;
+  }
+
+  Future<void> replace<T extends Object?>(
+    String routeName, [
+    Map<String, dynamic>? routeArguments,
+  ]) async {
+    final history = await FusionChannel.instance.replace(routeName, routeArguments ?? {});
+    if (history == null || history.isEmpty) {
+      return;
+    }
+    refreshHistory(history);
   }
 
   Future<void> pop<T extends Object>([T? result]) async {
-    final history = await FusionChannel.pop();
+    final history = await FusionChannel.instance.pop();
+    if (history == null) {
+      return;
+    }
     refreshHistory(history);
     _callback.remove(_history.last['uniqueId'])?.complete(result);
   }
 
+  Future<void> remove(String routeName, bool all) async {
+    final history = await FusionChannel.instance.remove(routeName, all);
+    if (history == null) {
+      return;
+    }
+    final oldList = _history.map((e) => e['uniqueId']).toList();
+    final newList = history.map((e) => e['uniqueId']).toList();
+    for (var element in oldList) {
+      if (newList.contains(element) == false) {
+        _callback.remove(element)?.complete();
+      }
+    }
+    refreshHistory(history);
+  }
+
   void refreshHistory(List<Map<String, dynamic>>? history) {
     _history.clear();
-    _history.add(_home);
+    _history.add(_root);
     history?.forEach((element) {
       _history.add(element);
     });

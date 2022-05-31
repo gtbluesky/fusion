@@ -142,8 +142,8 @@ open class FusionViewController: FlutterViewController {
     }
 
     deinit {
+        history.removeAll()
         if isNested {
-            history.removeAll()
             FusionStackManager.instance.removeChild()
         } else {
             FusionStackManager.instance.remove()

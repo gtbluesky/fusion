@@ -4,9 +4,9 @@ import '../data/fusion_data.dart';
 
 class FusionPage<T> extends MaterialPage<T> {
 
-  final bool isFirstPage;
+  final bool home;
 
-  const FusionPage({required Widget child, name, arguments, this.isFirstPage = false})
+  const FusionPage({required Widget child, name, arguments, this.home = false})
       : super(child: child, name: name, arguments: arguments);
 
   @override
@@ -27,7 +27,7 @@ class FusionPageBasedMaterialPageRoute<T> extends PageRoute<T>
 
   @override
   Duration get transitionDuration {
-    if ((settings as FusionPage?)?.isFirstPage == true) {
+    if ((settings as FusionPage?)?.home == true) {
       return const Duration(milliseconds: 0);
     } else {
       return FusionData.transitionDuration;
@@ -36,7 +36,7 @@ class FusionPageBasedMaterialPageRoute<T> extends PageRoute<T>
 
   @override
   Duration get reverseTransitionDuration {
-    if ((settings as FusionPage?)?.isFirstPage == true) {
+    if ((settings as FusionPage?)?.home == true) {
       return const Duration(milliseconds: 0);
     } else {
       return FusionData.reverseTransitionDuration;
@@ -46,7 +46,7 @@ class FusionPageBasedMaterialPageRoute<T> extends PageRoute<T>
   @override
   @protected
   bool get hasScopedWillPopCallback {
-    if ((settings as FusionPage?)?.isFirstPage == true) {
+    if ((settings as FusionPage?)?.home == true) {
       return true;
     } else {
       return super.hasScopedWillPopCallback;
