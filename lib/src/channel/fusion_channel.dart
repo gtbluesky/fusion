@@ -21,25 +21,29 @@ class FusionChannel {
       switch (call.method) {
         case 'push':
           final name = call.arguments['name'];
-          final arguments =
-              Map<String, dynamic>.from(call.arguments['arguments']);
+          Map<String, dynamic>? arguments;
+          if (call.arguments['arguments'] != null) {
+            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
+          }
           FusionNavigator.instance.push(name, arguments);
           break;
         case 'replace':
           final name = call.arguments['name'];
-          final arguments =
-              Map<String, dynamic>.from(call.arguments['arguments']);
+          Map<String, dynamic>? arguments;
+          if (call.arguments['arguments'] != null) {
+            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
+          }
           FusionNavigator.instance.replace(name, arguments);
           break;
         case 'pop':
           final active = call.arguments['active'];
-          // 主动
           if (active) {
+            // 主动
             final result = call.arguments['result'];
             FusionNavigator.instance.pop(result);
           } else {
             // 被动
-            // 即容器销毁后处理Flutter路由战
+            // 即容器销毁后处理Flutter路由栈
             FocusManager.instance.primaryFocus?.unfocus();
             await FusionNavigator.instance.pop();
             WidgetsBinding.instance?.drawFrame();

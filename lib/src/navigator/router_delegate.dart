@@ -50,9 +50,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
       final arguments = (e['arguments'] as Map?)?.cast<String, dynamic>();
       PageFactory? pageFactory = FusionNavigator.instance.routeMap[e['name']] ??
           (e['name'] == Navigator.defaultRouteName
-              ? (_) => Container(
-                    color: Colors.white,
-                  )
+              ? (_) => const Scaffold(backgroundColor: Colors.white)
               : FusionNavigator.instance.routeMap[unknownRoute]);
       final page =
           pageFactory != null ? pageFactory(arguments) : const UnknownPage();
