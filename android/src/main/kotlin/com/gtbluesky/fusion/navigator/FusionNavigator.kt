@@ -54,15 +54,13 @@ object FusionNavigator {
     /**
      * 在当前Flutter容器中移除对应路由
      * @param name: 路由名
-     * @param all: 移除栈中所有与指定路由名相同的路由，否则移除最接近栈顶的路由
      */
     @JvmStatic
-    @JvmOverloads
-    fun remove(name: String, all: Boolean = false) {
+    fun remove(name: String) {
         if (!FusionStackManager.topIsFusionContainer()) {
             return
         }
-        Fusion.engineBinding?.remove(name, all)
+        Fusion.engineBinding?.remove(name)
     }
 
     @JvmStatic

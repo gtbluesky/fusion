@@ -54,13 +54,12 @@ import Foundation
     /**
      * 在当前Flutter容器中移除对应路由
      * @param name: 路由名
-     * @param all: 移除栈中所有与指定路由名相同的路由，否则移除最接近栈顶的路由
      */
-    public func remove(name: String, all: Bool = false) {
+    public func remove(name: String) {
         if !FusionStackManager.instance.topIsFusionContainer() {
             return
         }
-        Fusion.instance.engineBinding?.remove(name: name, all: all)
+        Fusion.instance.engineBinding?.remove(name: name)
     }
 
     public func sendMessage(msgName: String, msgBody: Dictionary<String, Any>? = nil) {

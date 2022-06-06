@@ -33,8 +33,6 @@ class PageLifecycleBinding {
       return;
     }
     _listeners[route] = listener;
-    // FusionLog.log('addObserver.route:${route.runtimeType}@${route.hashCode}');
-    // FusionLog.log('addObserver.state:${observer.runtimeType}@${observer.hashCode}');
   }
 
   void unregister(PageLifecycleListener listener) {
@@ -46,12 +44,8 @@ class PageLifecycleBinding {
 
   void dispatchPageVisibleEvent(Route<dynamic> route,
       {bool isFirstTime = false}) {
-    // _listeners.forEach((key, value) {
-    //   FusionLog.log('_listeners.route:${key.runtimeType}@${key.hashCode}');
-    //   FusionLog.log('_listeners.state:${value.runtimeType}@${value.hashCode}');
-    // });
     if (isFirstTime) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         try {
           _listeners[route]?.onPageVisible();
         } on Exception catch (e) {

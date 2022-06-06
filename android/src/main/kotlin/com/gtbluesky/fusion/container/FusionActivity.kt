@@ -34,7 +34,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
-        updateSystemUiOverlays()
+        platformPlugin?.updateSystemUiOverlays()
     }
 
     override fun onStart() {
@@ -64,6 +64,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding = null
     }
 
+    override fun onBackPressed() {
+        engineBinding?.pop(true)
+    }
+
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
     override fun providePlatformPlugin(
@@ -73,17 +77,14 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         return null
     }
 
-    override fun updateSystemUiOverlays() {
-        platformPlugin?.updateSystemUiOverlays()
-    }
-
     override fun detachFromFlutterEngine() {}
 
     private fun configurePlatformChannel() {
         if (platformPlugin != null) {
             return
         }
-        platformPlugin = PlatformPlugin(this, engineBinding?.engine?.platformChannel)
+        val platformChannel = engineBinding?.engine?.platformChannel ?: return
+        platformPlugin = PlatformPlugin(this, platformChannel)
         val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
         val field = clazz.getDeclaredField("currentTheme")
         field.isAccessible = true

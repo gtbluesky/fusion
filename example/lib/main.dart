@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 
-final Map<String, PageFactory> routeMap = {
+final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
   '/list': (arguments) => ListPage(arguments: arguments),
   '/lifecycle': ((arguments) => LifecyclePage(

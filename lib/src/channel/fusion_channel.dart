@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 
 import '../lifecycle/page_lifecycle.dart';
 import '../navigator/fusion_navigator.dart';
@@ -45,14 +46,13 @@ class FusionChannel {
             // 被动
             // 即容器销毁后处理Flutter路由栈
             FocusManager.instance.primaryFocus?.unfocus();
-            await FusionNavigator.instance.pop();
-            WidgetsBinding.instance?.drawFrame();
+            await FusionNavigatorDelegate.instance.directPop();
+            WidgetsBinding.instance.drawFrame();
           }
           break;
         case 'remove':
           final name = call.arguments['name'];
-          final all = call.arguments['all'];
-          FusionNavigator.instance.remove(name, all);
+          FusionNavigator.instance.remove(name);
           break;
         case 'notifyPageVisible':
           final route = PageLifecycleBinding.instance.topRoute;
@@ -83,62 +83,54 @@ class FusionChannel {
     });
   }
 
-  Future<List<Map<String, dynamic>>?> push(
-      String name, dynamic arguments) async {
-    final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
-    final List<dynamic>? result = await _methodChannel.invokeMethod('push',
-        {'name': name, 'arguments': arguments, 'isFlutterPage': isFlutterPage});
-    List<Map<String, dynamic>>? list;
-    if (result != null) {
-      list = [];
+  Future<Map<String, dynamic>?> push(String name, dynamic arguments) async {
+    final isFlutterPage = FusionNavigatorDelegate.instance.isFlutterPage(name);
+    final result = await _methodChannel.invokeMethod(
+      'push',
+      {
+        'name': name,
+        'arguments': arguments,
+        'flutter': isFlutterPage,
+      },
+    );
+    if (result == null) {
+      return null;
     }
-    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list?.add(element.cast<String, dynamic>());
-    });
-    return list;
+    return Map<String, dynamic>.from(result);
   }
 
-  Future<List<Map<String, dynamic>>?> replace(
-      String name, dynamic arguments) async {
-    final isFlutterPage = FusionNavigator.instance.isFlutterPage(name);
+  Future<Map<String, dynamic>?> replace(String name, dynamic arguments) async {
+    final isFlutterPage = FusionNavigatorDelegate.instance.isFlutterPage(name);
     if (!isFlutterPage) {
       throw Exception('Route name is not found in route map!');
     }
-    final List<dynamic>? result = await _methodChannel
-        .invokeMethod('replace', {'name': name, 'arguments': arguments});
-    List<Map<String, dynamic>>? list;
-    if (result != null) {
-      list = [];
+    final result = await _methodChannel.invokeMethod(
+      'replace',
+      {
+        'name': name,
+        'arguments': arguments,
+        'flutter': isFlutterPage,
+      },
+    );
+    if (result == null) {
+      return null;
     }
-    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list?.add(element.cast<String, dynamic>());
-    });
-    return list;
+    return Map<String, dynamic>.from(result);
   }
 
-  Future<List<Map<String, dynamic>>?> pop() async {
-    final List<dynamic>? result = await _methodChannel.invokeMethod('pop');
-    List<Map<String, dynamic>>? list;
-    if (result != null) {
-      list = [];
-    }
-    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list?.add(element.cast<String, dynamic>());
-    });
-    return list;
+  Future<bool> pop() async {
+    final result = await _methodChannel.invokeMethod('pop');
+    return result;
   }
 
-  Future<List<Map<String, dynamic>>?> remove(String name, bool all) async {
-    final List<dynamic>? result =
-        await _methodChannel.invokeMethod('remove', {'name': name, 'all': all});
-    List<Map<String, dynamic>>? list;
-    if (result != null) {
-      list = [];
-    }
-    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
-      list?.add(element.cast<String, dynamic>());
-    });
-    return list;
+  Future<bool> remove(String name) async {
+    final result = await _methodChannel.invokeMethod(
+      'remove',
+      {
+        'name': name,
+      },
+    );
+    return result;
   }
 
   void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {

@@ -50,7 +50,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (isNested) {
             FusionStackManager.addChild(this)
         } else {
-            updateSystemUiOverlays()
+            platformPlugin?.updateSystemUiOverlays()
         }
     }
 
@@ -86,6 +86,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding = null
     }
 
+    override fun onBackPressed() {
+        engineBinding?.pop(true)
+    }
+
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
     override fun providePlatformPlugin(
@@ -99,14 +103,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
     }
 
-    override fun updateSystemUiOverlays() {
-        if (isNested) {
-            super.updateSystemUiOverlays()
-        } else {
-            platformPlugin?.updateSystemUiOverlays()
-        }
-    }
-
     override fun detachFromFlutterEngine() {
         if (isNested) {
             super.detachFromFlutterEngine()
@@ -117,7 +113,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (platformPlugin != null) {
             return
         }
-        platformPlugin = PlatformPlugin(activity, engineBinding?.engine?.platformChannel)
+        val platformChannel = engineBinding?.engine?.platformChannel ?: return
+        platformPlugin = activity?.let { PlatformPlugin(it, platformChannel) } ?: return
         val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
         val field = clazz.getDeclaredField("currentTheme")
         field.isAccessible = true

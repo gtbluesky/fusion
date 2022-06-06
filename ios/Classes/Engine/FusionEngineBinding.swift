@@ -47,19 +47,20 @@ class FusionEngineBinding: NSObject {
                     return
                 }
                 let arguments = dict["arguments"] as? Dictionary<String, Any>
-                let isFlutterPage = dict["isFlutterPage"] as? Bool ?? false
+                let isFlutterPage = dict["flutter"] as? Bool ?? false
                 if isFlutterPage {
                     if self.isNested == true {
                         if self.container?.history.isEmpty == true {
                             // 在原Flutter容器打开Flutter页面
                             // 即用户可见的第一个页面
-                            self.container?.history.append([
+                            let pageInfo: Dictionary<String, Any?> = [
                                 "name": name,
                                 "arguments": arguments,
                                 "uniqueId": UUID().uuidString,
                                 "home": true
-                            ])
-                            result(self.container?.history)
+                            ]
+                            self.container?.history.append(pageInfo)
+                            result(pageInfo)
                         } else {
                             // 在新Flutter容器打开Flutter页面
                             Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
@@ -71,14 +72,14 @@ class FusionEngineBinding: NSObject {
                             result(nil)
                             return
                         }
-                        let home = topContainer.history.isEmpty
-                        topContainer.history.append([
+                        let pageInfo: Dictionary<String, Any?> = [
                             "name": name,
                             "arguments": arguments,
                             "uniqueId": UUID().uuidString,
-                            "home": home
-                        ])
-                        result(self.history)
+                            "home": topContainer.history.isEmpty
+                        ]
+                        topContainer.history.append(pageInfo)
+                        result(pageInfo)
                         if topContainer.history.count == 1 {
                             self.addPopGesture(topContainer)
                         } else {
@@ -105,39 +106,39 @@ class FusionEngineBinding: NSObject {
                     return
                 }
                 topContainer.history.removeLast()
-                let home = topContainer.history.isEmpty
-                topContainer.history.append([
+                let pageInfo: Dictionary<String, Any?> = [
                     "name": name,
                     "arguments": arguments,
                     "uniqueId": UUID().uuidString,
-                    "home": home
-                ])
-                result(self.history)
+                    "home": topContainer.history.isEmpty
+                ]
+                topContainer.history.append(pageInfo)
+                result(pageInfo)
             case "pop":
                 if self.isNested {
                     if self.container == nil || self.container?.history.isEmpty == true {
-                        result([])
+                        result(true)
                         self.detach()
                     } else {
                         // 在flutter页面中点击pop，仅关闭容器
                         FusionStackManager.instance.closeTopContainer()
-                        result(nil)
+                        result(false)
                     }
                 } else {
                     guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
                         // flutter容器关闭后
                         // 仅刷新history，让容器第一个可见Flutter页面出栈
-                        result(self.history)
+                        result(false)
                         return
                     }
                     if topContainer.history.count == 1 {
                         // 仅关闭flutter容器
                         FusionStackManager.instance.closeTopContainer()
-                        result(nil)
+                        result(false)
                     } else {
                         // flutter页面pop
                         topContainer.history.removeLast()
-                        result(self.history)
+                        result(true)
                     }
                     if topContainer.history.count == 1 {
                         self.addPopGesture(topContainer)
@@ -147,31 +148,24 @@ class FusionEngineBinding: NSObject {
                 }
             case "remove":
                 if self.isNested {
-                    result(nil)
+                    result(false)
                     return
                 }
                 guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(nil)
+                    result(false)
                     return
                 }
                 guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                    result(nil)
+                    result(false)
                     return
                 }
-                let all = dict["all"] as? Bool ?? false
-                if all {
-                    topContainer.history.removeAll {
-                        $0["name"] as? String == name
-                    }
-                } else {
-                    let index = topContainer.history.lastIndex {
-                        $0["name"] as? String == name
-                    } ?? -1
-                    if index >= 0 {
-                        topContainer.history.remove(at: index)
-                    }
+                let index = topContainer.history.lastIndex {
+                    $0["name"] as? String == name
+                } ?? -1
+                if index >= 0 {
+                    topContainer.history.remove(at: index)
                 }
-                result(self.history)
+                result(true)
                 if topContainer.history.count == 1 {
                     self.addPopGesture(topContainer)
                 } else {
@@ -264,12 +258,11 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func remove(name: String, all: Bool) {
+    internal func remove(name: String) {
         channel?.invokeMethod(
                 "remove",
                 arguments: [
                     "name": name,
-                    "all": all
                 ]
         )
     }

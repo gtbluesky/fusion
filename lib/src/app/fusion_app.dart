@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
+import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
 import '../channel/fusion_channel.dart';
 import '../data/fusion_data.dart';
-import '../navigator/fusion_navigator.dart';
-import '../navigator/route_information_parser.dart';
-import '../navigator/router_delegate.dart';
+
+typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
 
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
-  final RouteInformationProvider? routeInformationProvider;
-  final BackButtonDispatcher? backButtonDispatcher;
+  final List<NavigatorObserver> navigatorObservers;
   final TransitionBuilder? builder;
   final String title;
   final GenerateAppTitle? onGenerateTitle;
@@ -30,18 +30,14 @@ class FusionApp extends StatefulWidget {
   final bool checkerboardOffscreenLayers;
   final bool showSemanticsDebugger;
   final bool debugShowCheckedModeBanner;
-  final Map<ShortcutActivator, Intent>? shortcuts;
   final Map<Type, Action<Intent>>? actions;
   final String? restorationScopeId;
-  final ScrollBehavior? scrollBehavior;
-  final bool useInheritedMediaQuery;
 
   FusionApp(
-    Map<String, PageFactory> routeMap, {
+    Map<String, FusionPageFactory> routeMap, {
     Key? key,
     this.scaffoldMessengerKey,
-    this.routeInformationProvider,
-    this.backButtonDispatcher,
+    this.navigatorObservers = const <NavigatorObserver>[],
     this.builder,
     this.title = '',
     this.onGenerateTitle,
@@ -62,18 +58,12 @@ class FusionApp extends StatefulWidget {
     this.checkerboardOffscreenLayers = false,
     this.showSemanticsDebugger = false,
     this.debugShowCheckedModeBanner = true,
-    this.shortcuts,
     this.actions,
     this.restorationScopeId,
-    this.scrollBehavior,
-    this.useInheritedMediaQuery = false,
     Duration transitionDuration = const Duration(milliseconds: 300),
     Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
-    FusionNavigator.instance.routeInformationParser =
-        FusionRouteInformationParser();
-    FusionNavigator.instance.routerDelegate = FusionRouterDelegate.instance;
-    FusionNavigator.instance.routeMap = routeMap;
+    FusionNavigatorDelegate.instance.routeMap = routeMap;
     FusionData.transitionDuration = transitionDuration;
     FusionData.reverseTransitionDuration = reverseTransitionDuration;
   }
@@ -83,7 +73,6 @@ class FusionApp extends StatefulWidget {
 }
 
 class _FusionAppState extends State<FusionApp> {
-
   @override
   void initState() {
     super.initState();
@@ -92,36 +81,35 @@ class _FusionAppState extends State<FusionApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-        routeInformationParser: FusionNavigator.instance.routeInformationParser,
-        routerDelegate: FusionNavigator.instance.routerDelegate,
-        scaffoldMessengerKey: widget.scaffoldMessengerKey,
-        routeInformationProvider: widget.routeInformationProvider,
-        backButtonDispatcher: widget.backButtonDispatcher,
-        builder: widget.builder,
-        title: widget.title,
-        onGenerateTitle: widget.onGenerateTitle,
-        color: widget.color,
-        theme: widget.theme,
-        darkTheme: widget.darkTheme,
-        highContrastTheme: widget.highContrastTheme,
-        highContrastDarkTheme: widget.highContrastDarkTheme,
-        themeMode: widget.themeMode,
-        locale: widget.locale,
-        localizationsDelegates: widget.localizationsDelegates,
-        localeListResolutionCallback: widget.localeListResolutionCallback,
-        localeResolutionCallback: widget.localeResolutionCallback,
-        supportedLocales: widget.supportedLocales,
-        debugShowMaterialGrid: widget.debugShowMaterialGrid,
-        showPerformanceOverlay: widget.showPerformanceOverlay,
-        checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
-        checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
-        showSemanticsDebugger: widget.showSemanticsDebugger,
-        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
-        shortcuts: widget.shortcuts,
-        actions: widget.actions,
-        restorationScopeId: widget.restorationScopeId,
-        scrollBehavior: widget.scrollBehavior,
-        useInheritedMediaQuery: widget.useInheritedMediaQuery);
+    return MaterialApp(
+      scaffoldMessengerKey: widget.scaffoldMessengerKey,
+      navigatorObservers: [
+        FusionNavigatorObserver.instance,
+        ...widget.navigatorObservers
+      ],
+      home: const Scaffold(backgroundColor: Colors.white),
+      builder: widget.builder,
+      title: widget.title,
+      onGenerateTitle: widget.onGenerateTitle,
+      color: widget.color,
+      theme: widget.theme,
+      darkTheme: widget.darkTheme,
+      highContrastTheme: widget.highContrastTheme,
+      highContrastDarkTheme: widget.highContrastDarkTheme,
+      themeMode: widget.themeMode,
+      locale: widget.locale,
+      localizationsDelegates: widget.localizationsDelegates,
+      localeListResolutionCallback: widget.localeListResolutionCallback,
+      localeResolutionCallback: widget.localeResolutionCallback,
+      supportedLocales: widget.supportedLocales,
+      debugShowMaterialGrid: widget.debugShowMaterialGrid,
+      showPerformanceOverlay: widget.showPerformanceOverlay,
+      checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
+      checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
+      showSemanticsDebugger: widget.showSemanticsDebugger,
+      debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+      actions: widget.actions,
+      restorationScopeId: widget.restorationScopeId,
+    );
   }
 }

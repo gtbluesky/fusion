@@ -46,21 +46,20 @@ class FusionEngineBinding(
                         return@setMethodCallHandler
                     }
                     val arguments = call.argument<Map<String, Any>?>("arguments")
-                    val isFlutterPage = call.argument<Boolean>("isFlutterPage") ?: false
+                    val isFlutterPage = call.argument<Boolean>("flutter") ?: false
                     if (isFlutterPage) {
                         if (isNested) {
                             if (container?.history()?.isEmpty() == true) {
                                 // 在原Flutter容器打开Flutter页面
                                 // 即用户可见的第一个页面
-                                container.history().add(
-                                    mapOf(
-                                        "name" to name,
-                                        "arguments" to arguments,
-                                        "uniqueId" to UUID.randomUUID().toString(),
-                                        "home" to true
-                                    )
+                                val pageInfo = mapOf(
+                                    "name" to name,
+                                    "arguments" to arguments,
+                                    "uniqueId" to UUID.randomUUID().toString(),
+                                    "home" to true
                                 )
-                                result.success(container.history())
+                                container.history().add(pageInfo)
+                                result.success(pageInfo)
                             } else {
                                 // 在新Flutter容器打开Flutter页面
                                 Fusion.delegate.pushFlutterRoute(name, arguments)
@@ -73,16 +72,14 @@ class FusionEngineBinding(
                                 result.success(null)
                                 return@setMethodCallHandler
                             }
-                            val home = topContainer.history().isEmpty()
-                            topContainer.history().add(
-                                mapOf(
-                                    "name" to name,
-                                    "arguments" to arguments,
-                                    "uniqueId" to UUID.randomUUID().toString(),
-                                    "home" to home
-                                )
+                            val pageInfo = mapOf(
+                                "name" to name,
+                                "arguments" to arguments,
+                                "uniqueId" to UUID.randomUUID().toString(),
+                                "home" to topContainer.history().isEmpty()
                             )
-                            result.success(history)
+                            topContainer.history().add(pageInfo)
+                            result.success(pageInfo)
                         }
                     } else {
                         // 打开Native页面
@@ -107,75 +104,64 @@ class FusionEngineBinding(
                         return@setMethodCallHandler
                     }
                     topContainer.history().removeLast()
-                    val home = topContainer.history().isEmpty()
-                    topContainer.history().add(
-                        mapOf(
-                            "name" to name,
-                            "arguments" to arguments,
-                            "uniqueId" to UUID.randomUUID().toString(),
-                            "home" to home
-                        )
+                    val pageInfo = mapOf(
+                        "name" to name,
+                        "arguments" to arguments,
+                        "uniqueId" to UUID.randomUUID().toString(),
+                        "home" to topContainer.history().isEmpty()
                     )
-                    result.success(history)
+                    topContainer.history().add(pageInfo)
+                    result.success(pageInfo)
                 }
                 "pop" -> {
                     if (isNested) {
                         if (container?.history()?.isEmpty() == true) {
-                            result.success(container.history())
+                            result.success(true)
                             detach()
                         } else {
                             // 在flutter页面中点击pop，仅关闭容器
                             FusionStackManager.closeTopContainer()
-                            result.success(null)
+                            result.success(false)
                         }
                     } else {
                         val topContainer = FusionStackManager.getTopContainer()
                         if (topContainer is FusionContainer) {
                             if (topContainer.history().size == 1) {
-                                // 仅关闭flutter容器
+                                // 关闭flutter容器
                                 FusionStackManager.closeTopContainer()
-                                result.success(null)
+                                result.success(false)
                             } else {
                                 // flutter页面pop
                                 topContainer.history().removeLast()
-                                result.success(history)
+                                result.success(true)
                             }
                         } else {
-                            // flutter容器关闭后
-                            // 仅刷新history，让容器第一个可见Flutter页面出栈
-                            result.success(history)
+                            result.success(false)
                         }
                     }
                 }
                 "remove" -> {
                     if (isNested) {
-                        result.success(null)
+                        result.success(false)
                         return@setMethodCallHandler
                     }
                     val name = call.argument<String>("name")
                     if (name.isNullOrEmpty()) {
-                        result.success(null)
+                        result.success(false)
                         return@setMethodCallHandler
                     }
                     val topContainer = FusionStackManager.getTopContainer()
                     if (topContainer !is FusionContainer) {
-                        result.success(null)
+                        result.success(false)
                         return@setMethodCallHandler
                     }
-                    val all = call.argument<Boolean>("all") ?: false
-                    if (all) {
-                        topContainer.history().removeAll {
-                            it["name"] == name
-                        }
-                    } else {
-                        val index = topContainer.history().indexOfLast {
-                            it["name"] == name
-                        }
-                        if (index >= 0) {
-                            topContainer.history().removeAt(index)
-                        }
+                    val index = topContainer.history().indexOfLast {
+                        it["name"] == name
                     }
-                    result.success(history)
+                    if (index >= 0) {
+                        topContainer.history().removeAt(index)
+                    }
+                    result.success(true)
                 }
                 "sendMessage" -> {
                     val msgName = call.argument<String>("msgName")
@@ -233,12 +219,11 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun remove(name: String, all: Boolean) {
+    internal fun remove(name: String) {
         channel?.invokeMethod(
             "remove",
             mapOf(
                 "name" to name,
-                "all" to all
             )
         )
     }
