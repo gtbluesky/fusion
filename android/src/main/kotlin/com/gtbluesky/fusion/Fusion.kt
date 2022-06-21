@@ -21,6 +21,7 @@ object Fusion {
         private set
     private lateinit var context: Application
     internal var currentTheme: PlatformChannel.SystemChromeStyle? = null
+    private var lifecycleCallback: Application.ActivityLifecycleCallbacks? = null
 
     fun install(context: Application, delegate: FusionRouteDelegate) {
         this.context = context
@@ -29,10 +30,14 @@ object Fusion {
         cachedEngine = createAndRunEngine()
         engineBinding = FusionEngineBinding(false)
         engineBinding?.attach()
-        context.registerActivityLifecycleCallbacks(FusionLifecycleCallbacks())
+        lifecycleCallback = FusionLifecycleCallbacks()
+        context.registerActivityLifecycleCallbacks(lifecycleCallback)
     }
 
     fun uninstall() {
+        context.unregisterActivityLifecycleCallbacks(lifecycleCallback)
+        lifecycleCallback = null
+        currentTheme = null
         engineBinding?.detach()
         engineBinding = null
         engineGroup = null
