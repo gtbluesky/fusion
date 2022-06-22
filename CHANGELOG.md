@@ -1,3 +1,7 @@
+## 1.1.4
+
+* Fixes some known bugs.
+
 ## 1.1.3
 
 * Adds replace function in FusionNavigator.

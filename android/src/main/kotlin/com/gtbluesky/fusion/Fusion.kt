@@ -6,16 +6,24 @@ import android.os.Bundle
 import com.gtbluesky.fusion.controller.FusionActivity
 import com.gtbluesky.fusion.controller.FusionContainer
 import com.gtbluesky.fusion.navigator.FusionStackManager
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
+import io.flutter.embedding.engine.dart.DartExecutor
 
 object Fusion {
     internal lateinit var engineGroup: FlutterEngineGroup
         private set
     internal lateinit var delegate: FusionRouteDelegate
         private set
+    private var cachedEngine: FlutterEngine? = null
 
     fun install(context: Application, delegate: FusionRouteDelegate) {
-        engineGroup = FlutterEngineGroup(context)
+        engineGroup = FlutterEngineGroup(context).apply {
+            cachedEngine = createAndRunEngine(
+                context,
+                DartExecutor.DartEntrypoint.createDefault()
+            )
+        }
         this.delegate = delegate
         context.registerActivityLifecycleCallbacks(FusionLifecycleCallbacks())
     }
