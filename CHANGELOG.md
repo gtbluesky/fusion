@@ -1,3 +1,7 @@
+## 1.1.5
+* WillPopScope can be used；
+* Fixes application name is empty in Android's app switcher recent task within hybrid mode.
+
 ## 1.1.4
 
 * Fixes some known bugs.

@@ -42,6 +42,10 @@ class FusionNavigator {
     return await routerDelegate.pop(result);
   }
 
+  Future<bool> maybePop<T extends Object>([T? result]) async {
+    return await routerDelegate.maybePop(result);
+  }
+
   void sendMessage(String msgName, {Map<String, dynamic>? msgBody}) {
     return FusionChannel.sendMessage(msgName, msgBody: msgBody);
   }

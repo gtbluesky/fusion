@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../channel/fusion_channel.dart';
 import '../constant/fusion_constant.dart';
+import '../lifecycle/page_lifecycle.dart';
 import '../page/unknown_page.dart';
 import '../route/fusion_page.dart';
 import 'fusion_navigator.dart';
@@ -32,7 +33,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
         if (!route.didPop(result)) {
           return false;
         }
-        pop(result);
+        maybePop(result);
         return true;
       },
       pages: _buildHistoryPages(),
@@ -59,7 +60,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
   /// false: 表示交由 Flutter 系统处理
   @override
   Future<bool> popRoute() async {
-    await pop();
+    await maybePop();
     return true;
   }
 
@@ -113,6 +114,19 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
       refreshHistory(history);
     }
     _callback.remove(_history.last['uniqueId'])?.complete(result);
+  }
+
+  Future<bool> maybePop<T extends Object>([T? result]) async {
+    final RoutePopDisposition disposition = await PageLifecycleBinding.instance.topRoute.willPop();
+    switch (disposition) {
+      case RoutePopDisposition.bubble:
+        return false;
+      case RoutePopDisposition.pop:
+        pop(result);
+        return true;
+      case RoutePopDisposition.doNotPop:
+        return true;
+    }
   }
 
   void refreshHistory(List<Map<String, dynamic>> history) {

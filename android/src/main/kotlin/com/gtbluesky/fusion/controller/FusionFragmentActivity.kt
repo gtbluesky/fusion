@@ -1,5 +1,6 @@
 package com.gtbluesky.fusion.controller
 
+import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -23,6 +24,15 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
+    }
+
+    override fun setTaskDescription(taskDescription: ActivityManager.TaskDescription?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (taskDescription?.label.isNullOrEmpty()) {
+                return
+            }
+        }
+        super.setTaskDescription(taskDescription)
     }
 
     override fun provideFlutterEngine(context: Context): FlutterEngine? {
