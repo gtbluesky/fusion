@@ -120,7 +120,6 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     final RoutePopDisposition disposition = await PageLifecycleBinding.instance.topRoute.willPop();
     switch (disposition) {
       case RoutePopDisposition.bubble:
-        return false;
       case RoutePopDisposition.pop:
         pop(result);
         return true;

@@ -13,74 +13,82 @@ class LifecyclePage extends StatefulWidget {
 
 class _LifecyclePageState extends State<LifecyclePage>
     implements PageLifecycleListener {
+  int _count = 0;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.arguments?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              child: const Text('push /normal'),
-              onTap: () {
-                FusionNavigator.instance
-                    .push('/normal', arguments: {'title': '12121'});
-              },
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            InkWell(
-                child: const Text('push /test'),
-                onTap: () async {
-                  final result = await FusionNavigator.instance
-                      .push<String?>('/test', arguments: {'title': '2'});
-                  if (kDebugMode) {
-                    print('result=$result');
-                  }
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            InkWell(
-                child: const Text('pop'),
-                onTap: () {
-                  FusionNavigator.instance.pop('Lifecycle返回结果');
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            InkWell(
-                child: const Text('replace'),
-                onTap: () {
-                  FusionNavigator.instance.replace('/test', arguments: {'title': 'replace success'});
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-          ],
+    return WillPopScope(
+      onWillPop: () {
+        print('onWillPop:count=$_count');
+        return Future.value(_count++ >= 2);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.arguments?['title'] ?? '未知页面',
+              style: AppBarTheme.of(context).titleTextStyle),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          FusionNavigator.instance.sendMessage(
-              'msg1', msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
-          // showDialog(
-          //     context: context,
-          //     builder: (context) {
-          //       return GestureDetector(
-          //         child: const Text('我是弹窗'),
-          //         onTap: () {
-          //           Navigator.of(context).pop();
-          //         },
-          //       );
-          //     });
-        },
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                child: const Text('push /normal'),
+                onTap: () {
+                  FusionNavigator.instance
+                      .push('/normal', arguments: {'title': '12121'});
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                  child: const Text('push /test'),
+                  onTap: () async {
+                    final result = await FusionNavigator.instance
+                        .push<String?>('/test', arguments: {'title': '2'});
+                    if (kDebugMode) {
+                      print('result=$result');
+                    }
+                  }),
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                  child: const Text('pop'),
+                  onTap: () {
+                    FusionNavigator.instance.pop('Lifecycle返回结果');
+                  }),
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                  child: const Text('replace'),
+                  onTap: () {
+                    FusionNavigator.instance.replace('/test', arguments: {'title': 'replace success'});
+                  }),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            FusionNavigator.instance.sendMessage(
+                'msg1', msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
+            // showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return GestureDetector(
+            //         child: const Text('我是弹窗'),
+            //         onTap: () {
+            //           Navigator.of(context).pop();
+            //         },
+            //       );
+            //     });
+          },
+        ),
       ),
     );
   }
