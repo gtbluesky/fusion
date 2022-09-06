@@ -33,7 +33,7 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
         if (!route.didPop(result)) {
           return false;
         }
-        maybePop(result);
+        pop(result);
         return true;
       },
       pages: _buildHistoryPages(),
@@ -54,8 +54,8 @@ class FusionRouterDelegate extends RouterDelegate<Map<String, dynamic>>
     }).toList();
   }
 
-  /// popRoute: 点击物理按键返回时被调用
-  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键或 iOS 右滑返回时被调用
+  /// popRoute: 点击物理按键返回时被调用。popRoute->maybePop(自实现)->willpop->pop(自实现)
+  /// onPopPage: 点击 Flutter 自带导航栏左侧返回键或 iOS 右滑返回时被调用。maybePop(framework)->willpop->onPopPage->pop(自实现)
   /// true: 表示自行处理
   /// false: 表示交由 Flutter 系统处理
   @override

@@ -18,9 +18,31 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        print('onWillPop:count=$_count');
-        return Future.value(_count++ >= 2);
+      onWillPop: () async {
+        var result = await showDialog<bool>(
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: const RoundedRectangleBorder(),
+                backgroundColor: Colors.red,
+                elevation: 0,
+                title: const Text('提示'),
+                content: const Text('确定要退出吗？'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: const Text('取消')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: const Text('确定'))
+                ],
+              );
+            },
+            context: context);
+        return result ?? false;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -64,7 +86,8 @@ class _LifecyclePageState extends State<LifecyclePage>
               InkWell(
                   child: const Text('replace'),
                   onTap: () {
-                    FusionNavigator.instance.replace('/test', arguments: {'title': 'replace success'});
+                    FusionNavigator.instance.replace('/test',
+                        arguments: {'title': 'replace success'});
                   }),
               const SizedBox(
                 height: 20,
@@ -75,8 +98,8 @@ class _LifecyclePageState extends State<LifecyclePage>
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            FusionNavigator.instance.sendMessage(
-                'msg1', msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
+            FusionNavigator.instance.sendMessage('msg1',
+                msgBody: {'time': DateTime.now().millisecondsSinceEpoch});
             // showDialog(
             //     context: context,
             //     builder: (context) {
