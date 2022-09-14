@@ -1,6 +1,7 @@
 package com.gtbluesky.fusion.container
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -102,5 +103,14 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         platformPlugin?.destroy()
         platformPlugin = null
+    }
+
+    override fun setTaskDescription(taskDescription: ActivityManager.TaskDescription?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (taskDescription?.label.isNullOrEmpty()) {
+                return
+            }
+        }
+        super.setTaskDescription(taskDescription)
     }
 }

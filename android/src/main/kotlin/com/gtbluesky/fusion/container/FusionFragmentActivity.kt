@@ -1,5 +1,6 @@
 package com.gtbluesky.fusion.container
 
+import android.app.ActivityManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -31,5 +32,14 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
             .build<FusionFragment>().also {
                 flutterFragment = it
             }
+    }
+
+    override fun setTaskDescription(taskDescription: ActivityManager.TaskDescription?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (taskDescription?.label.isNullOrEmpty()) {
+                return
+            }
+        }
+        super.setTaskDescription(taskDescription)
     }
 }
