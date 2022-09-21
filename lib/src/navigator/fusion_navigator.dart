@@ -20,8 +20,12 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.replace(routeName, routeArguments);
   }
 
-  Future<void> pop<T extends Object>([T? result]) async {
+  Future<void> pop<T extends Object?>([T? result]) async {
     return FusionNavigatorDelegate.instance.pop(result);
+  }
+
+  Future<bool> maybePop<T extends Object?>([T? result]) async {
+    return FusionNavigatorDelegate.instance.maybePop(result);
   }
 
   Future<void> remove(String routeName) async {

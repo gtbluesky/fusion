@@ -93,6 +93,17 @@ class _TestPageState extends State<TestPage>
               height: 20,
             ),
             InkWell(
+                child: const Text('push /willpop'),
+                onTap: () async {
+                  final result = await FusionNavigator.instance.push<String?>('/willpop');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
                 child: const Text('pop'),
                 onTap: () {
                   FusionNavigator.instance.pop('test返回结果');
@@ -162,21 +173,6 @@ class _TestPageState extends State<TestPage>
             Text('onReceive=$msg')
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              builder: (_) {
-                return SafeArea(
-                  child: Container(
-                    color: Colors.lightBlue,
-                    height: 50,
-                  ),
-                );
-              });
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'page/lifecycle_page.dart';
 import 'page/list_page.dart';
 import 'page/test_page.dart';
 import 'page/unknown_page.dart';
+import 'page/willpop_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,9 +32,8 @@ class MyApp extends StatelessWidget {
 final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
   '/list': (arguments) => ListPage(arguments: arguments),
-  '/lifecycle': ((arguments) => LifecyclePage(
-        arguments: arguments,
-      )),
+  '/lifecycle': ((arguments) => LifecyclePage(arguments: arguments)),
+  '/willpop': ((_) => const WillPopPage()),
   unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-
-import '../lifecycle/page_lifecycle.dart';
 
 class FusionNavigatorObserver extends NavigatorObserver {
 
@@ -17,50 +16,68 @@ class FusionNavigatorObserver extends NavigatorObserver {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    super.didPush(route, previousRoute);
     PageLifecycleBinding.instance.topRoute = route;
     if (isInitial) {
       isInitial = false;
       return;
     }
-    if (route is! PageRoute) {
-      return;
-    }
-    PageLifecycleBinding.instance
-        .dispatchPageVisibleEvent(route, isFirstTime: true);
-    if (previousRoute != null) {
+    if (previousRoute is PageRoute) {
       PageLifecycleBinding.instance.dispatchPageInvisibleEvent(previousRoute);
+    }
+    if (route is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageVisibleEvent(route, isFirstTime: true);
     }
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    super.didPop(route, previousRoute);
     if (previousRoute != null) {
       PageLifecycleBinding.instance.topRoute = previousRoute;
     }
-    if (route is! PageRoute) {
-      return;
+    if (route is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
     }
-    PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
-    if (previousRoute != null) {
+    if (previousRoute is PageRoute) {
       PageLifecycleBinding.instance.dispatchPageVisibleEvent(previousRoute);
     }
-    if (!isPopSliding) {
-      return;
+    if (isPopSliding) {
+      FusionNavigatorDelegate.instance.popHistory();
     }
-    FusionNavigatorDelegate.instance.popHistory();
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    if (previousRoute != null) {
+      PageLifecycleBinding.instance.topRoute = previousRoute;
+    }
+    if (route is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+    }
+    if (previousRoute is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageVisibleEvent(previousRoute);
+    }
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    if (newRoute != null) {
+      PageLifecycleBinding.instance.topRoute = newRoute;
+    }
+    if (oldRoute is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(oldRoute);
+    }
+    if (newRoute is PageRoute) {
+      PageLifecycleBinding.instance.dispatchPageVisibleEvent(newRoute);
+    }
   }
 
   @override
   void didStartUserGesture(Route route, Route? previousRoute) {
-    super.didStartUserGesture(route, previousRoute);
     isPopSliding = true;
   }
 
   @override
   void didStopUserGesture() {
-    super.didStopUserGesture();
     isPopSliding = false;
   }
 }

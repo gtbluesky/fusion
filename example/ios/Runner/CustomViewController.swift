@@ -16,7 +16,7 @@ class CustomViewController: FusionViewController, FusionMessengerProvider {
         print("\(self) configureFlutterChannel")
         channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            print("\(self)_call=\(call.method)")
+            print("Custom Channel：\(self)_\(call.method)")
         }
     }
     

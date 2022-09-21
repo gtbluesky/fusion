@@ -24,6 +24,6 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
     }
 
     override fun onReceive(msgName: String, msgBody: Map<String, Any>?) {
-        Toast.makeText(this, "$msgName, $msgBody", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "onReceive: msgName=$msgName, msgBody=$msgBody", Toast.LENGTH_SHORT).show()
     }
 }

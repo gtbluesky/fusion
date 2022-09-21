@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fusion/src/app/fusion_app.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/constant/fusion_constant.dart';
+import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 import 'package:fusion/src/page/unknown_page.dart';
 import 'package:fusion/src/route/fusion_page_route.dart';
+import 'package:fusion/src/widget/fusion_will_pop_scope.dart';
 
 class FusionNavigatorDelegate {
   FusionNavigatorDelegate._();
@@ -25,72 +27,101 @@ class FusionNavigatorDelegate {
   }
 
   Future<T?> push<T extends Object?>(
-      String routeName, [
-        Map<String, dynamic>? arguments,
-      ]) async {
-    Map<String, dynamic>? pageInfo = await FusionChannel.instance.push(routeName, arguments);
+    String routeName, [
+    Map<String, dynamic>? arguments,
+  ]) async {
+    Map<String, dynamic>? pageInfo =
+        await FusionChannel.instance.push(routeName, arguments);
     if (pageInfo == null) {
       return null;
     }
     final route = FusionPageRoute<T>(
-        builder: (_) {
-          FusionPageFactory? pageFactory =
-              routeMap[routeName] ?? routeMap[unknownRoute];
-          final page = pageFactory != null
-              ? pageFactory(arguments)
-              : const UnknownPage();
-          return WillPopScope(onWillPop: () async {
-            FusionNavigator.instance.pop();
+      builder: (_) {
+        FusionPageFactory? pageFactory =
+            routeMap[routeName] ?? routeMap[unknownRoute];
+        final page =
+            pageFactory != null ? pageFactory(arguments) : const UnknownPage();
+        return FusionWillPopScope(
+          onWillPopResult: ([result]) async {
+            FusionNavigator.instance.pop(result);
             return false;
           },
-              child: page);
-        },
-        settings: RouteSettings(
-          name: routeName,
-          arguments: arguments,
-        ),
-        home: pageInfo['home']);
+          child: page,
+        );
+      },
+      settings: RouteSettings(
+        name: routeName,
+        arguments: arguments,
+      ),
+      home: pageInfo['home'],
+    );
     pageInfo['route'] = route;
     _history.add(pageInfo);
     return _navigator.push(route);
   }
 
-  Future<void> replace(String routeName, [Map<String, dynamic>? arguments]) async {
-    Map<String, dynamic>? newPageInfo = await FusionChannel.instance.replace(routeName, arguments);
+  Future<void> replace(String routeName,
+      [Map<String, dynamic>? arguments]) async {
+    Map<String, dynamic>? newPageInfo =
+        await FusionChannel.instance.replace(routeName, arguments);
     if (newPageInfo == null) {
       return;
     }
     final route = FusionPageRoute(
-        builder: (_) {
-          FusionPageFactory? pageFactory =
-              routeMap[routeName] ?? routeMap[unknownRoute];
-          final page = pageFactory != null
-              ? pageFactory(arguments)
-              : const UnknownPage();
-          return WillPopScope(onWillPop: () async {
-            FusionNavigator.instance.pop();
+      builder: (_) {
+        FusionPageFactory? pageFactory =
+            routeMap[routeName] ?? routeMap[unknownRoute];
+        final page =
+            pageFactory != null ? pageFactory(arguments) : const UnknownPage();
+        return FusionWillPopScope(
+          onWillPopResult: ([result]) async {
+            FusionNavigator.instance.pop(result);
             return false;
           },
-              child: page);
-        },
-        settings: RouteSettings(
-          name: routeName,
-          arguments: arguments,
-        ),
-        home: newPageInfo['home']);
+          child: page,
+        );
+      },
+      settings: RouteSettings(
+        name: routeName,
+        arguments: arguments,
+      ),
+      home: newPageInfo['home'],
+    );
     newPageInfo['route'] = route;
     final oldPageInfo = _history.removeLast();
     _history.add(newPageInfo);
-    return _navigator.replace(oldRoute: oldPageInfo['route'], newRoute: newPageInfo['route']);
+    return _navigator.replace(
+      oldRoute: oldPageInfo['route'],
+      newRoute: newPageInfo['route'],
+    );
   }
 
-  Future<void> pop<T extends Object>([T? result]) async {
+  Future<void> pop<T extends Object?>([T? result]) async {
     bool executable = await FusionChannel.instance.pop();
     if (!executable) {
       return;
     }
     _history.removeLast();
     return _navigator.pop<T>(result);
+  }
+
+  Future<bool> maybePop<T extends Object?>([T? result]) async {
+    final route = PageLifecycleBinding.instance.topRoute;
+    RoutePopDisposition? disposition;
+    if (route is FusionPageRoute) {
+      disposition = await route.willPopResult(result);
+    } else {
+      disposition = await route.willPop();
+    }
+    switch (disposition) {
+      case RoutePopDisposition.bubble:
+        return false;
+      case RoutePopDisposition.pop:
+        pop(result);
+        return true;
+      case RoutePopDisposition.doNotPop:
+        return true;
+    }
   }
 
   Future<void> directPop() async {
@@ -112,7 +143,8 @@ class FusionNavigatorDelegate {
     if (!executable) {
       return;
     }
-    final index = _history.lastIndexWhere((element) => element['name'] == routeName);
+    final index =
+        _history.lastIndexWhere((element) => element['name'] == routeName);
     if (index < 0) {
       return;
     }

@@ -31,6 +31,6 @@ class HostViewController: UIViewController {
 
 extension HostViewController: PageNotificationListener {
     public func onReceive(msgName: String, msgBody: Dictionary<String, Any>?) {
-        print("\(msgName), \(msgBody)")
+        print("onReceive: msgName=\(msgName), msgBody=\(msgBody)")
     }
 }

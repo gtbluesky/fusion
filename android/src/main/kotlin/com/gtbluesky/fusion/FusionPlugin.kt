@@ -23,7 +23,7 @@ class FusionPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
+      result.success("Fusion Channel, Android ${android.os.Build.VERSION.RELEASE}")
     } else {
       result.notImplemented()
     }

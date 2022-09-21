@@ -3,15 +3,11 @@
 
 ## 简介
 
-Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。
+Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
 
-Fusion 基于引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。此外 Fusion 使用了 Flutter 新的导航框架 Navigator2.0，这使得 Fusion 可以更加灵活对 Flutter 路由栈进行管理。
+Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。此外，Fusion 也支持基于 EngineGroup 的多 Engine 模式，以支持 Flutter 页面嵌套在 Native 页面中的场景。
 
-不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 较好的兼容性使得使用者可以更加从容地升级 Flutter 版本。
-
-此外，Fusion 针对状态栏图标颜色做了精心适配，使得在Flutter页面时状态栏图标颜色完全由自身控制，拥有和纯Flutter应用一样的体验，在Flutter页面与Native页面多次跳转的情况下状态栏图标颜色也可正常展示。
-
-
+不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 优秀的兼容性使得使用者可以更加从容地升级 Flutter 版本，目前支持 Flutter SDK 从 2.0 到 3.x 的全部版本。
 
 ## 开始使用
 
@@ -32,7 +28,7 @@ void main() {
 }
 
 // 路由表
-final Map<String, PageFactory> routeMap = {
+final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
   unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
@@ -95,9 +91,9 @@ iOS 侧
         guard let name = name else {
             return
         }
-        let navController = self.window?.rootViewController as? UINavigationController
+        let nc = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
-        navController?.pushViewController(fusionVc, animated: true)
+        nc?.pushViewController(fusionVc, animated: true)
     }
 }
 ```
@@ -116,7 +112,7 @@ Fusion.instance.adaptiveGesture = false
 ```
 
 #### 嵌套模式
-嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面以 Tab 形式嵌入同一个 Native 容器中。
+嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
 
 Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
@@ -124,15 +120,19 @@ iOS 使用 FusionViewController 并传入 `isNested: true` 以支持嵌套模式
 
 ### 3、路由API（FusionNavigator）
 
-push：指定页入栈，支持获取返回值
+open（New）：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API
 
-pop：栈顶页出栈，支持设置返回值
+push：在当前Flutter容器中将对应路由入栈
 
-replace：替换栈顶路由
+pop：在当前Flutter容器中将栈顶路由出栈
 
-remove：移除栈中指定路由
+maybePop（New、TODO）：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
 
-P.S. 除页面外其他类型如 Dialog 等使用 Navigator 的 push 和 pop.
+replace：在当前Flutter容器中将栈顶路由替换为对应路由
+
+remove：在当前Flutter容器中移除对应路由
+
+P.S. 除页面外其他类型如 Dialog 等请使用 Navigator 的 push 和 pop.
 
 ### 4、Flutter Plugin 注册
 
@@ -164,7 +164,7 @@ class MyActivity : FragmentActivity(), FusionMessengerProvider {
   
     override fun releaseFlutterChannel() {
         channel?.setMethodCallHandler(null)
-        channle = null
+        channel = null
     }
 }
 ```
@@ -199,12 +199,19 @@ iOS 侧
 ```swift
 let fusionVc = FusionViewController(routeName: name, routeArguments: arguments)
 let channel = FlutterMethodChannel(name: "自定义的channel名", binaryMessenger: fusionVc.binaryMessenger)
-        channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-   				//根据call.method匹配路由
-        }
+channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+    
+}
 ```
 
+```swift
+deinit {
+  channel?.setMethodCallHandler(nil)
+  channel = nil
+}
+```
 
+### 
 
 ②、如果创建一个继承自 FusionViewController 的 ViewController 作为 Flutter 容器
 
@@ -213,24 +220,20 @@ let channel = FlutterMethodChannel(name: "自定义的channel名", binaryMesseng
 ```swift
 class CustomViewController : FusionViewController, FusionMessengerProvider {
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
-        let channel = FlutterMethodChannel(name: "自定义的channel名", binaryMessenger: binaryMessenger)
-        channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-   				//根据call.method匹配路由
+        channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
+        channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            
         }
+    }
+    
+    func releaseFlutterChannel() {
+        channel?.setMethodCallHandler(nil)
+        channel = nil
     }
 }
 ```
 
 > BasicMessageChannel 和 EventChannel 使用也是类似
-
-iOS 侧
-
-```swift
-deinit {
-  channel?.setMethodCallHandler(nil)
-  channel = nil
-}
-```
 
 ### 6、生命周期
 支持 `页面模式` 下监听 Flutter 页面的生命周期。
@@ -331,3 +334,12 @@ iOS侧
 
 #### 发送消息
 三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息。
+
+### 8、返回拦截
+
+在纯 Flutter 开发中可以使用`WillPopScope`组件拦截返回操作，Fusion 也完整支持该功能，使用方式与在纯 Flutter 开发完全一致，此外使用`FusionNavigator.maybePop`的操作也可被`WillPopScope`组件拦截。
+
+### 9、状态栏颜色模式
+
+Fusion 针对状态栏图标颜色做了精心适配，使得在 Flutter 页面时状态栏图标颜色完全由 Flutter 自身控制，拥有和纯 Flutter 应用一样的体验，在 Flutter 页面与 Native 页面多次跳转的情况下状态栏图标颜色也可正常展示。
+

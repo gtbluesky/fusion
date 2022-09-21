@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
-import '../data/fusion_data.dart';
+import 'package:fusion/src/data/fusion_data.dart';
+import 'package:fusion/src/widget/fusion_will_pop_scope.dart';
 
 class FusionPageRoute<T> extends MaterialPageRoute<T> {
+  /// 容器内的Flutter首页
   final bool home;
 
-  final List<WillPopCallback> scopedWillPopCallbacks = <WillPopCallback>[];
+  final List<WillPopCallback> _scopedWillPopCallbacks = <WillPopCallback>[];
+  FusionWillPopCallback? _fusionWillPopCallback;
 
   FusionPageRoute({
     required WidgetBuilder builder,
@@ -39,24 +41,48 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
   }
 
   @override
+  Future<RoutePopDisposition> willPop() async {
+    return willPopResult();
+  }
+
+  Future<RoutePopDisposition> willPopResult([dynamic result]) async {
+    for (final WillPopCallback callback in List.of(_scopedWillPopCallbacks)) {
+      if (await callback() != true) {
+        return RoutePopDisposition.doNotPop;
+      }
+    }
+    if (await _fusionWillPopCallback?.call(result) != true) {
+      return RoutePopDisposition.doNotPop;
+    }
+    return super.willPop();
+  }
+
+  //WillPopScope
+  @override
   void addScopedWillPopCallback(WillPopCallback callback) {
     super.addScopedWillPopCallback(callback);
-    scopedWillPopCallbacks.add(callback);
+    _scopedWillPopCallbacks.add(callback);
   }
 
   @override
   void removeScopedWillPopCallback(WillPopCallback callback) {
     super.removeScopedWillPopCallback(callback);
-    scopedWillPopCallbacks.remove(callback);
+    _scopedWillPopCallbacks.remove(callback);
   }
 
+  //FusionWillPopScope
+  void setFusionWillPopCallback(FusionWillPopCallback? callback) {
+    _fusionWillPopCallback = callback;
+  }
+
+  /// 处理iOS滑动退出
   @override
   @protected
   bool get hasScopedWillPopCallback {
     if (home == true) {
       return true;
     } else {
-      return scopedWillPopCallbacks.length > 1;
+      return _scopedWillPopCallbacks.isNotEmpty;
     }
   }
 }

@@ -15,7 +15,7 @@ class CustomFusionFragment : FusionFragment(), FusionMessengerProvider {
         Log.d(this.toString(), "configureFlutterChannel")
         channel = MethodChannel(binaryMessenger, "custom_channel")
         channel?.setMethodCallHandler { call, result ->
-            Toast.makeText(context, "${this}_${call.method}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Custom Channel：${this}_${call.method}", Toast.LENGTH_SHORT).show()
         }
     }
 

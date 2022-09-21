@@ -11,7 +11,7 @@ public class SwiftFusionPlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "getPlatformVersion" {
-            result("iOS: \(UIDevice.current.systemVersion)")
+            result("Fusion Channel, iOS: \(UIDevice.current.systemVersion)")
         } else {
             result(FlutterMethodNotImplemented)
         }

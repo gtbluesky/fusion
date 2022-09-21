@@ -86,10 +86,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding = null
     }
 
-    override fun onBackPressed() {
-        engineBinding?.pop(true)
-    }
-
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
     override fun providePlatformPlugin(

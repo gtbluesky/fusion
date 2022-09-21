@@ -1,3 +1,26 @@
+## 2.0.0
+* BREAKING CHANGE: Change to reused engine project.
+
+## 1.1.7
+
+* Fixes some known bugs.
+
+## 1.1.6
+
+* Fixes some known bugs.
+
+## 1.1.5
+* WillPopScope can be used；
+* Fixes application name is empty in Android's app switcher within hybrid mode.
+
+## 1.1.4
+
+* Fixes some known bugs.
+
+## 1.1.3
+
+* Adds replace function in FusionNavigator.
+
 ## 1.1.2
 
 * Flutter Plugins are registered automatically by Fusion.
