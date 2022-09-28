@@ -67,7 +67,7 @@ class FusionNavigatorDelegate {
     if (newPageInfo == null) {
       return;
     }
-    final route = FusionPageRoute(
+    final newRoute = FusionPageRoute(
       builder: (_) {
         FusionPageFactory? pageFactory =
             routeMap[routeName] ?? routeMap[unknownRoute];
@@ -87,13 +87,16 @@ class FusionNavigatorDelegate {
       ),
       home: newPageInfo['home'],
     );
-    newPageInfo['route'] = route;
+    newPageInfo['route'] = newRoute;
     final oldPageInfo = _history.removeLast();
+    final oldRoute = oldPageInfo['route'] as FusionPageRoute;
     _history.add(newPageInfo);
-    return _navigator.replace(
-      oldRoute: oldPageInfo['route'],
-      newRoute: newPageInfo['route'],
-    );
+    oldRoute.tickerFuture.whenCompleteOrCancel(() {
+      _navigator.replace(
+        oldRoute: oldRoute,
+        newRoute: newRoute,
+      );
+    });
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

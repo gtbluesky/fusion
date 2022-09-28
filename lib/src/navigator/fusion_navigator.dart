@@ -8,7 +8,6 @@ class FusionNavigator {
 
   static FusionNavigator get instance => _instance;
 
-
   Future<T?> push<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArguments,

@@ -5,13 +5,13 @@ import 'package:fusion/src/widget/fusion_will_pop_scope.dart';
 class FusionPageRoute<T> extends MaterialPageRoute<T> {
   /// 容器内的Flutter首页
   final bool home;
-
   final List<WillPopCallback> _scopedWillPopCallbacks = <WillPopCallback>[];
   FusionWillPopCallback? _fusionWillPopCallback;
+  late TickerFuture _tickerFuture;
 
   FusionPageRoute({
     required WidgetBuilder builder,
-    required RouteSettings settings,
+    required RouteSettings? settings,
     this.home = false,
     bool maintainState = true,
     bool fullscreenDialog = false,
@@ -21,6 +21,8 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
           maintainState: maintainState,
           fullscreenDialog: fullscreenDialog,
         );
+
+  TickerFuture get tickerFuture => _tickerFuture;
 
   @override
   Duration get transitionDuration {
@@ -73,6 +75,12 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
   //FusionWillPopScope
   void setFusionWillPopCallback(FusionWillPopCallback? callback) {
     _fusionWillPopCallback = callback;
+  }
+
+  @override
+  TickerFuture didPush() {
+    _tickerFuture = super.didPush();
+    return _tickerFuture;
   }
 
   /// 处理iOS滑动退出
