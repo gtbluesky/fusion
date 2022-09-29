@@ -75,8 +75,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         if (isReused) {
             performAttach()
             platformPlugin?.updateSystemUiOverlays()
@@ -159,6 +159,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun configureChannel() {
+        // 配置PlatformChannel和CustomChannel是因为其和Activity相关联
+        // 而三方插件和Activity无关，一个Engine配置一次即可
         val engine = engineBinding?.engine ?: return
         configurePlatformChannel()
         (activity as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
