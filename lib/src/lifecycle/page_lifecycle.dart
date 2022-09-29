@@ -45,7 +45,7 @@ class PageLifecycleBinding {
   void dispatchPageVisibleEvent(Route<dynamic> route,
       {bool isFirstTime = false}) {
     if (isFirstTime) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
         try {
           _listeners[route]?.onPageVisible();
         } on Exception catch (e) {

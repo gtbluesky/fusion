@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 class FusionEngineBinding(
-    private val isNested: Boolean
+    private val isReused: Boolean
 ) {
     private var container: FusionContainer? = null
     private var channel: MethodChannel? = null
@@ -25,7 +25,7 @@ class FusionEngineBinding(
         }
 
     init {
-        engine = if (isNested) {
+        engine = if (!isReused) {
             Fusion.createAndRunEngine()
         } else {
             Fusion.cachedEngine
@@ -48,7 +48,7 @@ class FusionEngineBinding(
                     val arguments = call.argument<Map<String, Any>?>("arguments")
                     val isFlutterPage = call.argument<Boolean>("flutter") ?: false
                     if (isFlutterPage) {
-                        if (isNested) {
+                        if (!isReused) {
                             if (container?.history()?.isEmpty() == true) {
                                 // 在原Flutter容器打开Flutter页面
                                 // 即用户可见的第一个页面
@@ -88,7 +88,7 @@ class FusionEngineBinding(
                     }
                 }
                 "replace" -> {
-                    if (isNested) {
+                    if (!isReused) {
                         result.success(null)
                         return@setMethodCallHandler
                     }
@@ -114,7 +114,7 @@ class FusionEngineBinding(
                     result.success(pageInfo)
                 }
                 "pop" -> {
-                    if (isNested) {
+                    if (!isReused) {
                         if (container?.history()?.isEmpty() == true) {
                             result.success(true)
                             detach()
@@ -141,7 +141,7 @@ class FusionEngineBinding(
                     }
                 }
                 "remove" -> {
-                    if (isNested) {
+                    if (!isReused) {
                         result.success(false)
                         return@setMethodCallHandler
                     }

@@ -8,7 +8,7 @@
 import Foundation
 
 class FusionEngineBinding: NSObject {
-    private let isNested: Bool
+    private let isReused: Bool
     weak private var container: FusionViewController? = nil
     private var channel: FlutterMethodChannel? = nil
     var engine: FlutterEngine? = nil
@@ -22,10 +22,10 @@ class FusionEngineBinding: NSObject {
         }
     }
 
-    init(_ isNested: Bool) {
-        self.isNested = isNested
+    init(_ isReused: Bool) {
+        self.isReused = isReused
         super.init()
-        if (isNested) {
+        if (!isReused) {
             engine = Fusion.instance.createAndRunEngine()
         } else {
             engine = Fusion.instance.cachedEngine
@@ -49,7 +49,7 @@ class FusionEngineBinding: NSObject {
                 let arguments = dict["arguments"] as? Dictionary<String, Any>
                 let isFlutterPage = dict["flutter"] as? Bool ?? false
                 if isFlutterPage {
-                    if self.isNested == true {
+                    if self.isReused == false {
                         if self.container?.history.isEmpty == true {
                             // 在原Flutter容器打开Flutter页面
                             // 即用户可见的第一个页面
@@ -92,7 +92,7 @@ class FusionEngineBinding: NSObject {
                     result(nil)
                 }
             case "replace":
-                if self.isNested {
+                if !self.isReused {
                     result(nil)
                     return
                 }
@@ -115,7 +115,7 @@ class FusionEngineBinding: NSObject {
                 topContainer.history.append(pageInfo)
                 result(pageInfo)
             case "pop":
-                if self.isNested {
+                if !self.isReused {
                     if self.container == nil || self.container?.history.isEmpty == true {
                         result(true)
                         self.detach()
@@ -147,7 +147,7 @@ class FusionEngineBinding: NSObject {
                     }
                 }
             case "remove":
-                if self.isNested {
+                if !self.isReused {
                     result(false)
                     return
                 }
@@ -187,7 +187,7 @@ class FusionEngineBinding: NSObject {
     }
 
     internal func addPopGesture(_ vc: FusionViewController) {
-        if (isNested) {
+        if (!isReused) {
             return
         }
         if !Fusion.instance.adaptiveGesture {
@@ -211,7 +211,7 @@ class FusionEngineBinding: NSObject {
     }
 
     internal func removePopGesture() {
-        if (isNested) {
+        if (!isReused) {
             return
         }
         if !Fusion.instance.adaptiveGesture {

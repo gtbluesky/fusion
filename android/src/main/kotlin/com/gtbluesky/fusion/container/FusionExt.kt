@@ -2,8 +2,11 @@ package com.gtbluesky.fusion.container
 
 import android.content.Context
 import android.content.Intent
+import android.view.View
+import android.view.ViewGroup
 import com.gtbluesky.fusion.constant.FusionConstant
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
+import io.flutter.embedding.android.FlutterView
 import java.io.Serializable
 
 @JvmOverloads
@@ -30,4 +33,20 @@ fun <T : FusionFragment> buildFusionFragment(
     return FusionFragment.FusionFlutterFragmentBuilder(clazz)
         .setInitialRoute(routeName, routeArguments)
         .build<T>()
+}
+
+fun findFlutterView(view: View?): FlutterView? {
+    if (view is FlutterView) {
+        return view
+    }
+    if (view is ViewGroup) {
+        for (i in 0 until view.childCount) {
+            val child = view.getChildAt(i)
+            val fv = findFlutterView(child)
+            if (fv != null) {
+                return fv
+            }
+        }
+    }
+    return null
 }

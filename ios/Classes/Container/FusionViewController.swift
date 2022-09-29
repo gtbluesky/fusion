@@ -9,25 +9,25 @@ import Foundation
 
 open class FusionViewController: FlutterViewController {
 
-    private var isNested = false
+    private var isReused = true
     internal var history: [Dictionary<String, Any?>] = []
     internal var engineBinding: FusionEngineBinding? = nil
 
-    public init(isNested: Bool = false, routeName: String, routeArguments: Dictionary<String, Any>?) {
-        self.isNested = isNested
-        if isNested {
-            engineBinding = FusionEngineBinding(isNested)
-        } else {
+    public init(isReused: Bool = true, routeName: String, routeArguments: Dictionary<String, Any>?) {
+        self.isReused = isReused
+        if isReused {
             engineBinding = Fusion.instance.engineBinding
+        } else {
+            engineBinding = FusionEngineBinding(false)
         }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
-        if isNested {
+        if !isReused {
             engineBinding?.attach(self)
         }
         engineBinding?.push(routeName, routeArguments)
-        if isNested {
+        if !isReused {
             FusionStackManager.instance.addChild(self)
         } else {
             FusionStackManager.instance.add(self)
@@ -39,7 +39,7 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func viewDidLoad() {
-        if !isNested {
+        if isReused {
             attachToFlutterEngine()
         }
         super.viewDidLoad()
@@ -49,31 +49,31 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func viewWillAppear(_ animated: Bool) {
-        if !isNested {
+        if isReused {
             attachToFlutterEngine()
         }
         super.viewWillAppear(animated)
         if let engine = engineBinding?.engine {
             (self as? FusionMessengerProvider)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
         }
-        if isNested {
+        if !isReused {
             return
         }
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     open override func viewDidAppear(_ animated: Bool) {
-        if !isNested {
+        if isReused {
             attachToFlutterEngine()
         }
         // 即使在UIViewController的viewDidAppear下，application也可能在inactive模式，此时如果提交渲染会导致GPU后台渲染而crash
         // https://github.com/flutter/flutter/issues/57973
         // https://github.com/flutter/engine/pull/18742
-        if UIApplication.shared.applicationState == .active && !isNested {
+        if UIApplication.shared.applicationState == .active && isReused {
             surfaceUpdated(true)
         }
         super.viewDidAppear(animated)
-        if (isNested) {
+        if (!isReused) {
             return
         }
         engineBinding?.notifyPageVisible()
@@ -86,7 +86,7 @@ open class FusionViewController: FlutterViewController {
 
     open override func didMove(toParent parent: UIViewController?) {
         // pop时调用
-        if parent == nil && !isNested {
+        if parent == nil && isReused {
             detachFromFlutterEngine()
         }
         super.didMove(toParent: parent)
@@ -97,7 +97,7 @@ open class FusionViewController: FlutterViewController {
             if let completion = completion {
                 completion()
             }
-            if !self.isNested {
+            if self.isReused {
                 self.detachFromFlutterEngine()
             }
         })
@@ -111,7 +111,7 @@ open class FusionViewController: FlutterViewController {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         (self as? FusionMessengerProvider)?.releaseFlutterChannel()
-        if (isNested) {
+        if (!isReused) {
             return
         }
         engineBinding?.notifyPageInvisible()
@@ -143,7 +143,7 @@ open class FusionViewController: FlutterViewController {
 
     deinit {
         history.removeAll()
-        if isNested {
+        if !isReused {
             FusionStackManager.instance.removeChild()
         } else {
             FusionStackManager.instance.remove()

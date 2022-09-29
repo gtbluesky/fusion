@@ -47,7 +47,7 @@ class FusionChannel {
             // 即容器销毁后处理Flutter路由栈
             FocusManager.instance.primaryFocus?.unfocus();
             await FusionNavigatorDelegate.instance.directPop();
-            WidgetsBinding.instance.drawFrame();
+            WidgetsBinding.instance?.drawFrame();
           }
           break;
         case 'remove':
@@ -134,7 +134,12 @@ class FusionChannel {
   }
 
   void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {
-    _methodChannel
-        .invokeMethod('sendMessage', {'msgName': msgName, 'msgBody': msgBody});
+    _methodChannel.invokeMethod(
+      'sendMessage',
+      {
+        'msgName': msgName,
+        'msgBody': msgBody,
+      },
+    );
   }
 }

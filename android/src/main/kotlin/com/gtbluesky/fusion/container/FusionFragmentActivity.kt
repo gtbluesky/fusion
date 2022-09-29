@@ -28,7 +28,7 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         return FusionFragment.FusionFlutterFragmentBuilder(FusionFragment::class.java)
             .setInitialRoute(routeName, routeArguments)
-            .setNestMode(false)
+            .setReuseMode(true)
             .build<FusionFragment>().also {
                 flutterFragment = it
             }

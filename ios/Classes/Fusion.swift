@@ -24,7 +24,7 @@ public class Fusion: NSObject {
         self.delegate = delegate
         engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
         cachedEngine = createAndRunEngine()
-        engineBinding = FusionEngineBinding(false)
+        engineBinding = FusionEngineBinding(true)
         engineBinding?.attach()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)

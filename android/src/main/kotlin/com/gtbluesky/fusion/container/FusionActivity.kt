@@ -11,6 +11,8 @@ import com.gtbluesky.fusion.channel.FusionMessengerProvider
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
@@ -20,12 +22,15 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     private val history = mutableListOf<Map<String, Any?>>()
     private var engineBinding: FusionEngineBinding? = null
     private var platformPlugin: PlatformPlugin? = null
+    private var flutterView: FlutterView? = null
+    private var isAttached = false
 
     override fun history() = history
 
+    override fun getRenderMode() = RenderMode.texture
+
     override fun onCreate(savedInstanceState: Bundle?) {
         engineBinding = Fusion.engineBinding
-        configurePlatformChannel()
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
@@ -35,27 +40,19 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
-        platformPlugin?.updateSystemUiOverlays()
+        flutterView = findFlutterView(window.decorView)
+        flutterView?.detachFromFlutterEngine()
     }
 
     override fun onStart() {
         super.onStart()
-        configurePlatformChannel()
-        if (this !is FusionMessengerProvider) {
-            return
-        }
-        engineBinding?.engine?.let {
-            this.configureFlutterChannel(it.dartExecutor.binaryMessenger)
-        }
+        performAttach()
+        platformPlugin?.updateSystemUiOverlays()
     }
 
-    override fun onStop() {
-        super.onStop()
-        releasePlatformChannel()
-        if (this !is FusionMessengerProvider) {
-            return
-        }
-        this.releaseFlutterChannel()
+    override fun onPause() {
+        super.onPause()
+        performDetach()
     }
 
     override fun onDestroy() {
@@ -65,16 +62,54 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding = null
     }
 
+    private fun performAttach() {
+        if (isAttached) {
+            return
+        }
+        val engine = engineBinding?.engine ?: return
+        // Attach plugins to the activity.
+        engine.activityControlSurface.attachToActivity(
+            delegate,
+            lifecycle
+        )
+        configureChannel()
+        // Attach rendering pipeline.
+        flutterView?.attachToFlutterEngine(engine)
+        isAttached = true
+    }
+
+    private fun performDetach() {
+        if (!isAttached) {
+            return
+        }
+        val engine = engineBinding?.engine ?: return
+        // Plugins are no longer attached to the activity.
+        engine.activityControlSurface.detachFromActivity()
+        releaseChannel()
+        // Detach rendering pipeline.
+        flutterView?.detachFromFlutterEngine()
+        isAttached = false
+    }
+
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
     override fun providePlatformPlugin(
         activity: Activity?,
         flutterEngine: FlutterEngine
-    ): PlatformPlugin? {
-        return null
-    }
+    ): PlatformPlugin? = null
 
     override fun detachFromFlutterEngine() {}
+
+    private fun configureChannel() {
+        configurePlatformChannel()
+        val engine = engineBinding?.engine ?: return
+        (this as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+    }
+
+    private fun releaseChannel() {
+        releasePlatformChannel()
+        (this as? FusionMessengerProvider)?.releaseFlutterChannel()
+    }
 
     private fun configurePlatformChannel() {
         if (platformPlugin != null) {

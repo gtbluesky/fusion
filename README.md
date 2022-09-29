@@ -12,6 +12,7 @@ Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情�
 ## 开始使用
 
 ### 0、准备
+
 在开始前需要按照 [Flutter 官方文档](https://docs.flutter.dev/development/add-to-app)，将 Flutter Module 项目接入到 Android 和 iOS 工程中。
 
 ### 1、初始化
@@ -116,7 +117,7 @@ Fusion.instance.adaptiveGesture = false
 
 Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
-iOS 使用 FusionViewController 并传入 `isNested: true` 以支持嵌套模式。
+iOS 使用 FusionViewController 并传入 `isReused: false` 以支持嵌套模式。
 
 ### 3、路由API（FusionNavigator）
 
@@ -126,9 +127,9 @@ push：在当前Flutter容器中将对应路由入栈
 
 pop：在当前Flutter容器中将栈顶路由出栈
 
-maybePop（New、TODO）：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
+maybePop（New）：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
 
-replace：在当前Flutter容器中将栈顶路由替换为对应路由
+replace：在当前Flutter容器中将栈顶路由替换为对应路由。目前其他框架均不支持该方法。
 
 remove：在当前Flutter容器中移除对应路由
 
@@ -338,8 +339,3 @@ iOS侧
 ### 8、返回拦截
 
 在纯 Flutter 开发中可以使用`WillPopScope`组件拦截返回操作，Fusion 也完整支持该功能，使用方式与在纯 Flutter 开发完全一致，此外使用`FusionNavigator.maybePop`的操作也可被`WillPopScope`组件拦截。
-
-### 9、状态栏颜色模式
-
-Fusion 针对状态栏图标颜色做了精心适配，使得在 Flutter 页面时状态栏图标颜色完全由 Flutter 自身控制，拥有和纯 Flutter 应用一样的体验，在 Flutter 页面与 Native 页面多次跳转的情况下状态栏图标颜色也可正常展示。
-

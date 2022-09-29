@@ -28,7 +28,7 @@ object Fusion {
         this.delegate = delegate
         engineGroup = FlutterEngineGroup(context)
         cachedEngine = createAndRunEngine()
-        engineBinding = FusionEngineBinding(false)
+        engineBinding = FusionEngineBinding(true)
         engineBinding?.attach()
         lifecycleCallback = FusionLifecycleCallbacks()
         context.registerActivityLifecycleCallbacks(lifecycleCallback)

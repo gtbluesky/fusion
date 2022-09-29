@@ -104,6 +104,17 @@ class _TestPageState extends State<TestPage>
               height: 20,
             ),
             InkWell(
+                child: const Text('push /web'),
+                onTap: () async {
+                  final result = await FusionNavigator.instance.push<String?>('/web');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
                 child: const Text('pop'),
                 onTap: () {
                   FusionNavigator.instance.pop('test返回结果');

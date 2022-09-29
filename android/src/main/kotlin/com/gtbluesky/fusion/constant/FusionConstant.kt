@@ -10,5 +10,5 @@ internal object FusionConstant {
     const val EXTRA_DESTROY_ENGINE_WITH_ACTIVITY =
         "destroy_engine_with_activity"
     const val ARG_DESTROY_ENGINE_WITH_FRAGMENT = "destroy_engine_with_fragment"
-    const val NESTED_MODE = "nested_mode"
+    const val REUSE_MODE = "reuse_mode"
 }
