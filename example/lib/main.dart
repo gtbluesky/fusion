@@ -3,6 +3,7 @@ import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
 import 'package:fusion_example/page/test_page.dart';
+import 'package:fusion_example/page/transparent_page.dart';
 import 'package:fusion_example/page/unknown_page.dart';
 import 'package:fusion_example/page/web_page.dart';
 import 'package:fusion_example/page/willpop_page.dart';
@@ -23,11 +24,10 @@ class MyApp extends StatelessWidget {
       reverseTransitionDuration: const Duration(milliseconds: 400),
       theme: ThemeData(
           pageTransitionsTheme:
-          const PageTransitionsTheme(builders: _defaultBuilders)),
+              const PageTransitionsTheme(builders: _defaultBuilders)),
     );
   }
 }
-
 
 final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
@@ -35,6 +35,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/lifecycle': ((arguments) => LifecyclePage(arguments: arguments)),
   '/willpop': ((_) => const WillPopPage()),
   '/web': ((_) => const WebPage()),
+  '/transparent': (arguments) => TransparentPage(arguments: arguments),
   unknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 

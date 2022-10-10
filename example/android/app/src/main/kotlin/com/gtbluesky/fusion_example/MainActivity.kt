@@ -18,12 +18,22 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
         activityMainBinding.tvFlutterActivity.setOnClickListener {
             FusionNavigator.open("/test", mapOf("title" to "Android Flutter Page"))
         }
+        activityMainBinding.tvTransparentFlutterActivity.setOnClickListener {
+            FusionNavigator.open(
+                "/transparent",
+                mapOf(
+                    "title" to "Transparent Flutter Page",
+                    "transparent" to true
+                )
+            )
+        }
         activityMainBinding.tvFlutterFragment.setOnClickListener {
             startActivity(Intent(this, FragmentSceneActivity::class.java))
         }
     }
 
     override fun onReceive(msgName: String, msgBody: Map<String, Any>?) {
-        Toast.makeText(this, "onReceive: msgName=$msgName, msgBody=$msgBody", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "onReceive: msgName=$msgName, msgBody=$msgBody", Toast.LENGTH_SHORT)
+            .show()
     }
 }

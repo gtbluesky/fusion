@@ -76,7 +76,7 @@ iOS 侧
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
       ...
-      Fusion.instance.install(delegate: self)
+      Fusion.instance.install(self)
       ...
     return true
   }
@@ -94,6 +94,7 @@ iOS 侧
         }
         let nc = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
+        // push和present均支持
         nc?.pushViewController(fusionVc, animated: true)
     }
 }
@@ -101,18 +102,63 @@ iOS 侧
 
 ### 2、Flutter 容器
 
-#### 页面模式
+#### 普通页面模式
 
-Android 使用 FusionActivty，启动 FusionActivty（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法。
+Android 使用 FusionActivity，启动 FusionActivity（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 设为 false。如果使用自定义FusionActivity其xml配置参考如下：
 
-iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController。FusionViewController 默认隐藏了 UINavigationController，并且将 iOS 和 Flutter 右滑手势返回兼容，使得 iOS 原生页面和 Flutter 页面都可通过手势返回。
+```xml
+        <activity
+            android:name=".CustomFusionActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:theme="@style/FusionNormalTheme"
+            android:windowSoftInputMode="adjustResize" />
+```
+
+
+
+iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController，`push` 和 `present`均支持。FusionViewController 默认隐藏了 UINavigationController，并且将 iOS 和 Flutter 右滑手势返回兼容，使得 iOS 原生页面和 Flutter 页面都可通过手势返回。
 
 P.S: 如果存在手势冲突，可以关闭手势自适应模式
 ```swift
 Fusion.instance.adaptiveGesture = false
 ```
 
+#### 透明页面模式
+
+Android 侧
+
+使用方式与普通页面模式相似，只是`buildFusionIntent` 方法的参数 `transparent `需设为 true，如果使用自定义FusionActivity其xml配置参考如下：
+
+```xml
+        <activity
+            android:name=".TransparentFusionActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:theme="@style/FusionTransparentTheme"
+            android:windowSoftInputMode="adjustResize" />
+```
+
+iOS 侧
+
+使用方式与普通页面模式相似，区别如下：
+
+```swi
+fusionVc.isViewOpaque = false
+fusionVc.modalPresentationStyle = .overCurrentContext
+navController?.present(fusionVc, animated: true)
+```
+
+同时Flutter页面背景也需要设置为透明
+
+> 注意：上述说的透明页面模式是指Flutter容器为透明（包括Flutter页面也为透明），此时可以看到下层的其他原生容器页面内容。另外Flutter页面本身也支持透明，如FlutterA不透明，FlutterB透明页面，从A跳转B，可在FlutterB看到FlutterA内容，此时使用普通页面模式即可。
+
 #### 嵌套模式
+
 嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
 
 Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。

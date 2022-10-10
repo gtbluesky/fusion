@@ -9,39 +9,22 @@ import Foundation
 import fusion
 
 class NormalViewController: UIViewController {
-    private var button: UIButton?
-    private var button2: UIButton?
-    private var button3: UIButton?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
-        button = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        button?.center = view.center
-        button?.setTitle("返回", for: .normal)
-        button?.backgroundColor = UIColor.blue
-        button?.addTarget(self, action: #selector(btnClick(btn:)), for: .touchUpInside)
-        if let button = button {
-            view.addSubview(button)
-        }
+        newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 0, title: "返回", action: #selector(btnClick(btn:)))
+        newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 60, title: "发送消息", action: #selector(btnClick2(btn:)))
+        newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50)), offsetY: 120, title: "打开普通Flutter页面", action: #selector(btnClick3(btn:)))
+        newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50)), offsetY: 180, title: "打开透明Flutter页面", action: #selector(btnClick4(btn:)))
+    }
 
-        button2 = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        button2?.center = CGPoint(x: view.center.x, y: view.center.y + 60)
-        button2?.setTitle("发送消息", for: .normal)
-        button2?.backgroundColor = UIColor.gray
-        button2?.addTarget(self, action: #selector(btnClick2(btn:)), for: .touchUpInside)
-        if let button = button2 {
-            view.addSubview(button)
-        }
-
-        button3 = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        button3?.center = CGPoint(x: view.center.x, y: view.center.y + 120)
-        button3?.setTitle("打开Flutter页面", for: .normal)
-        button3?.backgroundColor = UIColor.gray
-        button3?.addTarget(self, action: #selector(btnClick3(btn:)), for: .touchUpInside)
-        if let button = button3 {
-            view.addSubview(button)
-        }
+    private func newButton(button: UIButton, offsetY: Int, title: String, action: Selector) {
+        button.center = CGPoint(x: view.center.x, y: view.center.y + CGFloat(offsetY))
+        button.setTitle(title, for: .normal)
+        button.backgroundColor = UIColor.blue
+        button.addTarget(self, action: action, for: .touchUpInside)
+        view.addSubview(button)
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -65,5 +48,9 @@ class NormalViewController: UIViewController {
 
     @objc func btnClick3(btn: UIButton) {
         FusionNavigator.instance.open(name: "/test", arguments: ["title": "New Flutter Page"])
+    }
+
+    @objc func btnClick4(btn: UIButton) {
+        FusionNavigator.instance.open(name: "/transparent", arguments: ["title": "Transparent Flutter Page", "transparent": true])
     }
 }

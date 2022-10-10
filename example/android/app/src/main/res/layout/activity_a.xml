@@ -26,7 +26,14 @@
             android:id="@+id/tv_c"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="打开Flutter页面"
+            android:text="打开普通Flutter页面"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开透明Flutter页面"
             android:textSize="18sp"/>
     </LinearLayout>
 </RelativeLayout>

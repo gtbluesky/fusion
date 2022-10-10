@@ -12,7 +12,7 @@ import fusion
 class HostViewController: UIViewController {
 
     @IBOutlet weak var myButton: UIButton!
-
+    @IBOutlet weak var button1: UIButton!
     @IBOutlet weak var button2: UIButton!
 
     override func viewWillAppear(_ animated: Bool) {
@@ -22,6 +22,10 @@ class HostViewController: UIViewController {
 
     @IBAction func clickButton(_ sender: UIButton) {
         FusionNavigator.instance.open(name: "/test", arguments: ["title": "iOS Flutter Page"])
+    }
+
+    @IBAction func click1(_ sender: Any) {
+        FusionNavigator.instance.open(name: "/transparent", arguments: ["title": "iOS Flutter Page", "transparent": true])
     }
 
     @IBAction func click2(_ sender: Any) {

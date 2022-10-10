@@ -33,8 +33,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun history() = history
 
-    override fun getRenderMode() = RenderMode.texture
-
     override fun onAttach(context: Context) {
         isReused = arguments?.getBoolean(FusionConstant.REUSE_MODE) ?: false
         engineBinding = if (isReused) {
@@ -203,7 +201,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         private var routeArguments: Map<String, Any>? = null
         private var isReused = false
 
-        fun setInitialRoute(
+        fun initialRoute(
             name: String,
             arguments: Map<String, Any>?
         ): FusionFlutterFragmentBuilder {
@@ -212,7 +210,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return this
         }
 
-        fun setReuseMode(isReused: Boolean): FusionFlutterFragmentBuilder {
+        fun reuseMode(isReused: Boolean): FusionFlutterFragmentBuilder {
             this.isReused = isReused
             return this
         }
@@ -221,7 +219,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return super.createArgs().also {
                 it.putString(FusionConstant.ROUTE_NAME, routeName)
                 it.putSerializable(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
-                it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, false)
+                it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, !isReused)
                 it.putBoolean(FusionConstant.REUSE_MODE, isReused)
             }
         }

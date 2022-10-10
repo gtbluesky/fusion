@@ -22,7 +22,6 @@ open class FusionViewController: FlutterViewController {
         }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
-        modalPresentationStyle = .fullScreen
         if !isReused {
             engineBinding?.attach(self)
         }

@@ -8,7 +8,7 @@
             android:exported="false"
             android:hardwareAccelerated="true"
             android:launchMode="standard"
-            android:theme="@style/FusionTheme"
+            android:theme="@style/FusionNormalTheme"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
@@ -17,7 +17,7 @@
             android:exported="false"
             android:hardwareAccelerated="true"
             android:launchMode="standard"
-            android:theme="@style/FusionTheme"
+            android:theme="@style/FusionNormalTheme"
             android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

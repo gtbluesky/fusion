@@ -13,7 +13,15 @@
             android:id="@+id/tv_flutter_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Flutter Activity场景"
+            android:text="普通Flutter Activity场景"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_transparent_flutter_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="透明Flutter Activity场景"
             android:textSize="18sp"/>
 
         <TextView

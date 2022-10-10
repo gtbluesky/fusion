@@ -20,7 +20,7 @@ public class Fusion: NSObject {
         super.init()
     }
 
-    @objc public func install(delegate: FusionRouteDelegate) {
+    @objc public func install(_ delegate: FusionRouteDelegate) {
         self.delegate = delegate
         engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
         cachedEngine = createAndRunEngine()

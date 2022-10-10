@@ -8,7 +8,7 @@ import com.gtbluesky.fusion.container.FusionFragmentActivity
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
-class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
+open class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
 
     private var channel: MethodChannel? = null
 

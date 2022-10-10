@@ -35,12 +35,19 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
 
     override fun pushFlutterRoute(name: String, arguments: Map<String, Any>?) {
         Log.d(TAG, "pushFlutterRoute: name=${name}, arguments=${arguments}")
+        val transparent = (arguments?.get("transparent") as? Boolean) ?: false
+        val clazz = if (transparent) {
+            TransparentFusionActivity::class.java
+        } else {
+            CustomFusionActivity::class.java
+        }
         startActivity(
             buildFusionIntent(
                 applicationContext,
-                CustomFusionActivity::class.java,
+                clazz,
                 name,
-                arguments
+                arguments,
+                transparent
             ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }

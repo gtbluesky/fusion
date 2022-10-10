@@ -10,7 +10,7 @@ import fusion
             _ application: UIApplication,
             didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        Fusion.instance.install(delegate: self)
+        Fusion.instance.install(self)
         Fusion.instance.adaptiveGesture = true
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "HostVC")
@@ -32,9 +32,15 @@ import fusion
 
     func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?) {
         print("pushFlutterRoute: name=\(name), arguments=\(arguments)")
+        let transparent = arguments?["transparent"] as? Bool ?? false
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
-        navController?.pushViewController(fusionVc, animated: true)
-//        navController?.present(fusionVc, animated: true)
+        if transparent {
+            fusionVc.isViewOpaque = false
+            fusionVc.modalPresentationStyle = .overCurrentContext
+            navController?.present(fusionVc, animated: true)
+        } else {
+            navController?.pushViewController(fusionVc, animated: true)
+        }
     }
 }

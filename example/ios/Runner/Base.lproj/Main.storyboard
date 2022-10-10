@@ -19,19 +19,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="LC4-xr-4pj">
-                                <rect key="frame" x="76" y="391" width="238" height="62"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="LC4-xr-4pj">
+                                <rect key="frame" x="76" y="351.66666666666669" width="238" height="141"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SRh-hL-fLP">
                                         <rect key="frame" x="0.0" y="0.0" width="238" height="31"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 页面模式"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 普通页面模式"/>
                                         <connections>
                                             <action selector="clickButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="g7y-Yr-gzG"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vFE-NF-0ac">
+                                        <rect key="frame" x="0.0" y="55" width="238" height="31"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 透明页面模式"/>
+                                        <connections>
+                                            <action selector="click1:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N8G-DD-DHy"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wYC-6C-J6o">
-                                        <rect key="frame" x="0.0" y="31" width="238" height="31"/>
+                                        <rect key="frame" x="0.0" y="110" width="238" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Flutter 子页面模式"/>
                                         <connections>
@@ -51,6 +59,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="HhW-aG-tu4"/>
                     <connections>
+                        <outlet property="button1" destination="vFE-NF-0ac" id="0Nx-U5-hEe"/>
                         <outlet property="button2" destination="wYC-6C-J6o" id="161-cn-YQs"/>
                         <outlet property="myButton" destination="SRh-hL-fLP" id="wQh-DQ-cJQ"/>
                     </connections>
