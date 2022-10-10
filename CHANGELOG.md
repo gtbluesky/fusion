@@ -1,3 +1,7 @@
+## 1.1.8
+
+* Exposes `FlutterEngineGroup` instance.
+
 ## 1.1.7
 
 * Fixes some known bugs.

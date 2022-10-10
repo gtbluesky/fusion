@@ -10,7 +10,7 @@ import UIKit
 
 public class Fusion: NSObject {
     @objc public static let instance = Fusion()
-    let engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
+    public let engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
     var delegate: FusionRouteDelegate? = nil
     public var adaptiveGesture: Bool = false
 

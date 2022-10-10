@@ -11,7 +11,7 @@ import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
 
 object Fusion {
-    internal lateinit var engineGroup: FlutterEngineGroup
+    lateinit var engineGroup: FlutterEngineGroup
         private set
     internal lateinit var delegate: FusionRouteDelegate
         private set
