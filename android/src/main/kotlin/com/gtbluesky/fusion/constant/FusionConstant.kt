@@ -11,4 +11,5 @@ internal object FusionConstant {
         "destroy_engine_with_activity"
     const val ARG_DESTROY_ENGINE_WITH_FRAGMENT = "destroy_engine_with_fragment"
     const val REUSE_MODE = "reuse_mode"
+    const val FUSION_RESTORATION_BUNDLE_KEY = "fusion"
 }

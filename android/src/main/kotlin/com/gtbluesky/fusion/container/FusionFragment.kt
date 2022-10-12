@@ -3,6 +3,8 @@ package com.gtbluesky.fusion.container
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +53,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        engineBinding?.push(routeName, routeArguments)
+        val restoreMode =
+            savedInstanceState?.getBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) ?: false
+        Handler(Looper.getMainLooper()).post {
+            engineBinding?.push(routeName, routeArguments)
+        }
         if (isReused) {
             return
         }
@@ -100,6 +106,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return
         }
         FusionStackManager.removeChild(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, true)
     }
 
     override fun shouldAttachEngineToActivity(): Boolean {

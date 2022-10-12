@@ -6,6 +6,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.channel.FusionMessengerProvider
 import com.gtbluesky.fusion.constant.FusionConstant
@@ -35,7 +37,11 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        engineBinding?.push(routeName, routeArguments)
+        val restoreMode =
+            savedInstanceState?.getBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) ?: false
+        Handler(Looper.getMainLooper()).post {
+            engineBinding?.push(routeName, routeArguments)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
@@ -59,6 +65,11 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         history.clear()
         engineBinding?.pop()
         engineBinding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, true)
     }
 
     override fun shouldAttachEngineToActivity(): Boolean {
