@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
@@ -9,6 +10,7 @@ import 'package:fusion_example/page/web_page.dart';
 import 'package:fusion_example/page/willpop_page.dart';
 
 void main() {
+  print('defaultRouteName=${ui.window.defaultRouteName}');
   runApp(const MyApp());
 }
 
@@ -36,7 +38,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/willpop': ((_) => const WillPopPage()),
   '/web': ((_) => const WebPage()),
   '/transparent': (arguments) => TransparentPage(arguments: arguments),
-  unknownRoute: (arguments) => UnknownPage(arguments: arguments),
+  kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 
 const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =

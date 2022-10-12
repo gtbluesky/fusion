@@ -31,10 +31,10 @@ void main() {
 // 路由表
 final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
-  unknownRoute: (arguments) => UnknownPage(arguments: arguments),
+  kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 ```
-P.S: 请勿使用`/`路由，`unknownRoute`表示未定义路由
+P.S: 请勿使用`/`路由，`kUnknownRoute`表示未定义路由
 
 Android 侧
 

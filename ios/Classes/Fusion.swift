@@ -10,9 +10,9 @@ import UIKit
 
 public class Fusion: NSObject {
     @objc public static let instance = Fusion()
-    private var engineGroup: FlutterEngineGroup? = nil
+    public var engineGroup: FlutterEngineGroup? = nil
     internal var engineBinding: FusionEngineBinding? = nil
-    var cachedEngine: FlutterEngine? = nil
+    var defaultEngine: FlutterEngine? = nil
     var delegate: FusionRouteDelegate? = nil
     public var adaptiveGesture: Bool = false
 
@@ -23,7 +23,7 @@ public class Fusion: NSObject {
     @objc public func install(_ delegate: FusionRouteDelegate) {
         self.delegate = delegate
         engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
-        cachedEngine = createAndRunEngine()
+        defaultEngine = createAndRunEngine(FusionConstant.REUSE_MODE)
         engineBinding = FusionEngineBinding(true)
         engineBinding?.attach()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -34,11 +34,11 @@ public class Fusion: NSObject {
         engineBinding?.detach()
         engineBinding = nil
         engineGroup = nil
-        cachedEngine = nil
+        defaultEngine = nil
     }
 
-    internal func createAndRunEngine() -> FlutterEngine? {
-        let engine = engineGroup?.makeEngine(withEntrypoint: nil, libraryURI: nil)
+    internal func createAndRunEngine(_ initialRoute: String = FusionConstant.INITIAL_ROUTE) -> FlutterEngine? {
+        let engine = engineGroup?.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         if let engine = engine {
             let clazz = NSClassFromString("GeneratedPluginRegistrant") as? NSObject.Type
             let selector = NSSelectorFromString("registerWithRegistry:")

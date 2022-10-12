@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fusion/src/lifecycle/page_lifecycle.dart';
+import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-
-import '../lifecycle/page_lifecycle.dart';
-import '../navigator/fusion_navigator.dart';
-import '../notification/page_notification.dart';
+import 'package:fusion/src/notification/page_notification.dart';
+import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 
 class FusionChannel {
   FusionChannel._();
@@ -68,6 +68,8 @@ class FusionChannel {
         case 'notifyEnterBackground':
           PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
           break;
+        case 'latestStyle':
+          return SystemChrome.latestStyle?.toMap();
         default:
           break;
       }

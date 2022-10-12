@@ -5,6 +5,7 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
@@ -28,7 +29,7 @@ class FusionEngineBinding(
         engine = if (!isReused) {
             Fusion.createAndRunEngine()
         } else {
-            Fusion.cachedEngine
+            Fusion.defaultEngine
         }?.also {
             channel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
             eventChannel =
@@ -242,6 +243,54 @@ class FusionEngineBinding(
 
     internal fun notifyEnterBackground() {
         channel?.invokeMethod("notifyEnterBackground", null)
+    }
+
+    internal fun latestStyle(callback: () -> Unit) {
+        channel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
+            override fun success(result: Any?) {
+                Fusion.currentTheme = decodeSystemChromeStyle(result as? Map<String, Any>)
+                callback()
+            }
+
+            override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {}
+
+            override fun notImplemented() {}
+
+        })
+    }
+
+    private fun decodeSystemChromeStyle(styleMap: Map<String, Any>?): PlatformChannel.SystemChromeStyle? {
+        if (styleMap == null) {
+            return null
+        }
+        val statusBarColor = styleMap["statusBarColor"] as? Int
+        val statusBarIconBrightness =
+            if (styleMap["statusBarIconBrightness"] == "Brightness.light") {
+                PlatformChannel.Brightness.LIGHT
+            } else {
+                PlatformChannel.Brightness.DARK
+            }
+        val systemStatusBarContrastEnforced =
+            styleMap["systemStatusBarContrastEnforced"] as? Boolean
+        val systemNavigationBarColor = styleMap["systemNavigationBarColor"] as? Int
+        val systemNavigationBarIconBrightness =
+            if (styleMap["systemNavigationBarIconBrightness"] == "Brightness.light") {
+                PlatformChannel.Brightness.LIGHT
+            } else {
+                PlatformChannel.Brightness.DARK
+            }
+        val systemNavigationBarDividerColor = styleMap["systemNavigationBarDividerColor"] as? Int
+        val systemNavigationBarContrastEnforced =
+            styleMap["systemNavigationBarContrastEnforced"] as? Boolean
+        return PlatformChannel.SystemChromeStyle(
+            statusBarColor,
+            statusBarIconBrightness,
+            systemStatusBarContrastEnforced,
+            systemNavigationBarColor,
+            systemNavigationBarIconBrightness,
+            systemNavigationBarDividerColor,
+            systemNavigationBarContrastEnforced
+        )
     }
 
     internal fun sendMessage(msg: Map<String, Any?>) {

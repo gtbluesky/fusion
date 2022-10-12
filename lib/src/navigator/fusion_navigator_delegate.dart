@@ -38,7 +38,7 @@ class FusionNavigatorDelegate {
     final route = FusionPageRoute<T>(
       builder: (_) {
         FusionPageFactory? pageFactory =
-            routeMap[routeName] ?? routeMap[unknownRoute];
+            routeMap[routeName] ?? routeMap[kUnknownRoute];
         final page =
             pageFactory != null ? pageFactory(arguments) : const UnknownPage();
         return FusionWillPopScope(
@@ -70,7 +70,7 @@ class FusionNavigatorDelegate {
     final newRoute = FusionPageRoute(
       builder: (_) {
         FusionPageFactory? pageFactory =
-            routeMap[routeName] ?? routeMap[unknownRoute];
+            routeMap[routeName] ?? routeMap[kUnknownRoute];
         final page =
             pageFactory != null ? pageFactory(arguments) : const UnknownPage();
         return FusionWillPopScope(

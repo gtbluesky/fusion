@@ -3,6 +3,7 @@ package com.gtbluesky.fusion
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.navigator.FusionStackManager
@@ -10,10 +11,12 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
+import io.flutter.plugin.common.MethodChannel
 
 object Fusion {
-    private var engineGroup: FlutterEngineGroup? = null
-    internal var cachedEngine: FlutterEngine? = null
+    var engineGroup: FlutterEngineGroup? = null
+        private set
+    internal var defaultEngine: FlutterEngine? = null
         private set
     internal var engineBinding: FusionEngineBinding? = null
         private set
@@ -27,7 +30,7 @@ object Fusion {
         this.context = context
         this.delegate = delegate
         engineGroup = FlutterEngineGroup(context)
-        cachedEngine = createAndRunEngine()
+        defaultEngine = createAndRunEngine(FusionConstant.REUSE_MODE)
         engineBinding = FusionEngineBinding(true)
         engineBinding?.attach()
         lifecycleCallback = FusionLifecycleCallbacks()
@@ -41,13 +44,14 @@ object Fusion {
         engineBinding?.detach()
         engineBinding = null
         engineGroup = null
-        cachedEngine = null
+        defaultEngine = null
     }
 
-    fun createAndRunEngine(): FlutterEngine? {
+    fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
         return engineGroup?.createAndRunEngine(
             context,
-            DartExecutor.DartEntrypoint.createDefault()
+            DartExecutor.DartEntrypoint.createDefault(),
+            initialRoute
         )
     }
 }

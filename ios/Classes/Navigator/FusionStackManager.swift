@@ -8,20 +8,20 @@
 import Foundation
 import UIKit
 
-class FusionStackManager {
-    var stack = [WeakReference<FusionViewController>]()
-    private var nestedStack = [WeakReference<FusionViewController>]()
+internal class FusionStackManager {
+    var pageStack = [WeakReference<FusionViewController>]()
+    private var nestStack = [WeakReference<FusionViewController>]()
     static let instance = FusionStackManager()
 
     private init() {
     }
 
     func add(_ vc: FusionViewController) {
-        stack.append(WeakReference(vc))
+        pageStack.append(WeakReference(vc))
     }
 
     func remove() {
-        stack.removeAll {
+        pageStack.removeAll {
             $0.value == nil
         }
     }
@@ -53,18 +53,18 @@ class FusionStackManager {
     }
 
     func addChild(_ container: FusionViewController) {
-        nestedStack.append(WeakReference(container))
+        nestStack.append(WeakReference(container))
     }
 
     func removeChild() {
-        nestedStack.removeAll {
+        nestStack.removeAll {
             $0.value == nil
         }
     }
 
     func notifyEnterForeground() {
         Fusion.instance.engineBinding?.notifyEnterForeground()
-        nestedStack.forEach {
+        nestStack.forEach {
             if let vc = $0.value {
                 vc.engineBinding?.notifyEnterForeground()
             }
@@ -73,7 +73,7 @@ class FusionStackManager {
 
     func notifyEnterBackground() {
         Fusion.instance.engineBinding?.notifyEnterBackground()
-        nestedStack.forEach {
+        nestStack.forEach {
             if let vc = $0.value {
                 vc.engineBinding?.notifyEnterBackground()
             }
@@ -84,7 +84,7 @@ class FusionStackManager {
         var msg: Dictionary<String, Any?> = ["msgName": msgName]
         msg["msgBody"] = msgBody
         Fusion.instance.engineBinding?.sendMessage(msg)
-        nestedStack.forEach {
+        nestStack.forEach {
             $0.value?.engineBinding?.sendMessage(msg)
         }
         UIApplication.roofNavigationController?.viewControllers.forEach {

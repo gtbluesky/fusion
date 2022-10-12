@@ -19,7 +19,7 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 2、Fragment恢复
+        // Fragment恢复
         if (flutterFragment == null) {
             flutterFragment = supportFragmentManager.findFragmentByTag("flutter_fragment") as? FusionFragment
         }
@@ -28,7 +28,7 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         }
     }
 
-    // 1、Fragment首次创建
+    // Fragment首次创建
     override fun createFlutterFragment(): FlutterFragment {
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE

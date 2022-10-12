@@ -16,7 +16,7 @@ class FusionEngineBinding: NSObject {
     private var eventSink: FlutterEventSink? = nil
     private var history: [Dictionary<String, Any?>] {
         get {
-            FusionStackManager.instance.stack.flatMap {
+            FusionStackManager.instance.pageStack.flatMap {
                 ($0.value)?.history ?? []
             }
         }
@@ -28,7 +28,7 @@ class FusionEngineBinding: NSObject {
         if (!isReused) {
             engine = Fusion.instance.createAndRunEngine()
         } else {
-            engine = Fusion.instance.cachedEngine
+            engine = Fusion.instance.defaultEngine
         }
         guard let engine = engine else {
             return

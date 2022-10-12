@@ -14,9 +14,7 @@ import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.ExclusiveAppComponent
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.FlutterView
-import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
 
@@ -48,12 +46,12 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val routeName =
             arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         engineBinding?.push(routeName, routeArguments)
-        super.onCreate(savedInstanceState)
         if (isReused) {
             return
         }
@@ -77,7 +75,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         super.onResume()
         if (isReused) {
             performAttach()
-            platformPlugin?.updateSystemUiOverlays()
+            engineBinding?.latestStyle { updateSystemUiOverlays() }
         } else {
             val engine = engineBinding?.engine ?: return
             (this as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
@@ -98,6 +96,14 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         history.clear()
         engineBinding?.pop()
         engineBinding = null
+        if (isReused) {
+            return
+        }
+        FusionStackManager.removeChild(this)
+    }
+
+    override fun shouldAttachEngineToActivity(): Boolean {
+        return !isReused
     }
 
     private fun performAttach() {
@@ -142,6 +148,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         activity: Activity?,
         flutterEngine: FlutterEngine
     ): PlatformPlugin? {
+        // 复用情况下自行处理PlatformPlugin
+        // 非复用情况下默认处理
         return if (isReused) {
             null
         } else {
@@ -175,23 +183,24 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
         val platformChannel = engineBinding?.engine?.platformChannel ?: return
         platformPlugin = activity?.let { PlatformPlugin(it, platformChannel) } ?: return
-        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
-        val field = clazz.getDeclaredField("currentTheme")
-        field.isAccessible = true
-        Fusion.currentTheme?.let {
-            field.set(platformPlugin, it)
-        }
     }
 
     private fun releasePlatformChannel() {
-        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
-        val field = clazz.getDeclaredField("currentTheme")
-        field.isAccessible = true
-        (field.get(platformPlugin) as? PlatformChannel.SystemChromeStyle)?.let {
-            Fusion.currentTheme = it
-        }
         platformPlugin?.destroy()
         platformPlugin = null
+    }
+
+    override fun updateSystemUiOverlays() {
+        try {
+            val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
+            field?.isAccessible = true
+            Fusion.currentTheme?.let {
+                field?.set(platformPlugin, it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        platformPlugin?.updateSystemUiOverlays()
     }
 
     internal class FusionFlutterFragmentBuilder(fragmentClass: Class<out FusionFragment>) :

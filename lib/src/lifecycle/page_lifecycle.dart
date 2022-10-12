@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../log/fusion_log.dart';
+import 'package:fusion/src/log/fusion_log.dart';
 
 class PageLifecycleListener {
   void onPageVisible() {}

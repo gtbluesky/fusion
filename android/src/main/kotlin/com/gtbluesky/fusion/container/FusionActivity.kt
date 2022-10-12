@@ -14,7 +14,6 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
@@ -31,12 +30,12 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         engineBinding = Fusion.engineBinding
+        super.onCreate(savedInstanceState)
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         engineBinding?.push(routeName, routeArguments)
-        super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
@@ -44,10 +43,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         flutterView?.detachFromFlutterEngine()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         performAttach()
-        platformPlugin?.updateSystemUiOverlays()
+        engineBinding?.latestStyle { updateSystemUiOverlays() }
     }
 
     override fun onPause() {
@@ -60,6 +59,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         history.clear()
         engineBinding?.pop()
         engineBinding = null
+    }
+
+    override fun shouldAttachEngineToActivity(): Boolean {
+        return false
     }
 
     private fun performAttach() {
@@ -101,8 +104,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun detachFromFlutterEngine() {}
 
     private fun configureChannel() {
-        configurePlatformChannel()
+        // 配置PlatformChannel和CustomChannel是因为其和Activity相关联
+        // 而三方插件和Activity无关，一个Engine配置一次即可
         val engine = engineBinding?.engine ?: return
+        configurePlatformChannel()
         (this as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
     }
 
@@ -117,23 +122,24 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         val platformChannel = engineBinding?.engine?.platformChannel ?: return
         platformPlugin = PlatformPlugin(this, platformChannel)
-        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
-        val field = clazz.getDeclaredField("currentTheme")
-        field.isAccessible = true
-        Fusion.currentTheme?.let {
-            field.set(platformPlugin, it)
-        }
     }
 
     private fun releasePlatformChannel() {
-        val clazz = Class.forName("io.flutter.plugin.platform.PlatformPlugin")
-        val field = clazz.getDeclaredField("currentTheme")
-        field.isAccessible = true
-        (field.get(platformPlugin) as? PlatformChannel.SystemChromeStyle)?.let {
-            Fusion.currentTheme = it
-        }
         platformPlugin?.destroy()
         platformPlugin = null
+    }
+
+    override fun updateSystemUiOverlays() {
+        try {
+            val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
+            field?.isAccessible = true
+            Fusion.currentTheme?.let {
+                field?.set(platformPlugin, it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        platformPlugin?.updateSystemUiOverlays()
     }
 
     override fun setTaskDescription(taskDescription: ActivityManager.TaskDescription?) {
