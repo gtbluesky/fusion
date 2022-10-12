@@ -1,4 +1,7 @@
 //
+//  UINavigationControllerExtension.swift
+//  fusion
+//
 // Created by gtbluesky on 2022/4/22.
 //
 
@@ -40,14 +43,14 @@ extension UINavigationController {
         return delegate!
     }
 
-    func addPopGesture() {
+    public func addPopGesture() {
         if interactivePopGestureRecognizer?.view?.gestureRecognizers?.contains(popGestureRecognizer()) == false {
             interactivePopGestureRecognizer?.view?.addGestureRecognizer(popGestureRecognizer())
         }
         interactivePopGestureRecognizer?.isEnabled = false
     }
 
-    func removePopGesture() {
+    public func removePopGesture() {
         if interactivePopGestureRecognizer?.view?.gestureRecognizers?.contains(popGestureRecognizer()) == true {
             interactivePopGestureRecognizer?.view?.removeGestureRecognizer(popGestureRecognizer())
         }

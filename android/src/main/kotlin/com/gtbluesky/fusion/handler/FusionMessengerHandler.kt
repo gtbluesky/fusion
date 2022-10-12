@@ -1,8 +1,8 @@
-package com.gtbluesky.fusion.channel
+package com.gtbluesky.fusion.handler
 
 import io.flutter.plugin.common.BinaryMessenger
 
-interface FusionMessengerProvider {
+interface FusionMessengerHandler {
     fun configureFlutterChannel(binaryMessenger: BinaryMessenger)
     fun releaseFlutterChannel()
 }

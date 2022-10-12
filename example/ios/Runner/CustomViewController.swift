@@ -8,7 +8,7 @@
 import Foundation
 import fusion
 
-class CustomViewController: FusionViewController, FusionMessengerProvider {
+class CustomViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler {
 
     private var channel: FlutterMethodChannel? = nil
 
@@ -24,6 +24,28 @@ class CustomViewController: FusionViewController, FusionMessengerProvider {
         print("\(self) releaseFlutterChannel")
         channel?.setMethodCallHandler(nil)
         channel = nil
+    }
+
+    func resumePopGesture() {
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.addPopGesture()
+    }
+
+    func pausePopGesture() {
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.removePopGesture()
     }
 
     deinit {

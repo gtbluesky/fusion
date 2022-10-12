@@ -2,13 +2,12 @@ package com.gtbluesky.fusion_example
 
 import android.util.Log
 import android.widget.Toast
-import com.gtbluesky.fusion.channel.FusionMessengerProvider
-import com.gtbluesky.fusion.container.FusionActivity
+import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.container.FusionFragmentActivity
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
-open class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerProvider {
+open class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerHandler {
 
     private var channel: MethodChannel? = null
 

@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.channel.FusionMessengerProvider
+import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.navigator.FusionStackManager
@@ -84,7 +84,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             engineBinding?.latestStyle { updateSystemUiOverlays() }
         } else {
             val engine = engineBinding?.engine ?: return
-            (this as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+            (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
         }
     }
 
@@ -93,7 +93,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (isReused) {
             performDetach()
         } else {
-            (this as? FusionMessengerProvider)?.releaseFlutterChannel()
+            (this as? FusionMessengerHandler)?.releaseFlutterChannel()
         }
     }
 
@@ -180,12 +180,12 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         // 而三方插件和Activity无关，一个Engine配置一次即可
         val engine = engineBinding?.engine ?: return
         configurePlatformChannel()
-        (activity as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+        (activity as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
     }
 
     private fun releaseChannel() {
         releasePlatformChannel()
-        (activity as? FusionMessengerProvider)?.releaseFlutterChannel()
+        (activity as? FusionMessengerHandler)?.releaseFlutterChannel()
     }
 
     private fun configurePlatformChannel() {

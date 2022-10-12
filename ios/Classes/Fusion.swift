@@ -14,7 +14,6 @@ public class Fusion: NSObject {
     internal var engineBinding: FusionEngineBinding? = nil
     var defaultEngine: FlutterEngine? = nil
     var delegate: FusionRouteDelegate? = nil
-    public var adaptiveGesture: Bool = false
 
     private override init() {
         super.init()

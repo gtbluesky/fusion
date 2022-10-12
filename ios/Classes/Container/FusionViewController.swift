@@ -53,7 +53,7 @@ open class FusionViewController: FlutterViewController {
         }
         super.viewWillAppear(animated)
         if let engine = engineBinding?.engine {
-            (self as? FusionMessengerProvider)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
         }
         if !isReused {
             return
@@ -77,7 +77,7 @@ open class FusionViewController: FlutterViewController {
         }
         engineBinding?.notifyPageVisible()
         if history.count == 1 {
-            engineBinding?.addPopGesture(self)
+            engineBinding?.addPopGesture()
         } else {
             engineBinding?.removePopGesture()
         }
@@ -109,7 +109,7 @@ open class FusionViewController: FlutterViewController {
 
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (self as? FusionMessengerProvider)?.releaseFlutterChannel()
+        (self as? FusionMessengerHandler)?.releaseFlutterChannel()
         if (!isReused) {
             return
         }

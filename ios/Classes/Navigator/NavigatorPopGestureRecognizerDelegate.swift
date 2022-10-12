@@ -1,4 +1,7 @@
 //
+//  NavigatorPopGestureRecognizerDelegate.swift
+//  fusion
+//
 // Created by gtbluesky on 2022/4/22.
 //
 

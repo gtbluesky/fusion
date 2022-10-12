@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.channel.FusionMessengerProvider
+import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import io.flutter.embedding.android.FlutterActivity
@@ -119,12 +119,12 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         // 而三方插件和Activity无关，一个Engine配置一次即可
         val engine = engineBinding?.engine ?: return
         configurePlatformChannel()
-        (this as? FusionMessengerProvider)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+        (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
     }
 
     private fun releaseChannel() {
         releasePlatformChannel()
-        (this as? FusionMessengerProvider)?.releaseFlutterChannel()
+        (this as? FusionMessengerHandler)?.releaseFlutterChannel()
     }
 
     private fun configurePlatformChannel() {

@@ -11,7 +11,6 @@ import fusion
             didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Fusion.instance.install(self)
-        Fusion.instance.adaptiveGesture = true
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "HostVC")
         window = UIWindow()

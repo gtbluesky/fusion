@@ -1,5 +1,5 @@
 //
-//  EngineBinding.swift
+//  FusionEngineBinding.swift
 //  fusion
 //
 //  Created by gtbluesky on 2022/3/10.
@@ -81,7 +81,7 @@ class FusionEngineBinding: NSObject {
                         topContainer.history.append(pageInfo)
                         result(pageInfo)
                         if topContainer.history.count == 1 {
-                            self.addPopGesture(topContainer)
+                            self.addPopGesture()
                         } else {
                             self.removePopGesture()
                         }
@@ -141,7 +141,7 @@ class FusionEngineBinding: NSObject {
                         result(true)
                     }
                     if topContainer.history.count == 1 {
-                        self.addPopGesture(topContainer)
+                        self.addPopGesture()
                     } else {
                         self.removePopGesture()
                     }
@@ -167,7 +167,7 @@ class FusionEngineBinding: NSObject {
                 }
                 result(true)
                 if topContainer.history.count == 1 {
-                    self.addPopGesture(topContainer)
+                    self.addPopGesture()
                 } else {
                     self.removePopGesture()
                 }
@@ -186,46 +186,26 @@ class FusionEngineBinding: NSObject {
         eventChannel?.setStreamHandler(self)
     }
 
-    internal func addPopGesture(_ vc: FusionViewController) {
+    internal func addPopGesture() {
         if (!isReused) {
-            return
-        }
-        if !Fusion.instance.adaptiveGesture {
-            return
-        }
-        if vc.history.count > 1 {
             return
         }
         let vc = UIApplication.roofViewController
         if !(vc is FusionViewController) {
             return
         }
-        let nc = vc?.navigationController
-        if nc == nil {
-            return
-        }
-        if nc?.isNavigationBarHidden == false {
-            return
-        }
-        nc?.addPopGesture()
+        (vc as? FusionPopGestureHandler)?.resumePopGesture()
     }
 
     internal func removePopGesture() {
         if (!isReused) {
             return
         }
-        if !Fusion.instance.adaptiveGesture {
-            return
-        }
         let vc = UIApplication.roofViewController
-        let nc = vc?.navigationController
-        if nc == nil {
+        if !(vc is FusionViewController) {
             return
         }
-        if nc?.isNavigationBarHidden == false {
-            return
-        }
-        nc?.removePopGesture()
+        (vc as? FusionPopGestureHandler)?.pausePopGesture()
     }
 
     internal func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {

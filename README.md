@@ -5,9 +5,11 @@
 
 Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
 
-Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。此外，Fusion 也支持基于 EngineGroup 的多 Engine 模式，以支持 Flutter 页面嵌套在 Native 页面中的场景。
+Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。
 
 不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 优秀的兼容性使得使用者可以更加从容地升级 Flutter 版本，目前支持 Flutter SDK 从 2.0 到 3.x 的全部版本。
+
+Fusion 更加注重细节的处理，重点解决了其他采用复用Engine方案框架中普遍存在的状态栏图标颜色可能出现显示不正确的问题，也解决了 Flutter 混合开发时当栈顶是 Flutter 页面时进入到任务界面其应用名称不显示的问题。
 
 ## 开始使用
 
@@ -56,6 +58,7 @@ class MyApplication : Application(), FusionRouteDelegate {
     override fun pushFlutterRoute(name: String?, arguments: Map<String, Any>?) {
         // Native 跳转 Flutter 页面时被调用
       	// 根据路由 name 跳转对应 FusionActivity 或其子类
+       	// 可在 arguments 中存放参数判断是否需要打开透明页面
       	context?.let {
         	it.startActivity(buildFusionIntent(it, CustomFusionActivity::class.java, name, arguments))
         }
@@ -89,12 +92,13 @@ iOS 侧
     func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?) {
         // Native 跳转 Flutter 页面时被调用
       	// 根据路由 name 跳转对应 FusionViewController 或其子类
+      	// 可在 arguments 中存放参数判断是否需要打开透明页面
         guard let name = name else {
             return
         }
         let nc = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
-        // push和present均支持
+        // 可在 arguments 中存放参数判断是 push 还是 present
         nc?.pushViewController(fusionVc, animated: true)
     }
 }
@@ -104,7 +108,7 @@ iOS 侧
 
 #### 普通页面模式
 
-Android 使用 FusionActivity，启动 FusionActivity（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 设为 false。如果使用自定义FusionActivity其xml配置参考如下：
+Android 通过继承 `FusionActivity` 创建 Flutter 容器，启动 FusionActivity（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 需设为 false。其 xml 配置参考如下：
 
 ```xml
         <activity
@@ -119,18 +123,45 @@ Android 使用 FusionActivity，启动 FusionActivity（或其子类）时需要
 
 
 
-iOS 使用 FusionViewController，可以直接使用，也可通过继承其创建新的 ViewController，`push` 和 `present`均支持。FusionViewController 默认隐藏了 UINavigationController，并且将 iOS 和 Flutter 右滑手势返回兼容，使得 iOS 原生页面和 Flutter 页面都可通过手势返回。
+iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `present` 均支持。FusionViewController 默认隐藏了 UINavigationController。
 
-P.S: 如果存在手势冲突，可以关闭手势自适应模式
+在 iOS 中需要处理原生右滑退出手势和 Flutter 手势冲突的问题，解决方法也很简单：只需在自定义的 Flutter 容器中实现 `FusionPopGestureHandler` 并在对应方法中启用或者关闭原生手势即可，这样可以实现如果当前 Flutter 容器存在多个 Flutter 页面时，右滑手势是退出 Flutter 页面，而当 Flutter 页面只有一个时则右滑退出 Flutter 容器。
+
 ```swift
-Fusion.instance.adaptiveGesture = false
+	// 启用原生手势
+	func resumePopGesture() {
+    		// 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.addPopGesture()
+    }
+
+		// 关闭原生手势
+    func pausePopGesture() {
+      	// 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.removePopGesture()
+    }
 ```
+
+
 
 #### 透明页面模式
 
 Android 侧
 
-使用方式与普通页面模式相似，只是`buildFusionIntent` 方法的参数 `transparent `需设为 true，如果使用自定义FusionActivity其xml配置参考如下：
+使用方式与普通页面模式相似，只是`buildFusionIntent` 方法的参数 `transparent `需设为 true，其 xml 配置参考如下：
 
 ```xml
         <activity
@@ -155,25 +186,25 @@ navController?.present(fusionVc, animated: true)
 
 同时Flutter页面背景也需要设置为透明
 
-> 注意：上述说的透明页面模式是指Flutter容器为透明（包括Flutter页面也为透明），此时可以看到下层的其他原生容器页面内容。另外Flutter页面本身也支持透明，如FlutterA不透明，FlutterB透明页面，从A跳转B，可在FlutterB看到FlutterA内容，此时使用普通页面模式即可。
+> 注意：上述说的透明页面模式是指Flutter容器为透明（包括Flutter页面也为透明），此时可以看到下层的其他原生容器页面内容。另外Flutter页面本身也支持透明，如：FlutterA不透明，FlutterB透明页面，从A跳转B，可在FlutterB看到FlutterA内容，此时应当使用普通页面模式。
 
-#### 嵌套模式
+#### 子页面模式
 
-嵌套模式是指一个或多个 Flutter 页面以子页面形式嵌入到 Native 容器中的场景，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
+子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
 
-Android 使用 FusionFragment 以支持嵌套模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
+Android 使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
-iOS 使用 FusionViewController 并传入 `isReused: false` 以支持嵌套模式。
+iOS 使用 FusionViewController 并传入 `isReused: false` 以支持子页面模式。
 
 ### 3、路由API（FusionNavigator）
 
-open（New）：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API
+open：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API
 
 push：在当前Flutter容器中将对应路由入栈
 
 pop：在当前Flutter容器中将栈顶路由出栈
 
-maybePop（New）：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
+maybePop：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
 
 replace：在当前Flutter容器中将栈顶路由替换为对应路由。目前其他框架均不支持该方法。
 
@@ -183,7 +214,7 @@ P.S. 除页面外其他类型如 Dialog 等请使用 Navigator 的 push 和 pop.
 
 ### 4、Flutter Plugin 注册
 
-框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith`
+框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册
 
 ### 5、自定义 Channel
 
@@ -191,10 +222,10 @@ P.S. 除页面外其他类型如 Dialog 等请使用 Navigator 的 push 和 pop.
 
 Android 侧
 
-①、如果使用的是 FusionFragment 容器，则需在对应的 Activity 类上实现 FusionMessengerProvider 接口，在接口方法中创建 Channel
+①、如果使用的是 FusionFragment 容器，则需在对应的 Activity 类上实现 FusionMessengerHandler 接口，在接口方法中创建 Channel
 
 ```kotlin
-class MyActivity : FragmentActivity(), FusionMessengerProvider {
+class MyActivity : FragmentActivity(), FusionMessengerHandler {
   
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,10 +249,10 @@ class MyActivity : FragmentActivity(), FusionMessengerProvider {
 
 
 
-②、如果使用的是 FusionActivity 容器，则需要创建一个新的 Activity 并继承 FusionActivity 并实现 FusionMessengerProvider 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
+②、如果使用的是 FusionActivity 或 FusionFragmentActivity 容器，则需要创建一个新的 Activity 并继承 FusionActivity 并实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
 
 ```kotlin
-class CustomActivity : FusionActivity(), FusionMessengerProvider {
+class CustomActivity : FusionActivity(), FusionMessengerHandler {
   
     override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
         val channel = MethodChannel(binaryMessenger, "自定义的channel名")
@@ -241,31 +272,10 @@ class CustomActivity : FusionActivity(), FusionMessengerProvider {
 
 iOS 侧
 
-①、如果直接使用了 FusionViewController 作为 Flutter 容器
+创建一个继承自 FusionViewController 的 ViewController 作为 Flutter 容器，实现 FusionMessengerHandler 协议，在协议方法中创建 Channel
 
 ```swift
-let fusionVc = FusionViewController(routeName: name, routeArguments: arguments)
-let channel = FlutterMethodChannel(name: "自定义的channel名", binaryMessenger: fusionVc.binaryMessenger)
-channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-    
-}
-```
-
-```swift
-deinit {
-  channel?.setMethodCallHandler(nil)
-  channel = nil
-}
-```
-
-### 
-
-②、如果创建一个继承自 FusionViewController 的 ViewController 作为 Flutter 容器
-
-既可以按照①中的方式创建channel，也可以实现 FusionMessengerProvider 协议，在协议方法中创建 Channel
-
-```swift
-class CustomViewController : FusionViewController, FusionMessengerProvider {
+class CustomViewController : FusionViewController, FusionMessengerHandler {
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
@@ -283,7 +293,7 @@ class CustomViewController : FusionViewController, FusionMessengerProvider {
 > BasicMessageChannel 和 EventChannel 使用也是类似
 
 ### 6、生命周期
-支持 `页面模式` 下监听 Flutter 页面的生命周期。
+目前仅支持 `页面模式` 下监听 Flutter 页面的生命周期。
 - ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听
