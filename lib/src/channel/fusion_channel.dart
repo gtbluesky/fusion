@@ -54,6 +54,17 @@ class FusionChannel {
           final name = call.arguments['name'];
           FusionNavigator.instance.remove(name);
           break;
+        case 'restore' :
+          final List<Map<String, dynamic>> list = [];
+          call.arguments?.forEach((element) {
+            list.add(element.cast<String, dynamic>());
+          });
+          if (list.isNotEmpty) {
+            for (var element in list) {
+              FusionNavigator.instance.restore(element);
+            }
+          }
+          break;
         case 'notifyPageVisible':
           final route = PageLifecycleBinding.instance.topRoute;
           PageLifecycleBinding.instance.dispatchPageVisibleEvent(route);
@@ -145,10 +156,10 @@ class FusionChannel {
     );
   }
 
-  Future<List<Map<String, dynamic>>?> restoreHistory() async {
-    final result = await _methodChannel.invokeListMethod<Map<String, dynamic>>('restoreHistory');
+  Future<List<Map<String, dynamic>>> restoreHistory() async {
+    final result = await _methodChannel.invokeListMethod<Map>('restoreHistory');
     final List<Map<String, dynamic>> list = [];
-    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+    result?.forEach((element) {
       list.add(element.cast<String, dynamic>());
     });
     return list;

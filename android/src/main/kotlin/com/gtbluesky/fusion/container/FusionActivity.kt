@@ -17,6 +17,7 @@ import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.platform.PlatformPlugin
+import java.io.Serializable
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
 
@@ -37,10 +38,15 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        val restoreMode =
-            savedInstanceState?.getBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) ?: false
-        Handler(Looper.getMainLooper()).post {
-            engineBinding?.push(routeName, routeArguments)
+        val restoredHistory =
+            savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) as? List<Map<String, Any?>>
+        if (restoredHistory != null) {
+            history.addAll(restoredHistory)
+            engineBinding?.restore(restoredHistory)
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                engineBinding?.push(routeName, routeArguments)
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
@@ -69,7 +75,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, true)
+        outState.putSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, history as? Serializable)
     }
 
     override fun shouldAttachEngineToActivity(): Boolean {

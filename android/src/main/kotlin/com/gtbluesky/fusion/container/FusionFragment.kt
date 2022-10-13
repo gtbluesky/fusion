@@ -53,10 +53,15 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
-        val restoreMode =
-            savedInstanceState?.getBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) ?: false
-        Handler(Looper.getMainLooper()).post {
-            engineBinding?.push(routeName, routeArguments)
+        val restoredHistory =
+            savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) as? List<Map<String, Any?>>
+        if (restoredHistory != null) {
+            history.addAll(restoredHistory)
+            engineBinding?.restore(restoredHistory)
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                engineBinding?.push(routeName, routeArguments)
+            }
         }
         if (isReused) {
             return
@@ -110,7 +115,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, true)
+        outState.putSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, history as? Serializable)
     }
 
     override fun shouldAttachEngineToActivity(): Boolean {

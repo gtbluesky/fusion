@@ -121,11 +121,11 @@ class _FusionAppState extends State<FusionApp> {
   }
 
   _restoreHistoryAfterHotRestart() async {
-    List<Map<String, dynamic>>? list = await FusionChannel.instance.restoreHistory();
-    if (list?.isNotEmpty == true) {
-      list?.forEach((element) {
+    final list = await FusionChannel.instance.restoreHistory();
+    if (list.isNotEmpty) {
+      for (var element in list) {
         FusionNavigator.instance.restore(element);
-      });
+      }
     }
   }
 }

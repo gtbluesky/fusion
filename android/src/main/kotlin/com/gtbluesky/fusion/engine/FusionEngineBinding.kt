@@ -236,6 +236,13 @@ class FusionEngineBinding(
         )
     }
 
+    internal fun restore(history: List<Map<String, Any?>>) {
+        channel?.invokeMethod(
+            "restore",
+            history
+        )
+    }
+
     internal fun notifyPageVisible() {
         channel?.invokeMethod("notifyPageVisible", null)
     }
