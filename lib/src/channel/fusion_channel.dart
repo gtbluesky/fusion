@@ -144,4 +144,13 @@ class FusionChannel {
       },
     );
   }
+
+  Future<List<Map<String, dynamic>>?> restoreHistory() async {
+    final result = await _methodChannel.invokeListMethod<Map<String, dynamic>>('restoreHistory');
+    final List<Map<String, dynamic>> list = [];
+    result?.cast<Map<dynamic, dynamic>>().forEach((element) {
+      list.add(element.cast<String, dynamic>());
+    });
+    return list;
+  }
 }

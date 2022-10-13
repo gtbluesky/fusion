@@ -179,6 +179,12 @@ class FusionEngineBinding: NSObject {
                 let msgBody = dict["msgBody"] as? Dictionary<String, Any>
                 FusionStackManager.instance.sendMessage(msgName, msgBody)
                 result(nil)
+            case "restoreHistory":
+                if self.isReused {
+                    result(self.history)
+                } else {
+                    result(nil)
+                }
             default:
                 result(FlutterMethodNotImplemented)
             }

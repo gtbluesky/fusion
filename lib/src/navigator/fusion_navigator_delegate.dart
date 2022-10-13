@@ -60,6 +60,35 @@ class FusionNavigatorDelegate {
     return _navigator.push(route);
   }
 
+  void restore<T extends Object?>(Map<String, dynamic> pageInfo) async {
+    String routeName = pageInfo['name'];
+    Map<String, dynamic>? arguments = (pageInfo['arguments'] as Map?)?.cast();
+    final route = FusionPageRoute<T>(
+      builder: (_) {
+        FusionPageFactory? pageFactory =
+            routeMap[routeName] ?? routeMap[kUnknownRoute];
+        final page =
+        pageFactory != null ? pageFactory(arguments) : const UnknownPage();
+        return FusionWillPopScope(
+          onWillPopResult: ([result]) async {
+            FusionNavigator.instance.pop(result);
+            return false;
+          },
+          child: page,
+        );
+      },
+      settings: RouteSettings(
+        name: routeName,
+        arguments: arguments,
+      ),
+      home: pageInfo['home'],
+      restore: true,
+    );
+    pageInfo['route'] = route;
+    _history.add(pageInfo);
+    _navigator.push(route);
+  }
+
   Future<void> replace(String routeName,
       [Map<String, dynamic>? arguments]) async {
     Map<String, dynamic>? newPageInfo =

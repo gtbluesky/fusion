@@ -5,6 +5,8 @@ import 'package:fusion/src/widget/fusion_will_pop_scope.dart';
 class FusionPageRoute<T> extends MaterialPageRoute<T> {
   /// 容器内的Flutter首页
   final bool home;
+  /// 恢复的页面
+  final bool restore;
   final List<WillPopCallback> _scopedWillPopCallbacks = <WillPopCallback>[];
   FusionWillPopCallback? _fusionWillPopCallback;
   late TickerFuture _tickerFuture;
@@ -13,6 +15,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
     required WidgetBuilder builder,
     required RouteSettings? settings,
     this.home = false,
+    this.restore = false,
     bool maintainState = true,
     bool fullscreenDialog = false,
   }) : super(
@@ -26,7 +29,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
 
   @override
   Duration get transitionDuration {
-    if (home == true) {
+    if (home || restore) {
       return const Duration(milliseconds: 0);
     } else {
       return FusionData.transitionDuration;
@@ -35,7 +38,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
 
   @override
   Duration get reverseTransitionDuration {
-    if (home == true) {
+    if (home) {
       return const Duration(milliseconds: 0);
     } else {
       return FusionData.reverseTransitionDuration;

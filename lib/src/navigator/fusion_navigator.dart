@@ -15,6 +15,10 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.push(routeName, routeArguments);
   }
 
+  void restore<T extends Object?>(Map<String, dynamic> pageInfo) {
+    FusionNavigatorDelegate.instance.restore(pageInfo);
+  }
+
   Future<void> replace(String routeName, [Map<String, dynamic>? routeArguments]) async {
     return FusionNavigatorDelegate.instance.replace(routeName, routeArguments);
   }

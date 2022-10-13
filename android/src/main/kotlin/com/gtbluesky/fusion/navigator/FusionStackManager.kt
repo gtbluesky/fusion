@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
     val stack = mutableListOf<WeakReference<Activity>>()
-    private val nestStack = mutableListOf<WeakReference<FusionContainer>>()
+    private val childPageStack = mutableListOf<WeakReference<FusionContainer>>()
 
     fun add(activity: Activity) {
         stack.add(WeakReference(activity))
@@ -35,23 +35,23 @@ internal object FusionStackManager {
     }
 
     fun addChild(container: FusionContainer) {
-        nestStack.add(WeakReference(container))
+        childPageStack.add(WeakReference(container))
     }
 
     fun removeChild(container: FusionContainer) {
-        nestStack.removeAll { it.get() == container }
+        childPageStack.removeAll { it.get() == container }
     }
 
     fun notifyEnterForeground() {
         Fusion.engineBinding?.notifyEnterForeground()
-        nestStack.forEach {
+        childPageStack.forEach {
             it.get()?.engineBinding()?.notifyEnterForeground()
         }
     }
 
     fun notifyEnterBackground() {
         Fusion.engineBinding?.notifyEnterBackground()
-        nestStack.forEach {
+        childPageStack.forEach {
             it.get()?.engineBinding()?.notifyEnterBackground()
         }
     }
@@ -60,7 +60,7 @@ internal object FusionStackManager {
         val msg = mutableMapOf<String, Any?>("msgName" to msgName)
         msg["msgBody"] = msgBody
         Fusion.engineBinding?.sendMessage(msg)
-        nestStack.forEach {
+        childPageStack.forEach {
             it.get()?.engineBinding()?.sendMessage(msg)
         }
         // 普通Activity

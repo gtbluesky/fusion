@@ -174,6 +174,13 @@ class FusionEngineBinding(
                     FusionStackManager.sendMessage(msgName, msgBody)
                     result.success(null)
                 }
+                "restoreHistory" -> {
+                    if (isReused) {
+                        result.success(history)
+                    } else {
+                        result.success(null)
+                    }
+                }
                 else -> {
                     result.notImplemented()
                 }

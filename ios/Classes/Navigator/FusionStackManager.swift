@@ -10,7 +10,7 @@ import UIKit
 
 internal class FusionStackManager {
     var pageStack = [WeakReference<FusionViewController>]()
-    private var nestStack = [WeakReference<FusionViewController>]()
+    private var childPageStack = [WeakReference<FusionViewController>]()
     static let instance = FusionStackManager()
 
     private init() {
@@ -53,18 +53,18 @@ internal class FusionStackManager {
     }
 
     func addChild(_ container: FusionViewController) {
-        nestStack.append(WeakReference(container))
+        childPageStack.append(WeakReference(container))
     }
 
     func removeChild() {
-        nestStack.removeAll {
+        childPageStack.removeAll {
             $0.value == nil
         }
     }
 
     func notifyEnterForeground() {
         Fusion.instance.engineBinding?.notifyEnterForeground()
-        nestStack.forEach {
+        childPageStack.forEach {
             if let vc = $0.value {
                 vc.engineBinding?.notifyEnterForeground()
             }
@@ -73,7 +73,7 @@ internal class FusionStackManager {
 
     func notifyEnterBackground() {
         Fusion.instance.engineBinding?.notifyEnterBackground()
-        nestStack.forEach {
+        childPageStack.forEach {
             if let vc = $0.value {
                 vc.engineBinding?.notifyEnterBackground()
             }
@@ -84,7 +84,7 @@ internal class FusionStackManager {
         var msg: Dictionary<String, Any?> = ["msgName": msgName]
         msg["msgBody"] = msgBody
         Fusion.instance.engineBinding?.sendMessage(msg)
-        nestStack.forEach {
+        childPageStack.forEach {
             $0.value?.engineBinding?.sendMessage(msg)
         }
         UIApplication.roofNavigationController?.viewControllers.forEach {
