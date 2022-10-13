@@ -17,7 +17,7 @@ import io.flutter.embedding.engine.systemchannels.PlatformChannel
 object Fusion {
     var engineGroup: FlutterEngineGroup? = null
         private set
-    internal var defaultEngine: FlutterEngine? = null
+    var defaultEngine: FlutterEngine? = null
         private set
     internal var engineBinding: FusionEngineBinding? = null
         private set

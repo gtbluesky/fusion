@@ -10,9 +10,9 @@ import UIKit
 
 public class Fusion: NSObject {
     @objc public static let instance = Fusion()
-    public var engineGroup: FlutterEngineGroup? = nil
+    public private(set) var engineGroup: FlutterEngineGroup? = nil
+    public private(set) var defaultEngine: FlutterEngine? = nil
     internal var engineBinding: FusionEngineBinding? = nil
-    var defaultEngine: FlutterEngine? = nil
     var delegate: FusionRouteDelegate? = nil
 
     private override init() {

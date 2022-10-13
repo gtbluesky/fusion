@@ -1,6 +1,14 @@
+## 2.0.1
+
+* Exposes Fusion's `defaultEngine` instance.
+
 ## 2.0.0
 
 * BREAKING CHANGE: Change to reused engine project.
+
+## 1.1.8
+
+* Exposes `FlutterEngineGroup` instance.
 
 ## 1.1.7
 

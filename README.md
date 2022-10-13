@@ -52,13 +52,13 @@ class MyApplication : Application(), FusionRouteDelegate {
 
     override fun pushNativeRoute(name: String?, arguments: Map<String, Any>?) {
         // Flutter 跳转 Native 页面时被调用
-      	// 根据路由 name 跳转对应原生 Activity
+        // 根据路由 name 跳转对应原生 Activity
     }
 
     override fun pushFlutterRoute(name: String?, arguments: Map<String, Any>?) {
         // Native 跳转 Flutter 页面时被调用
-      	// 根据路由 name 跳转对应 FusionActivity 或其子类
-       	// 可在 arguments 中存放参数判断是否需要打开透明页面
+        // 根据路由 name 跳转对应 FusionActivity 或其子类
+        // 可在 arguments 中存放参数判断是否需要打开透明页面
       	context?.let {
         	it.startActivity(buildFusionIntent(it, CustomFusionActivity::class.java, name, arguments))
         }
@@ -86,13 +86,13 @@ iOS 侧
     
     func pushNativeRoute(name: String?, arguments: Dictionary<String, Any>?) {
         // Flutter 跳转 Native 页面时被调用
-      	// 根据路由 name 跳转对应原生 VC
+        // 根据路由 name 跳转对应原生 VC
     }
     
     func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?) {
         // Native 跳转 Flutter 页面时被调用
-      	// 根据路由 name 跳转对应 FusionViewController 或其子类
-      	// 可在 arguments 中存放参数判断是否需要打开透明页面
+        // 根据路由 name 跳转对应 FusionViewController 或其子类
+        // 可在 arguments 中存放参数判断是否需要打开透明页面
         guard let name = name else {
             return
         }
@@ -128,9 +128,9 @@ iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `pres
 在 iOS 中需要处理原生右滑退出手势和 Flutter 手势冲突的问题，解决方法也很简单：只需在自定义的 Flutter 容器中实现 `FusionPopGestureHandler` 并在对应方法中启用或者关闭原生手势即可，这样可以实现如果当前 Flutter 容器存在多个 Flutter 页面时，右滑手势是退出 Flutter 页面，而当 Flutter 页面只有一个时则右滑退出 Flutter 容器。
 
 ```swift
-	// 启用原生手势
-	func resumePopGesture() {
-    		// 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
+    // 启用原生手势
+    func resumePopGesture() {
+        // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
         let nc = navigationController
         if nc == nil {
             return
@@ -141,9 +141,9 @@ iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `pres
         nc?.addPopGesture()
     }
 
-		// 关闭原生手势
+    // 关闭原生手势
     func pausePopGesture() {
-      	// 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
+        // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
         let nc = navigationController
         if nc == nil {
             return
