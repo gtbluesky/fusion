@@ -8,6 +8,6 @@
 import Foundation
 
 @objc public protocol FusionPopGestureHandler {
-    func resumePopGesture()
-    func pausePopGesture()
+    func enablePopGesture()
+    func disablePopGesture()
 }

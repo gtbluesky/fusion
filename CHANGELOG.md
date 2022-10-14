@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Fixes memory leak on iOS platform.
+* Fixes replace method.
+
 ## 2.0.1
 
 * Exposes Fusion's `defaultEngine` instance.

@@ -1,7 +1,5 @@
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
-import 'package:fusion/src/constant/fusion_constant.dart';
 import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
@@ -66,7 +64,6 @@ class FusionApp extends StatefulWidget {
     Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
     FusionNavigatorDelegate.instance.routeMap = routeMap;
-    FusionData.isReused = ui.window.defaultRouteName == kReuseMode;
     FusionData.transitionDuration = transitionDuration;
     FusionData.reverseTransitionDuration = reverseTransitionDuration;
   }

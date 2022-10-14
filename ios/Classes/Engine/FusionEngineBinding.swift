@@ -49,7 +49,7 @@ class FusionEngineBinding: NSObject {
                 let arguments = dict["arguments"] as? Dictionary<String, Any>
                 let isFlutterPage = dict["flutter"] as? Bool ?? false
                 if isFlutterPage {
-                    if self.isReused == false {
+                    if !self.isReused {
                         if self.container?.history.isEmpty == true {
                             // 在原Flutter容器打开Flutter页面
                             // 即用户可见的第一个页面
@@ -200,7 +200,7 @@ class FusionEngineBinding: NSObject {
         if !(vc is FusionViewController) {
             return
         }
-        (vc as? FusionPopGestureHandler)?.resumePopGesture()
+        (vc as? FusionPopGestureHandler)?.enablePopGesture()
     }
 
     internal func removePopGesture() {
@@ -211,7 +211,7 @@ class FusionEngineBinding: NSObject {
         if !(vc is FusionViewController) {
             return
         }
-        (vc as? FusionPopGestureHandler)?.pausePopGesture()
+        (vc as? FusionPopGestureHandler)?.disablePopGesture()
     }
 
     internal func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {

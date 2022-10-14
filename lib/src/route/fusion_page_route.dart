@@ -9,7 +9,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
   final bool restore;
   final List<WillPopCallback> _scopedWillPopCallbacks = <WillPopCallback>[];
   FusionWillPopCallback? _fusionWillPopCallback;
-  late TickerFuture _tickerFuture;
+  TickerFuture? _tickerFuture;
 
   FusionPageRoute({
     required WidgetBuilder builder,
@@ -25,7 +25,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
           fullscreenDialog: fullscreenDialog,
         );
 
-  TickerFuture get tickerFuture => _tickerFuture;
+  TickerFuture? get tickerFuture => _tickerFuture;
 
   @override
   Duration get transitionDuration {
@@ -83,7 +83,7 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
   @override
   TickerFuture didPush() {
     _tickerFuture = super.didPush();
-    return _tickerFuture;
+    return _tickerFuture!;
   }
 
   /// 处理iOS滑动退出

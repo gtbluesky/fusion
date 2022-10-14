@@ -16,13 +16,13 @@ internal class FusionStackManager {
     private init() {
     }
 
-    func add(_ vc: FusionViewController) {
-        pageStack.append(WeakReference(vc))
+    func add(_ container: FusionViewController) {
+        pageStack.append(WeakReference(container))
     }
 
-    func remove() {
+    func remove(_ container: FusionViewController) {
         pageStack.removeAll {
-            $0.value == nil
+            $0.value == container
         }
     }
 
@@ -56,9 +56,9 @@ internal class FusionStackManager {
         childPageStack.append(WeakReference(container))
     }
 
-    func removeChild() {
+    func removeChild(_ container: FusionViewController) {
         childPageStack.removeAll {
-            $0.value == nil
+            $0.value == container
         }
     }
 

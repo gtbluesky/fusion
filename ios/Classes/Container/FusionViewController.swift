@@ -65,12 +65,6 @@ open class FusionViewController: FlutterViewController {
         if isReused {
             attachToFlutterEngine()
         }
-        // 即使在UIViewController的viewDidAppear下，application也可能在inactive模式，此时如果提交渲染会导致GPU后台渲染而crash
-        // https://github.com/flutter/flutter/issues/57973
-        // https://github.com/flutter/engine/pull/18742
-        if UIApplication.shared.applicationState == .active && isReused {
-            surfaceUpdated(true)
-        }
         super.viewDidAppear(animated)
         if (!isReused) {
             return
@@ -84,20 +78,21 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func didMove(toParent parent: UIViewController?) {
-        // pop时调用
+        super.didMove(toParent: parent)
+        // parent == nil 为 pop
+        // parent != nil 为 push
         if parent == nil && isReused {
             detachFromFlutterEngine()
         }
-        super.didMove(toParent: parent)
     }
 
     open override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag, completion:  {
+        super.dismiss(animated: flag, completion: { [weak self] in
             if let completion = completion {
                 completion()
             }
-            if self.isReused {
-                self.detachFromFlutterEngine()
+            if self?.isReused == true {
+                self?.detachFromFlutterEngine()
             }
         })
     }
@@ -117,37 +112,31 @@ open class FusionViewController: FlutterViewController {
     }
 
     private func attachToFlutterEngine() {
-        if engine?.viewController == self {
+        if engineBinding?.engine?.viewController == self {
             return
         }
-        engine?.viewController = self
+        engineBinding?.engine?.viewController = self
     }
 
     private func detachFromFlutterEngine() {
-        if engine?.viewController != self {
+        if engineBinding?.engine?.viewController != self {
             return
         }
-        surfaceUpdated(false)
-        engine?.viewController = nil
+        engineBinding?.engine?.viewController = nil
     }
 
-    private func surfaceUpdated(_ appeared: Bool) {
-        if engine?.viewController == self {
-            let selector = NSSelectorFromString("surfaceUpdated:")
-            if super.responds(to: selector) == true {
-                super.perform(selector, with: appeared)
-            }
-        }
-    }
-
-    deinit {
+    private func destroy() {
         history.removeAll()
         if !isReused {
-            FusionStackManager.instance.removeChild()
+            FusionStackManager.instance.removeChild(self)
         } else {
-            FusionStackManager.instance.remove()
+            FusionStackManager.instance.remove(self)
         }
         engineBinding?.pop()
         engineBinding = nil
+    }
+
+    deinit {
+        destroy()
     }
 }

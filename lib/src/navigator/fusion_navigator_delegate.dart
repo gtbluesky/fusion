@@ -120,12 +120,19 @@ class FusionNavigatorDelegate {
     final oldPageInfo = _history.removeLast();
     final oldRoute = oldPageInfo['route'] as FusionPageRoute;
     _history.add(newPageInfo);
-    oldRoute.tickerFuture.whenCompleteOrCancel(() {
+    if (oldRoute.tickerFuture == null) {
       _navigator.replace(
         oldRoute: oldRoute,
         newRoute: newRoute,
       );
-    });
+    } else {
+      oldRoute.tickerFuture?.whenCompleteOrCancel(() {
+        _navigator.replace(
+          oldRoute: oldRoute,
+          newRoute: newRoute,
+        );
+      });
+    }
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

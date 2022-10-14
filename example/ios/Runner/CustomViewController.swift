@@ -26,7 +26,7 @@ class CustomViewController: FusionViewController, FusionMessengerHandler, Fusion
         channel = nil
     }
 
-    func resumePopGesture() {
+    func enablePopGesture() {
         let nc = navigationController
         if nc == nil {
             return
@@ -37,7 +37,7 @@ class CustomViewController: FusionViewController, FusionMessengerHandler, Fusion
         nc?.addPopGesture()
     }
 
-    func pausePopGesture() {
+    func disablePopGesture() {
         let nc = navigationController
         if nc == nil {
             return

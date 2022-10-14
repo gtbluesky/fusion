@@ -129,7 +129,7 @@ iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `pres
 
 ```swift
     // 启用原生手势
-    func resumePopGesture() {
+    func enablePopGesture() {
         // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
         let nc = navigationController
         if nc == nil {
@@ -142,7 +142,7 @@ iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `pres
     }
 
     // 关闭原生手势
-    func pausePopGesture() {
+    func disablePopGesture() {
         // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
         let nc = navigationController
         if nc == nil {
