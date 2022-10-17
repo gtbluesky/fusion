@@ -16,6 +16,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
 
@@ -58,7 +59,9 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun onResume() {
         super.onResume()
         performAttach()
-        engineBinding?.latestStyle { updateSystemUiOverlays() }
+        engineBinding?.latestStyle { systemChromeStyle ->
+            updateSystemUiOverlays(systemChromeStyle)
+        }
     }
 
     override fun onPause() {
@@ -146,13 +149,11 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         platformPlugin = null
     }
 
-    override fun updateSystemUiOverlays() {
+    private fun updateSystemUiOverlays(systemChromeStyle: PlatformChannel.SystemChromeStyle) {
         try {
             val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
             field?.isAccessible = true
-            Fusion.currentTheme?.let {
-                field?.set(platformPlugin, it)
-            }
+            field?.set(platformPlugin, systemChromeStyle)
         } catch (e: Exception) {
             e.printStackTrace()
         }

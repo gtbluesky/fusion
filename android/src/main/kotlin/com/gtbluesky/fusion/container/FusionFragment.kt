@@ -17,6 +17,7 @@ import io.flutter.embedding.android.ExclusiveAppComponent
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
 
@@ -24,12 +25,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     private var isReused = false
     private val history = mutableListOf<Map<String, Any?>>()
-    private var engineBinding: FusionEngineBinding? = null
+    internal var engineBinding: FusionEngineBinding? = null
     private var platformPlugin: PlatformPlugin? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
-
-    override fun engineBinding() = engineBinding
 
     override fun history() = history
 
@@ -86,7 +85,9 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         super.onResume()
         if (isReused) {
             performAttach()
-            engineBinding?.latestStyle { updateSystemUiOverlays() }
+            engineBinding?.latestStyle { systemChromeStyle ->
+                updateSystemUiOverlays(systemChromeStyle)
+            }
         } else {
             val engine = engineBinding?.engine ?: return
             (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
@@ -206,13 +207,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         platformPlugin = null
     }
 
-    override fun updateSystemUiOverlays() {
+    private fun updateSystemUiOverlays(systemChromeStyle: PlatformChannel.SystemChromeStyle) {
         try {
             val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
             field?.isAccessible = true
-            Fusion.currentTheme?.let {
-                field?.set(platformPlugin, it)
-            }
+            field?.set(platformPlugin, systemChromeStyle)
         } catch (e: Exception) {
             e.printStackTrace()
         }

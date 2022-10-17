@@ -3,19 +3,22 @@ package com.gtbluesky.fusion.navigator
 import android.app.Activity
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.container.FusionContainer
+import com.gtbluesky.fusion.container.FusionFragment
 import com.gtbluesky.fusion.notification.PageNotificationListener
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
     val stack = mutableListOf<WeakReference<Activity>>()
-    private val childPageStack = mutableListOf<WeakReference<FusionContainer>>()
+    private val childPageStack = mutableListOf<WeakReference<FusionFragment>>()
 
     fun add(activity: Activity) {
         stack.add(WeakReference(activity))
     }
 
     fun remove(activity: Activity) {
-        stack.removeAll { it.get() == activity }
+        stack.removeAll {
+            it.get() == activity || it.get() == null
+        }
     }
 
     fun move2Top(activity: Activity) {
@@ -34,25 +37,27 @@ internal object FusionStackManager {
         getTopContainer()?.finish()
     }
 
-    fun addChild(container: FusionContainer) {
+    fun addChild(container: FusionFragment) {
         childPageStack.add(WeakReference(container))
     }
 
-    fun removeChild(container: FusionContainer) {
-        childPageStack.removeAll { it.get() == container }
+    fun removeChild(container: FusionFragment) {
+        childPageStack.removeAll {
+            it.get() == container || it.get() == null
+        }
     }
 
     fun notifyEnterForeground() {
         Fusion.engineBinding?.notifyEnterForeground()
         childPageStack.forEach {
-            it.get()?.engineBinding()?.notifyEnterForeground()
+            it.get()?.engineBinding?.notifyEnterForeground()
         }
     }
 
     fun notifyEnterBackground() {
         Fusion.engineBinding?.notifyEnterBackground()
         childPageStack.forEach {
-            it.get()?.engineBinding()?.notifyEnterBackground()
+            it.get()?.engineBinding?.notifyEnterBackground()
         }
     }
 
@@ -61,7 +66,7 @@ internal object FusionStackManager {
         msg["msgBody"] = msgBody
         Fusion.engineBinding?.sendMessage(msg)
         childPageStack.forEach {
-            it.get()?.engineBinding()?.sendMessage(msg)
+            it.get()?.engineBinding?.sendMessage(msg)
         }
         // 普通Activity
         stack.forEach {

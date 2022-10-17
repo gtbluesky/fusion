@@ -10,12 +10,12 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-class FusionEngineBinding(
+internal class FusionEngineBinding(
     private val isReused: Boolean
 ) {
     private var container: FusionContainer? = null
     private var channel: MethodChannel? = null
-    internal var engine: FlutterEngine? = null
+    var engine: FlutterEngine? = null
     private var eventChannel: EventChannel? = null
     private var eventSink: EventChannel.EventSink? = null
     private val history: List<Map<String, Any?>>
@@ -37,7 +37,7 @@ class FusionEngineBinding(
         }
     }
 
-    internal fun attach(container: FusionContainer? = null) {
+    fun attach(container: FusionContainer? = null) {
         channel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "push" -> {
@@ -197,7 +197,7 @@ class FusionEngineBinding(
         })
     }
 
-    internal fun push(name: String, arguments: Map<String, Any>? = null) {
+    fun push(name: String, arguments: Map<String, Any>? = null) {
         channel?.invokeMethod(
             "push",
             mapOf(
@@ -207,7 +207,7 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun replace(name: String, arguments: Map<String, Any>?) {
+    fun replace(name: String, arguments: Map<String, Any>?) {
         channel?.invokeMethod(
             "replace",
             mapOf(
@@ -217,7 +217,7 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun pop(active: Boolean = false, result: Any? = null) {
+    fun pop(active: Boolean = false, result: Any? = null) {
         channel?.invokeMethod(
             "pop",
             mapOf(
@@ -227,7 +227,7 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun remove(name: String) {
+    fun remove(name: String) {
         channel?.invokeMethod(
             "remove",
             mapOf(
@@ -236,34 +236,35 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun restore(history: List<Map<String, Any?>>) {
+    fun restore(history: List<Map<String, Any?>>) {
         channel?.invokeMethod(
             "restore",
             history
         )
     }
 
-    internal fun notifyPageVisible() {
+    fun notifyPageVisible() {
         channel?.invokeMethod("notifyPageVisible", null)
     }
 
-    internal fun notifyPageInvisible() {
+    fun notifyPageInvisible() {
         channel?.invokeMethod("notifyPageInvisible", null)
     }
 
-    internal fun notifyEnterForeground() {
+    fun notifyEnterForeground() {
         channel?.invokeMethod("notifyEnterForeground", null)
     }
 
-    internal fun notifyEnterBackground() {
+    fun notifyEnterBackground() {
         channel?.invokeMethod("notifyEnterBackground", null)
     }
 
-    internal fun latestStyle(callback: () -> Unit) {
+    fun latestStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
         channel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
             override fun success(result: Any?) {
-                Fusion.currentTheme = decodeSystemChromeStyle(result as? Map<String, Any>)
-                callback()
+                val systemChromeStyle = decodeSystemChromeStyle(result as? Map<String, Any>)
+                    ?: return
+                callback(systemChromeStyle)
             }
 
             override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {}
@@ -307,11 +308,11 @@ class FusionEngineBinding(
         )
     }
 
-    internal fun sendMessage(msg: Map<String, Any?>) {
+    fun sendMessage(msg: Map<String, Any?>) {
         eventSink?.success(msg)
     }
 
-    internal fun detach() {
+    fun detach() {
         container = null
         channel?.setMethodCallHandler(null)
         channel = null

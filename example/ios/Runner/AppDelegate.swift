@@ -37,7 +37,7 @@ import fusion
         if transparent {
             fusionVc.isViewOpaque = false
             fusionVc.modalPresentationStyle = .overCurrentContext
-            navController?.present(fusionVc, animated: true)
+            navController?.present(fusionVc, animated: false)
         } else {
             navController?.pushViewController(fusionVc, animated: true)
         }

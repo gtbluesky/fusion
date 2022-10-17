@@ -13,7 +13,7 @@ public class Fusion: NSObject {
     public private(set) var engineGroup: FlutterEngineGroup? = nil
     public private(set) var defaultEngine: FlutterEngine? = nil
     internal var engineBinding: FusionEngineBinding? = nil
-    var delegate: FusionRouteDelegate? = nil
+    internal var delegate: FusionRouteDelegate? = nil
 
     private override init() {
         super.init()

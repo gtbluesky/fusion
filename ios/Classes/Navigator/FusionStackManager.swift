@@ -13,8 +13,7 @@ internal class FusionStackManager {
     private var childPageStack = [WeakReference<FusionViewController>]()
     static let instance = FusionStackManager()
 
-    private init() {
-    }
+    private init() {}
 
     func add(_ container: FusionViewController) {
         pageStack.append(WeakReference(container))
@@ -22,7 +21,7 @@ internal class FusionStackManager {
 
     func remove(_ container: FusionViewController) {
         pageStack.removeAll {
-            $0.value == container
+            $0.value == container || $0.value == nil
         }
     }
 
@@ -48,7 +47,11 @@ internal class FusionStackManager {
                 nc?.popViewController(animated: true)
             }
         } else {
-            vc?.dismiss(animated: true)
+            if let vc = vc as? FusionViewController {
+                vc.dismiss(animated: vc.isViewOpaque)
+            } else {
+                vc?.dismiss(animated: true)
+            }
         }
     }
 
@@ -58,7 +61,7 @@ internal class FusionStackManager {
 
     func removeChild(_ container: FusionViewController) {
         childPageStack.removeAll {
-            $0.value == container
+            $0.value == container || $0.value == nil
         }
     }
 

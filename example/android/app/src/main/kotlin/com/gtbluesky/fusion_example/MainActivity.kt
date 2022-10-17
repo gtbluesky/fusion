@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
         activityMainBinding.tvFlutterActivity.setOnClickListener {
-            FusionNavigator.open("/test", mapOf("title" to "Android Flutter Page"))
+            FusionNavigator.open("/lifecycle", mapOf("title" to "Android Flutter Page"))
         }
         activityMainBinding.tvTransparentFlutterActivity.setOnClickListener {
             FusionNavigator.open(

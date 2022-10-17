@@ -178,10 +178,10 @@ iOS 侧
 
 使用方式与普通页面模式相似，区别如下：
 
-```swi
+```swift
 fusionVc.isViewOpaque = false
 fusionVc.modalPresentationStyle = .overCurrentContext
-navController?.present(fusionVc, animated: true)
+navController?.present(fusionVc, animated: false)
 ```
 
 同时Flutter页面背景也需要设置为透明
@@ -263,7 +263,7 @@ class CustomActivity : FusionActivity(), FusionMessengerHandler {
   
     override fun releaseFlutterChannel() {
         channel?.setMethodCallHandler(null)
-        channle = null
+        channel = null
     }
 }
 ```

@@ -12,7 +12,6 @@ import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
-import io.flutter.embedding.engine.systemchannels.PlatformChannel
 
 object Fusion {
     var engineGroup: FlutterEngineGroup? = null
@@ -24,7 +23,6 @@ object Fusion {
     internal lateinit var delegate: FusionRouteDelegate
         private set
     private lateinit var context: Application
-    internal var currentTheme: PlatformChannel.SystemChromeStyle? = null
     private var lifecycleCallback: Application.ActivityLifecycleCallbacks? = null
 
     @UiThread
@@ -48,7 +46,6 @@ object Fusion {
     fun uninstall() {
         context.unregisterActivityLifecycleCallbacks(lifecycleCallback)
         lifecycleCallback = null
-        currentTheme = null
         engineBinding?.detach()
         engineBinding = null
         engineGroup = null

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class FusionEngineBinding: NSObject {
+internal class FusionEngineBinding: NSObject {
     private let isReused: Bool
     weak private var container: FusionViewController? = nil
     private var channel: FlutterMethodChannel? = nil
@@ -37,7 +37,7 @@ class FusionEngineBinding: NSObject {
         eventChannel = FlutterEventChannel(name: FusionConstant.FUSION_EVENT_CHANNEL, binaryMessenger: engine.binaryMessenger)
     }
 
-    internal func attach(_ container: FusionViewController? = nil) {
+    func attach(_ container: FusionViewController? = nil) {
         self.container = container
         channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
@@ -192,7 +192,7 @@ class FusionEngineBinding: NSObject {
         eventChannel?.setStreamHandler(self)
     }
 
-    internal func addPopGesture() {
+    func addPopGesture() {
         if (!isReused) {
             return
         }
@@ -203,7 +203,7 @@ class FusionEngineBinding: NSObject {
         (vc as? FusionPopGestureHandler)?.enablePopGesture()
     }
 
-    internal func removePopGesture() {
+    func removePopGesture() {
         if (!isReused) {
             return
         }
@@ -214,7 +214,7 @@ class FusionEngineBinding: NSObject {
         (vc as? FusionPopGestureHandler)?.disablePopGesture()
     }
 
-    internal func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {
+    func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {
         channel?.invokeMethod(
                 "push",
                 arguments: [
@@ -224,7 +224,7 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func replace(_ name: String, _ arguments: Dictionary<String, Any>?) {
+    func replace(_ name: String, _ arguments: Dictionary<String, Any>?) {
         channel?.invokeMethod(
                 "replace",
                 arguments: [
@@ -234,7 +234,7 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func pop(_ active: Bool = false, _ result: Any? = nil) {
+    func pop(_ active: Bool = false, _ result: Any? = nil) {
         channel?.invokeMethod(
                 "pop",
                 arguments: [
@@ -244,7 +244,7 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func remove(name: String) {
+    func remove(name: String) {
         channel?.invokeMethod(
                 "remove",
                 arguments: [
@@ -253,23 +253,60 @@ class FusionEngineBinding: NSObject {
         )
     }
 
-    internal func notifyPageVisible() {
+    func notifyPageVisible() {
         channel?.invokeMethod("notifyPageVisible", arguments: nil)
     }
 
-    internal func notifyPageInvisible() {
+    func notifyPageInvisible() {
         channel?.invokeMethod("notifyPageInvisible", arguments: nil)
     }
 
-    internal func notifyEnterForeground() {
+    func notifyEnterForeground() {
         channel?.invokeMethod("notifyEnterForeground", arguments: nil)
     }
 
-    internal func notifyEnterBackground() {
+    func notifyEnterBackground() {
         channel?.invokeMethod("notifyEnterBackground", arguments: nil)
     }
 
-    internal func detach() {
+    func latestStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {
+        let infoValue = Bundle.main.object(forInfoDictionaryKey: "UIViewControllerBasedStatusBarAppearance") as? Bool
+        if infoValue == false {
+            return
+        }
+        channel?.invokeMethod("latestStyle", arguments: nil, result: { (result) in
+            if (result is FlutterError) {
+                return
+            }
+            if result as? NSObject == FlutterMethodNotImplemented {
+                return
+            }
+            var statusBarStyle: UIStatusBarStyle?;
+            if let map = result as? Dictionary<String, Any> {
+                let brightness = map["statusBarBrightness"] as? String
+                if brightness == nil {
+                    return
+                }
+                if brightness == "Brightness.dark" {
+                    statusBarStyle = .lightContent
+                } else if brightness == "Brightness.light" {
+                    if #available(iOS 13, *) {
+                        statusBarStyle = .darkContent
+                    } else {
+                        statusBarStyle = .default
+                    }
+                } else {
+                    return
+                }
+            }
+            guard let statusBarStyle = statusBarStyle else {
+                return
+            }
+            callback(statusBarStyle)
+        })
+    }
+
+    func detach() {
         channel?.setMethodCallHandler(nil)
         channel = nil
         eventChannel?.setStreamHandler(nil)

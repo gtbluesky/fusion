@@ -50,6 +50,9 @@ open class FusionViewController: FlutterViewController {
     open override func viewWillAppear(_ animated: Bool) {
         if isReused {
             attachToFlutterEngine()
+            engineBinding?.latestStyle { statusBarStyle in
+                NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
+            }
         }
         super.viewWillAppear(animated)
         if let engine = engineBinding?.engine {
