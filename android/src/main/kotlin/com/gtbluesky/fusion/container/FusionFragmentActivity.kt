@@ -17,11 +17,14 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     override fun history() = flutterFragment?.history() ?: mutableListOf()
 
+    override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Fragment恢复
         if (flutterFragment == null) {
-            flutterFragment = supportFragmentManager.findFragmentByTag("flutter_fragment") as? FusionFragment
+            flutterFragment =
+                supportFragmentManager.findFragmentByTag("flutter_fragment") as? FusionFragment
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT

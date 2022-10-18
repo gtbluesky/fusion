@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
-// import 'package:fusion/src/log/fusion_log.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/notification/page_notification.dart';

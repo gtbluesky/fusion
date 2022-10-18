@@ -34,7 +34,12 @@ internal object FusionStackManager {
     fun topIsFusionContainer() = getTopContainer() is FusionContainer
 
     fun closeTopContainer() {
-        getTopContainer()?.finish()
+        val top = getTopContainer()
+        top?.finish()
+        // 透明容器则关闭退出动画
+        if (top is FusionContainer && top.isTransparent()) {
+            top.overridePendingTransition(0, 0)
+        }
     }
 
     fun addChild(container: FusionFragment) {

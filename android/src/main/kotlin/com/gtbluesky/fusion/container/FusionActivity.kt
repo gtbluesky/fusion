@@ -9,10 +9,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
+import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
@@ -29,6 +30,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     private var isAttached = false
 
     override fun history() = history
+
+    override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
 
     override fun getRenderMode() = RenderMode.texture
 
@@ -78,7 +81,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY, history as? Serializable)
+        outState.putSerializable(
+            FusionConstant.FUSION_RESTORATION_BUNDLE_KEY,
+            history as? Serializable
+        )
     }
 
     override fun shouldAttachEngineToActivity(): Boolean {
