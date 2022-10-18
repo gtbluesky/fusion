@@ -10,10 +10,10 @@ import Foundation
 internal class FusionEngineBinding: NSObject {
     private let isReused: Bool
     weak private var container: FusionViewController? = nil
-    private var channel: FlutterMethodChannel? = nil
+    private var navigationChannel: FlutterMethodChannel? = nil
+    private var notificationChannel: FlutterMethodChannel? = nil
+    private var platformChannel: FlutterMethodChannel? = nil
     var engine: FlutterEngine? = nil
-    private var eventChannel: FlutterEventChannel? = nil
-    private var eventSink: FlutterEventSink? = nil
     private var history: [Dictionary<String, Any?>] {
         get {
             FusionStackManager.instance.pageStack.flatMap {
@@ -33,13 +33,14 @@ internal class FusionEngineBinding: NSObject {
         guard let engine = engine else {
             return
         }
-        channel = FlutterMethodChannel(name: FusionConstant.FUSION_CHANNEL, binaryMessenger: engine.binaryMessenger)
-        eventChannel = FlutterEventChannel(name: FusionConstant.FUSION_EVENT_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        navigationChannel = FlutterMethodChannel(name: FusionConstant.FUSION_NAVIGATION_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        notificationChannel = FlutterMethodChannel(name: FusionConstant.FUSION_NOTIFICATION_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        platformChannel = FlutterMethodChannel(name: FusionConstant.FUSION_PLATFORM_CHANNEL, binaryMessenger: engine.binaryMessenger)
     }
 
     func attach(_ container: FusionViewController? = nil) {
         self.container = container
-        channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+        navigationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
             case "push":
                 guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
@@ -171,14 +172,6 @@ internal class FusionEngineBinding: NSObject {
                 } else {
                     self.removePopGesture()
                 }
-            case "sendMessage":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String else {
-                    result(nil)
-                    return
-                }
-                let msgBody = dict["msgBody"] as? Dictionary<String, Any>
-                FusionStackManager.instance.sendMessage(msgName, msgBody)
-                result(nil)
             case "restoreHistory":
                 if self.isReused {
                     result(self.history)
@@ -189,7 +182,20 @@ internal class FusionEngineBinding: NSObject {
                 result(FlutterMethodNotImplemented)
             }
         }
-        eventChannel?.setStreamHandler(self)
+        notificationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            switch call.method {
+            case "sendMessage":
+                guard let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String else {
+                    result(nil)
+                    return
+                }
+                let msgBody = dict["msgBody"] as? Dictionary<String, Any>
+                FusionStackManager.instance.sendMessage(msgName: msgName, msgBody: msgBody)
+                result(nil)
+            default:
+                result(FlutterMethodNotImplemented)
+            }
+        }
     }
 
     func addPopGesture() {
@@ -214,8 +220,8 @@ internal class FusionEngineBinding: NSObject {
         (vc as? FusionPopGestureHandler)?.disablePopGesture()
     }
 
-    func push(_ name: String, _ arguments: Dictionary<String, Any>? = nil) {
-        channel?.invokeMethod(
+    func push(_ name: String, arguments: Dictionary<String, Any>?) {
+        navigationChannel?.invokeMethod(
                 "push",
                 arguments: [
                     "name": name,
@@ -224,8 +230,8 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
-    func replace(_ name: String, _ arguments: Dictionary<String, Any>?) {
-        channel?.invokeMethod(
+    func replace(_ name: String, arguments: Dictionary<String, Any>?) {
+        navigationChannel?.invokeMethod(
                 "replace",
                 arguments: [
                     "name": name,
@@ -234,8 +240,8 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
-    func pop(_ active: Bool = false, _ result: Any? = nil) {
-        channel?.invokeMethod(
+    func pop(active: Bool = false, result: Any? = nil) {
+        navigationChannel?.invokeMethod(
                 "pop",
                 arguments: [
                     "active": active,
@@ -244,8 +250,8 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
-    func remove(name: String) {
-        channel?.invokeMethod(
+    func remove(_ name: String) {
+        navigationChannel?.invokeMethod(
                 "remove",
                 arguments: [
                     "name": name,
@@ -254,19 +260,23 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func notifyPageVisible() {
-        channel?.invokeMethod("notifyPageVisible", arguments: nil)
+        notificationChannel?.invokeMethod("notifyPageVisible", arguments: nil)
     }
 
     func notifyPageInvisible() {
-        channel?.invokeMethod("notifyPageInvisible", arguments: nil)
+        notificationChannel?.invokeMethod("notifyPageInvisible", arguments: nil)
     }
 
     func notifyEnterForeground() {
-        channel?.invokeMethod("notifyEnterForeground", arguments: nil)
+        notificationChannel?.invokeMethod("notifyEnterForeground", arguments: nil)
     }
 
     func notifyEnterBackground() {
-        channel?.invokeMethod("notifyEnterBackground", arguments: nil)
+        notificationChannel?.invokeMethod("notifyEnterBackground", arguments: nil)
+    }
+
+    func onReceive(_ msg: Dictionary<String, Any?>) {
+        notificationChannel?.invokeMethod("onReceive", arguments: msg)
     }
 
     func latestStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {
@@ -274,14 +284,17 @@ internal class FusionEngineBinding: NSObject {
         if infoValue == false {
             return
         }
-        channel?.invokeMethod("latestStyle", arguments: nil, result: { (result) in
+        platformChannel?.invokeMethod("latestStyle", arguments: nil, result: { (result) in
+            if (result == nil) {
+                return
+            }
             if (result is FlutterError) {
                 return
             }
             if result as? NSObject == FlutterMethodNotImplemented {
                 return
             }
-            var statusBarStyle: UIStatusBarStyle?;
+            var statusBarStyle: UIStatusBarStyle?
             if let map = result as? Dictionary<String, Any> {
                 let brightness = map["statusBarBrightness"] as? String
                 if brightness == nil {
@@ -307,28 +320,13 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func detach() {
-        channel?.setMethodCallHandler(nil)
-        channel = nil
-        eventChannel?.setStreamHandler(nil)
-        eventChannel = nil
+        navigationChannel?.setMethodCallHandler(nil)
+        navigationChannel = nil
+        notificationChannel?.setMethodCallHandler(nil)
+        notificationChannel = nil
+        platformChannel = nil
         engine?.viewController = nil
         engine?.destroyContext()
         engine = nil
-    }
-}
-
-extension FusionEngineBinding: FlutterStreamHandler {
-    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        self.eventSink = events
-        return nil
-    }
-
-    func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        eventSink = nil
-        return nil
-    }
-
-    func sendMessage(_ msg: Dictionary<String, Any?>) {
-        eventSink?(msg)
     }
 }

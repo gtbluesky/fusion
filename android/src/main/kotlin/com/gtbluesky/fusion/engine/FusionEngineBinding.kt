@@ -14,10 +14,10 @@ internal class FusionEngineBinding(
     private val isReused: Boolean
 ) {
     private var container: FusionContainer? = null
-    private var channel: MethodChannel? = null
+    private var navigationChannel: MethodChannel? = null
+    private var notificationChannel: MethodChannel? = null
+    private var platformChannel: MethodChannel? = null
     var engine: FlutterEngine? = null
-    private var eventChannel: EventChannel? = null
-    private var eventSink: EventChannel.EventSink? = null
     private val history: List<Map<String, Any?>>
         get() {
             return FusionStackManager.stack.flatMap {
@@ -31,14 +31,14 @@ internal class FusionEngineBinding(
         } else {
             Fusion.defaultEngine
         }?.also {
-            channel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_CHANNEL)
-            eventChannel =
-                EventChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_EVENT_CHANNEL)
+            navigationChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_NAVIGATION_CHANNEL)
+            notificationChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_NOTIFICATION_CHANNEL)
+            platformChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_PLATFORM_CHANNEL)
         }
     }
 
     fun attach(container: FusionContainer? = null) {
-        channel?.setMethodCallHandler { call, result ->
+        navigationChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "push" -> {
                     val name = call.argument<String>("name")
@@ -164,16 +164,6 @@ internal class FusionEngineBinding(
                     }
                     result.success(true)
                 }
-                "sendMessage" -> {
-                    val msgName = call.argument<String>("msgName")
-                    if (msgName.isNullOrEmpty()) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val msgBody = call.argument<MutableMap<String, Any>>("msgBody")
-                    FusionStackManager.sendMessage(msgName, msgBody)
-                    result.success(null)
-                }
                 "restoreHistory" -> {
                     if (isReused) {
                         result.success(history)
@@ -186,19 +176,27 @@ internal class FusionEngineBinding(
                 }
             }
         }
-        eventChannel?.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                this@FusionEngineBinding.eventSink = events
+        notificationChannel?.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "sendMessage" -> {
+                    val msgName = call.argument<String>("msgName")
+                    if (msgName.isNullOrEmpty()) {
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
+                    val msgBody = call.argument<MutableMap<String, Any>>("msgBody")
+                    FusionStackManager.sendMessage(msgName, msgBody)
+                    result.success(null)
+                }
+                else -> {
+                    result.notImplemented()
+                }
             }
-
-            override fun onCancel(arguments: Any?) {
-                eventSink = null
-            }
-        })
+        }
     }
 
     fun push(name: String, arguments: Map<String, Any>? = null) {
-        channel?.invokeMethod(
+        navigationChannel?.invokeMethod(
             "push",
             mapOf(
                 "name" to name,
@@ -208,7 +206,7 @@ internal class FusionEngineBinding(
     }
 
     fun replace(name: String, arguments: Map<String, Any>?) {
-        channel?.invokeMethod(
+        navigationChannel?.invokeMethod(
             "replace",
             mapOf(
                 "name" to name,
@@ -218,7 +216,7 @@ internal class FusionEngineBinding(
     }
 
     fun pop(active: Boolean = false, result: Any? = null) {
-        channel?.invokeMethod(
+        navigationChannel?.invokeMethod(
             "pop",
             mapOf(
                 "active" to active,
@@ -228,7 +226,7 @@ internal class FusionEngineBinding(
     }
 
     fun remove(name: String) {
-        channel?.invokeMethod(
+        navigationChannel?.invokeMethod(
             "remove",
             mapOf(
                 "name" to name,
@@ -237,30 +235,34 @@ internal class FusionEngineBinding(
     }
 
     fun restore(history: List<Map<String, Any?>>) {
-        channel?.invokeMethod(
+        navigationChannel?.invokeMethod(
             "restore",
             history
         )
     }
 
     fun notifyPageVisible() {
-        channel?.invokeMethod("notifyPageVisible", null)
+        notificationChannel?.invokeMethod("notifyPageVisible", null)
     }
 
     fun notifyPageInvisible() {
-        channel?.invokeMethod("notifyPageInvisible", null)
+        notificationChannel?.invokeMethod("notifyPageInvisible", null)
     }
 
     fun notifyEnterForeground() {
-        channel?.invokeMethod("notifyEnterForeground", null)
+        notificationChannel?.invokeMethod("notifyEnterForeground", null)
     }
 
     fun notifyEnterBackground() {
-        channel?.invokeMethod("notifyEnterBackground", null)
+        notificationChannel?.invokeMethod("notifyEnterBackground", null)
+    }
+
+    fun onReceive(msg: Map<String, Any?>) {
+        notificationChannel?.invokeMethod("onReceive", msg)
     }
 
     fun latestStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
-        channel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
+        platformChannel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
             override fun success(result: Any?) {
                 val systemChromeStyle = decodeSystemChromeStyle(result as? Map<String, Any>)
                     ?: return
@@ -308,16 +310,13 @@ internal class FusionEngineBinding(
         )
     }
 
-    fun sendMessage(msg: Map<String, Any?>) {
-        eventSink?.success(msg)
-    }
-
     fun detach() {
         container = null
-        channel?.setMethodCallHandler(null)
-        channel = null
-        eventChannel?.setStreamHandler(null)
-        eventChannel = null
+        navigationChannel?.setMethodCallHandler(null)
+        navigationChannel = null
+        notificationChannel?.setMethodCallHandler(null)
+        notificationChannel = null
+        platformChannel = null
         engine?.destroy()
         engine = null
     }

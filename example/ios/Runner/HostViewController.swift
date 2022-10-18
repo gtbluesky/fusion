@@ -21,11 +21,11 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func clickButton(_ sender: UIButton) {
-        FusionNavigator.instance.open(name: "/lifecycle", arguments: ["title": "iOS Flutter Page"])
+        FusionNavigator.instance.open("/lifecycle", arguments: ["title": "iOS Flutter Page"])
     }
 
     @IBAction func click1(_ sender: Any) {
-        FusionNavigator.instance.open(name: "/transparent", arguments: ["title": "iOS Flutter Page", "transparent": true])
+        FusionNavigator.instance.open("/transparent", arguments: ["title": "iOS Flutter Page", "transparent": true])
     }
 
     @IBAction func click2(_ sender: Any) {

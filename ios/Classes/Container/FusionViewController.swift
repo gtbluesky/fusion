@@ -25,7 +25,7 @@ open class FusionViewController: FlutterViewController {
         if !isReused {
             engineBinding?.attach(self)
         }
-        engineBinding?.push(routeName, routeArguments)
+        engineBinding?.push(routeName, arguments: routeArguments)
         if !isReused {
             FusionStackManager.instance.addChild(self)
         } else {

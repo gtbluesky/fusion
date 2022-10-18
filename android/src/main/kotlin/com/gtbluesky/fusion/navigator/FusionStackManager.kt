@@ -64,9 +64,9 @@ internal object FusionStackManager {
     fun sendMessage(msgName: String, msgBody: Map<String, Any>?) {
         val msg = mutableMapOf<String, Any?>("msgName" to msgName)
         msg["msgBody"] = msgBody
-        Fusion.engineBinding?.sendMessage(msg)
+        Fusion.engineBinding?.onReceive(msg)
         childPageStack.forEach {
-            it.get()?.engineBinding?.sendMessage(msg)
+            it.get()?.engineBinding?.onReceive(msg)
         }
         // 普通Activity
         stack.forEach {

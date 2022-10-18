@@ -13,7 +13,8 @@ internal class FusionStackManager {
     private var childPageStack = [WeakReference<FusionViewController>]()
     static let instance = FusionStackManager()
 
-    private init() {}
+    private init() {
+    }
 
     func add(_ container: FusionViewController) {
         pageStack.append(WeakReference(container))
@@ -83,12 +84,12 @@ internal class FusionStackManager {
         }
     }
 
-    func sendMessage(_ msgName: String, _ msgBody: Dictionary<String, Any>?) {
+    func sendMessage(msgName: String, msgBody: Dictionary<String, Any>?) {
         var msg: Dictionary<String, Any?> = ["msgName": msgName]
         msg["msgBody"] = msgBody
-        Fusion.instance.engineBinding?.sendMessage(msg)
+        Fusion.instance.engineBinding?.onReceive(msg)
         childPageStack.forEach {
-            $0.value?.engineBinding?.sendMessage(msg)
+            $0.value?.engineBinding?.onReceive(msg)
         }
         UIApplication.roofNavigationController?.viewControllers.forEach {
             ($0 as? PageNotificationListener)?.onReceive(msgName: msgName, msgBody: msgBody)
