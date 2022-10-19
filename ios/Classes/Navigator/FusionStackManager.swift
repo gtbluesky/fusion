@@ -46,6 +46,8 @@ internal class FusionStackManager {
         if let count = nc?.viewControllers.count {
             if count > 1 {
                 nc?.popViewController(animated: true)
+            } else if count == 1 && nc?.presentingViewController != nil {
+                nc?.dismiss(animated: true)
             }
         } else {
             if let vc = vc as? FusionViewController {
