@@ -41,8 +41,11 @@ class PageLifecycleBinding {
     _listeners.removeWhere((key, value) => value == listener);
   }
 
-  void dispatchPageVisibleEvent(Route<dynamic> route,
-      {bool isFirstTime = false}) {
+  void dispatchPageVisibleEvent(
+    Route<dynamic> route, {
+    bool isFirstTime = false,
+  }) {
+    /// 确保didChangeDependencies后调用生命周期方法
     if (isFirstTime) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         try {

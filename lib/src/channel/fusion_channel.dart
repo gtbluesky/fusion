@@ -5,6 +5,7 @@ import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/notification/page_notification.dart';
+import 'package:fusion/src/route/fusion_page_route.dart';
 
 class FusionChannel {
   FusionChannel._();
@@ -74,15 +75,18 @@ class FusionChannel {
       }
     });
     _notificationChannel.setMethodCallHandler((call) async {
-      // FusionLog.log('_notificationChannel method=${call.method}');
+      // print('_notificationChannel method=${call.method}');
       switch (call.method) {
         case 'notifyPageVisible':
-          final route = PageLifecycleBinding.instance.topRoute;
-          PageLifecycleBinding.instance.dispatchPageVisibleEvent(route);
+          /// 确保页面入栈后再调用生命周期方法
+          WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+            final route = PageLifecycleBinding.instance.topRoute;
+            _handlePageVisible(route);
+          });
           break;
         case 'notifyPageInvisible':
           final route = PageLifecycleBinding.instance.topRoute;
-          PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+          _handlePageInvisible(route);
           break;
         case 'notifyEnterForeground':
           PageLifecycleBinding.instance.dispatchPageForegroundEvent();
@@ -112,6 +116,28 @@ class FusionChannel {
           break;
       }
     });
+  }
+
+  void _handlePageVisible(
+      Route? route, {
+        bool isFirstTime = false,
+      }) {
+    if (route is FusionPageRoute && !route.isVisible) {
+      route.containerInTop = true;
+      if (route.isVisible) {
+        PageLifecycleBinding.instance
+            .dispatchPageVisibleEvent(route, isFirstTime: isFirstTime);
+      }
+    }
+  }
+
+  void _handlePageInvisible(Route? route) {
+    if (route is FusionPageRoute) {
+      if (route.isVisible) {
+        PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+      }
+      route.containerInTop = false;
+    }
   }
 
   Future<Map<String, dynamic>?> push(String name, dynamic arguments) async {

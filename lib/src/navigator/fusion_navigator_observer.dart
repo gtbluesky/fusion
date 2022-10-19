@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
+import 'package:fusion/src/route/fusion_page_route.dart';
 
 class FusionNavigatorObserver extends NavigatorObserver {
-
   FusionNavigatorObserver._();
 
   static final FusionNavigatorObserver _instance = FusionNavigatorObserver._();
@@ -21,12 +21,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
       isInitial = false;
       return;
     }
-    if (previousRoute is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(previousRoute);
-    }
-    if (route is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageVisibleEvent(route, isFirstTime: true);
-    }
+    _handlePageInvisible(previousRoute);
+    _handlePageVisible(route, isFirstTime: true);
   }
 
   @override
@@ -34,12 +30,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
     if (previousRoute != null) {
       PageLifecycleBinding.instance.topRoute = previousRoute;
     }
-    if (route is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
-    }
-    if (previousRoute is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageVisibleEvent(previousRoute);
-    }
+    _handlePageInvisible(route);
+    _handlePageVisible(previousRoute);
     if (isPopSliding) {
       FusionNavigatorDelegate.instance.popHistory();
     }
@@ -50,12 +42,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
     if (previousRoute != null) {
       PageLifecycleBinding.instance.topRoute = previousRoute;
     }
-    if (route is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
-    }
-    if (previousRoute is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageVisibleEvent(previousRoute);
-    }
+    _handlePageInvisible(route);
+    _handlePageVisible(previousRoute);
   }
 
   @override
@@ -63,12 +51,8 @@ class FusionNavigatorObserver extends NavigatorObserver {
     if (newRoute != null) {
       PageLifecycleBinding.instance.topRoute = newRoute;
     }
-    if (oldRoute is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(oldRoute);
-    }
-    if (newRoute is PageRoute) {
-      PageLifecycleBinding.instance.dispatchPageVisibleEvent(newRoute);
-    }
+    _handlePageInvisible(oldRoute);
+    _handlePageVisible(newRoute);
   }
 
   @override
@@ -79,5 +63,27 @@ class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didStopUserGesture() {
     isPopSliding = false;
+  }
+
+  void _handlePageVisible(
+    Route? route, {
+    bool isFirstTime = false,
+  }) {
+    if (route is FusionPageRoute && !route.isVisible) {
+      route.pageInTop = true;
+      if (route.isVisible) {
+        PageLifecycleBinding.instance
+            .dispatchPageVisibleEvent(route, isFirstTime: isFirstTime);
+      }
+    }
+  }
+
+  void _handlePageInvisible(Route? route) {
+    if (route is FusionPageRoute) {
+      if (route.isVisible) {
+        PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+      }
+      route.pageInTop = false;
+    }
   }
 }

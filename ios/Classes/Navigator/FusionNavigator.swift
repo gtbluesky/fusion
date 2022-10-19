@@ -63,6 +63,6 @@ import Foundation
     }
 
     public func sendMessage(_ msgName: String, msgBody: Dictionary<String, Any>? = nil) {
-        FusionStackManager.instance.sendMessage(msgName: msgName, msgBody: msgBody)
+        FusionStackManager.instance.sendMessage(msgName, msgBody: msgBody)
     }
 }

@@ -292,6 +292,8 @@ class CustomViewController : FusionViewController, FusionMessengerHandler {
 
 > BasicMessageChannel 和 EventChannel 使用也是类似
 
+P.S.: 以上方式创建的Channel是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
+
 ### 6、生命周期
 目前仅支持 `页面模式` 下监听 Flutter 页面的生命周期。
 - ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener

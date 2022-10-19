@@ -190,7 +190,7 @@ internal class FusionEngineBinding: NSObject {
                     return
                 }
                 let msgBody = dict["msgBody"] as? Dictionary<String, Any>
-                FusionStackManager.instance.sendMessage(msgName: msgName, msgBody: msgBody)
+                FusionStackManager.instance.sendMessage(msgName, msgBody: msgBody)
                 result(nil)
             default:
                 result(FlutterMethodNotImplemented)

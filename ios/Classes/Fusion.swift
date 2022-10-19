@@ -53,11 +53,17 @@ public class Fusion: NSObject {
      */
     @objc func willEnterForeground() {
         FusionStackManager.instance.notifyEnterForeground()
+        if !FusionStackManager.instance.topIsFusionContainer() {
+            return
+        }
         engineBinding?.notifyPageVisible()
     }
 
     @objc func didEnterBackground() {
         FusionStackManager.instance.notifyEnterBackground()
+        if !FusionStackManager.instance.topIsFusionContainer() {
+            return
+        }
         engineBinding?.notifyPageInvisible()
     }
 }

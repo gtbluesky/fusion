@@ -84,7 +84,7 @@ internal class FusionStackManager {
         }
     }
 
-    func sendMessage(msgName: String, msgBody: Dictionary<String, Any>?) {
+    func sendMessage(_ msgName: String, msgBody: Dictionary<String, Any>?) {
         var msg: Dictionary<String, Any?> = ["msgName": msgName]
         msg["msgBody"] = msgBody
         Fusion.instance.engineBinding?.onReceive(msg)

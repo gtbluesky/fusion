@@ -60,18 +60,19 @@ class _LifecyclePageState extends State<LifecyclePage>
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          FusionNavigator.instance.sendMessage(
-              'msg1', {'time': DateTime.now().millisecondsSinceEpoch});
-          // showDialog(
-          //     context: context,
-          //     builder: (context) {
-          //       return GestureDetector(
-          //         child: const Text('我是弹窗'),
-          //         onTap: () {
-          //           Navigator.of(context).pop();
-          //         },
-          //       );
-          //     });
+          // FusionNavigator.instance.sendMessage(
+          //     'msg1', {'time': DateTime.now().millisecondsSinceEpoch});
+          showDialog(
+              context: context,
+              builder: (context) {
+                return GestureDetector(
+                  child: const Text('我是弹窗'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    FusionNavigator.instance.pop();
+                  },
+                );
+              });
         },
       ),
     );

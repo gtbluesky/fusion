@@ -7,6 +7,10 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
   final bool home;
   /// 恢复的页面
   final bool restore;
+  /// 容器是否在栈顶
+  bool containerInTop = true;
+  /// 页面是否在栈顶
+  bool pageInTop = false;
   final List<WillPopCallback> _scopedWillPopCallbacks = <WillPopCallback>[];
   FusionWillPopCallback? _fusionWillPopCallback;
   TickerFuture? _tickerFuture;
@@ -85,6 +89,9 @@ class FusionPageRoute<T> extends MaterialPageRoute<T> {
     _tickerFuture = super.didPush();
     return _tickerFuture!;
   }
+
+  /// 当前Flutter页面是否可见
+  bool get isVisible => containerInTop && pageInTop;
 
   /// 处理iOS滑动退出
   @override
