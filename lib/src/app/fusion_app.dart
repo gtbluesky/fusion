@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/data/fusion_data.dart';
+import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
@@ -78,6 +79,9 @@ class _FusionAppState extends State<FusionApp> {
     super.initState();
     /// Make sure that the widget in the tree is already mounted.
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (FusionState.isRestoring) {
+        return;
+      }
       _restoreHistoryAfterHotRestart();
     });
     FusionChannel.instance.register();
@@ -121,6 +125,7 @@ class _FusionAppState extends State<FusionApp> {
     final list = await FusionChannel.instance.restoreHistory();
     if (list.isNotEmpty) {
       for (var element in list) {
+        // print('Hot Restart:${element['name']}');
         FusionNavigator.instance.restore(element);
       }
     }

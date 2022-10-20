@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
@@ -60,12 +61,14 @@ class FusionChannel {
           await FusionNavigator.instance.remove(name);
           break;
         case 'restore':
+          FusionState.isRestoring = true;
           final List<Map<String, dynamic>> list = [];
           call.arguments?.forEach((element) {
             list.add(element.cast<String, dynamic>());
           });
           if (list.isNotEmpty) {
             for (var element in list) {
+              // print('restore:${element['name']}');
               FusionNavigator.instance.restore(element);
             }
           }
@@ -80,6 +83,7 @@ class FusionChannel {
         case 'notifyPageVisible':
           /// 确保页面入栈后再调用生命周期方法
           WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+            // print('_notificationChannel run=${call.method}');
             final route = PageLifecycleBinding.instance.topRoute;
             _handlePageVisible(route);
           });
