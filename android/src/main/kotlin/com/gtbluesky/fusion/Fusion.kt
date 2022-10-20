@@ -68,7 +68,9 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     private var isActivityChangingConfigurations = false
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        FusionStackManager.add(activity)
+        if (activity is FusionContainer) {
+            FusionStackManager.add(activity)
+        }
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -81,8 +83,6 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityResumed(activity: Activity) {
-        // 处理Activity存在复用的情况
-        FusionStackManager.move2Top(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {
@@ -102,7 +102,9 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        FusionStackManager.remove(activity)
+        if (activity is FusionContainer) {
+            FusionStackManager.remove(activity)
+        }
     }
 
 }

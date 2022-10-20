@@ -25,9 +25,6 @@ import Foundation
      * 在当前Flutter容器中将对应路由入栈
      */
     public func push(_ name: String, arguments: Dictionary<String, Any>? = nil) {
-        if !FusionStackManager.instance.topIsFusionContainer() {
-            return
-        }
         Fusion.instance.engineBinding?.push(name, arguments: arguments)
     }
 
@@ -35,9 +32,6 @@ import Foundation
      * 在当前Flutter容器中将栈顶路由替换为对应路由
      */
     public func replace(_ name: String, arguments: Dictionary<String, Any>? = nil) {
-        if !FusionStackManager.instance.topIsFusionContainer() {
-            return
-        }
         Fusion.instance.engineBinding?.replace(name, arguments: arguments)
     }
 
@@ -45,9 +39,6 @@ import Foundation
      * 在当前Flutter容器中将栈顶路由出栈
      */
     public func pop<T>(_ result: T? = nil) {
-        if !FusionStackManager.instance.topIsFusionContainer() {
-            return
-        }
         Fusion.instance.engineBinding?.pop(active: true, result: result)
     }
 
@@ -56,9 +47,6 @@ import Foundation
      * @param name: 路由名
      */
     public func remove(_ name: String) {
-        if !FusionStackManager.instance.topIsFusionContainer() {
-            return
-        }
         Fusion.instance.engineBinding?.remove(name)
     }
 

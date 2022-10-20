@@ -6,7 +6,6 @@ import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
@@ -20,8 +19,8 @@ internal class FusionEngineBinding(
     var engine: FlutterEngine? = null
     private val history: List<Map<String, Any?>>
         get() {
-            return FusionStackManager.stack.flatMap {
-                (it.get() as? FusionContainer)?.history() ?: listOf()
+            return FusionStackManager.pageStack.flatMap {
+                it.get()?.history() ?: listOf()
             }
         }
 

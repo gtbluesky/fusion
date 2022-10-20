@@ -8,37 +8,32 @@ import com.gtbluesky.fusion.notification.PageNotificationListener
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
-    val stack = mutableListOf<WeakReference<Activity>>()
+    val pageStack = mutableListOf<WeakReference<FusionContainer>>()
     private val childPageStack = mutableListOf<WeakReference<FusionFragment>>()
 
-    fun add(activity: Activity) {
-        stack.add(WeakReference(activity))
+    fun add(container: FusionContainer) {
+        pageStack.add(WeakReference(container))
     }
 
-    fun remove(activity: Activity) {
-        stack.removeAll {
-            it.get() == activity || it.get() == null
+    fun remove(container: FusionContainer) {
+        pageStack.removeAll {
+            it.get() == container || it.get() == null
         }
     }
 
-    fun move2Top(activity: Activity) {
-        remove(activity)
-        add(activity)
+    fun getTopContainer(): FusionContainer? {
+        if (pageStack.isEmpty()) return null
+        return pageStack.last().get()
     }
-
-    fun getTopContainer(): Activity? {
-        if (stack.isEmpty()) return null
-        return stack.last().get()
-    }
-
-    fun topIsFusionContainer() = getTopContainer() is FusionContainer
 
     fun closeTopContainer() {
         val top = getTopContainer()
-        top?.finish()
-        // 透明容器则关闭退出动画
-        if (top is FusionContainer && top.isTransparent()) {
-            top.overridePendingTransition(0, 0)
+        if (top is Activity) {
+            top.finish()
+            // 透明容器则关闭退出动画
+            if (top.isTransparent()) {
+                top.overridePendingTransition(0, 0)
+            }
         }
     }
 
@@ -74,7 +69,7 @@ internal object FusionStackManager {
             it.get()?.engineBinding?.onReceive(msg)
         }
         // 普通Activity
-        stack.forEach {
+        pageStack.forEach {
             (it.get() as? PageNotificationListener)?.onReceive(msgName, msgBody)
         }
     }

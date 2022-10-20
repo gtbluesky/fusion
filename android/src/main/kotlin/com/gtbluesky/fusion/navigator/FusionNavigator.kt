@@ -21,9 +21,6 @@ object FusionNavigator {
     @JvmStatic
     @JvmOverloads
     fun push(name: String, arguments: Map<String, Any>? = null) {
-        if (!FusionStackManager.topIsFusionContainer()) {
-            return
-        }
         Fusion.engineBinding?.push(name, arguments)
     }
 
@@ -33,9 +30,6 @@ object FusionNavigator {
     @JvmStatic
     @JvmOverloads
     fun replace(name: String, arguments: Map<String, Any>? = null) {
-        if (!FusionStackManager.topIsFusionContainer()) {
-            return
-        }
         Fusion.engineBinding?.replace(name, arguments)
     }
 
@@ -45,9 +39,6 @@ object FusionNavigator {
     @JvmStatic
     @JvmOverloads
     fun <T> pop(result: T? = null) {
-        if (!FusionStackManager.topIsFusionContainer()) {
-            return
-        }
         Fusion.engineBinding?.pop(true, result)
     }
 
@@ -57,9 +48,6 @@ object FusionNavigator {
      */
     @JvmStatic
     fun remove(name: String) {
-        if (!FusionStackManager.topIsFusionContainer()) {
-            return
-        }
         Fusion.engineBinding?.remove(name)
     }
 
