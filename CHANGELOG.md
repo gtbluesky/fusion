@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Fixes some known bugs.
+
 ## 2.0.2
 
 * Fixes memory leak on iOS platform.

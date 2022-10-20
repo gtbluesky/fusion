@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/data/fusion_data.dart';
@@ -79,6 +80,9 @@ class _FusionAppState extends State<FusionApp> {
     super.initState();
     /// Make sure that the widget in the tree is already mounted.
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (!kDebugMode) {
+        return;
+      }
       if (FusionState.isRestoring) {
         return;
       }
