@@ -35,6 +35,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun getRenderMode() = RenderMode.texture
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         engineBinding = Fusion.engineBinding
         super.onCreate(savedInstanceState)

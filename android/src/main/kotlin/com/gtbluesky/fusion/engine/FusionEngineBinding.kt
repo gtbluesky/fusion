@@ -260,6 +260,7 @@ internal class FusionEngineBinding(
         notificationChannel?.invokeMethod("onReceive", msg)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun latestStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
         platformChannel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
             override fun success(result: Any?) {

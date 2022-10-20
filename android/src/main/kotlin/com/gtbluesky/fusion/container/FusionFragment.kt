@@ -49,6 +49,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding?.attach(this)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val routeName =

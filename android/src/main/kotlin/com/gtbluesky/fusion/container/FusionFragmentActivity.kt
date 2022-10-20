@@ -32,6 +32,7 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
     }
 
     // Fragment首次创建
+    @Suppress("UNCHECKED_CAST")
     override fun createFlutterFragment(): FlutterFragment {
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
