@@ -8,12 +8,15 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
+import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
+import io.flutter.embedding.android.FlutterImageView
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
@@ -37,6 +40,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val top = FusionStackManager.getTopContainer()
+        if (top != this) {
+            top?.detachFromEngine()
+        }
         engineBinding = Fusion.engineBinding
         super.onCreate(savedInstanceState)
         val routeName =
@@ -58,26 +65,28 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         flutterView = findFlutterView(window.decorView)
         flutterView?.detachFromFlutterEngine()
+        FusionStackManager.add(this)
     }
 
     override fun onResume() {
         super.onResume()
+        val top = FusionStackManager.getTopContainer()
+        if (top != this) {
+            top?.detachFromEngine()
+        }
         performAttach()
         engineBinding?.latestStyle { systemChromeStyle ->
             updateSystemUiOverlays(systemChromeStyle)
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        performDetach()
-    }
-
     override fun onDestroy() {
+        performDetach()
         super.onDestroy()
         history.clear()
         engineBinding?.pop()
         engineBinding = null
+        FusionStackManager.remove(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -96,6 +105,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (isAttached) {
             return
         }
+        isAttached = true
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
         engine.activityControlSurface.attachToActivity(
@@ -105,20 +115,25 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         configureChannel()
         // Attach rendering pipeline.
         flutterView?.attachToFlutterEngine(engine)
-        isAttached = true
     }
 
     private fun performDetach() {
         if (!isAttached) {
             return
         }
+        isAttached = false
         val engine = engineBinding?.engine ?: return
         // Plugins are no longer attached to the activity.
         engine.activityControlSurface.detachFromActivity()
         releaseChannel()
         // Detach rendering pipeline.
         flutterView?.detachFromFlutterEngine()
-        isAttached = false
+        flutterView?.forEach {
+            if (it is FlutterImageView) {
+                flutterView?.removeView(it)
+                return
+            }
+        }
     }
 
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
@@ -127,6 +142,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         activity: Activity?,
         flutterEngine: FlutterEngine
     ): PlatformPlugin? = null
+
+    override fun detachFromEngine() {
+        performDetach()
+    }
 
     override fun detachFromFlutterEngine() {}
 

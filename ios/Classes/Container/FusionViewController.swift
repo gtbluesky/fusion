@@ -22,6 +22,9 @@ open class FusionViewController: FlutterViewController {
         }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
+        if let engine = engineBinding?.engine {
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+        }
         if !isReused {
             engineBinding?.attach(self)
         }
@@ -38,9 +41,6 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func viewDidLoad() {
-        if isReused {
-            attachToFlutterEngine()
-        }
         super.viewDidLoad()
         if isViewOpaque {
             self.view.backgroundColor = UIColor.white
@@ -55,9 +55,6 @@ open class FusionViewController: FlutterViewController {
             }
         }
         super.viewWillAppear(animated)
-        if let engine = engineBinding?.engine {
-            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
-        }
         if !isReused {
             return
         }
@@ -107,7 +104,6 @@ open class FusionViewController: FlutterViewController {
 
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (self as? FusionMessengerHandler)?.releaseFlutterChannel()
         if (!isReused) {
             return
         }
@@ -119,6 +115,9 @@ open class FusionViewController: FlutterViewController {
             return
         }
         engineBinding?.engine?.viewController = self
+        if let engine = engineBinding?.engine {
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+        }
     }
 
     private func detachFromFlutterEngine() {
@@ -126,11 +125,13 @@ open class FusionViewController: FlutterViewController {
             return
         }
         engineBinding?.engine?.viewController = nil
+        (self as? FusionMessengerHandler)?.releaseFlutterChannel()
     }
 
     private func destroy() {
         history.removeAll()
         if !isReused {
+            (self as? FusionMessengerHandler)?.releaseFlutterChannel()
             FusionStackManager.instance.removeChild(self)
         } else {
             FusionStackManager.instance.remove(self)

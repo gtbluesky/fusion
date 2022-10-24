@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Fixes some known bugs.
+
 ## 2.0.3
 
 * Fixes some known bugs.

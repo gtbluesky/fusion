@@ -8,15 +8,13 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.navigator.FusionStackManager
-import io.flutter.embedding.android.ExclusiveAppComponent
-import io.flutter.embedding.android.FlutterFragment
-import io.flutter.embedding.android.FlutterView
-import io.flutter.embedding.android.TransparencyMode
+import io.flutter.embedding.android.*
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
@@ -51,6 +49,12 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (isReused) {
+            val top = FusionStackManager.getTopContainer()
+            if (top != activity) {
+                top?.detachFromEngine()
+            }
+        }
         super.onCreate(savedInstanceState)
         val routeName =
             arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
@@ -67,9 +71,12 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             }
         }
         if (isReused) {
-            return
+            FusionStackManager.add(activity as FusionContainer)
+        } else {
+            FusionStackManager.addChild(this)
+            val engine = engineBinding?.engine ?: return
+            (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
         }
-        FusionStackManager.addChild(this)
     }
 
     override fun onCreateView(
@@ -88,34 +95,32 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     override fun onResume() {
         super.onResume()
         if (isReused) {
+            val top = FusionStackManager.getTopContainer()
+            if (top != activity) {
+                top?.detachFromEngine()
+            }
             performAttach()
             engineBinding?.latestStyle { systemChromeStyle ->
                 updateSystemUiOverlays(systemChromeStyle)
             }
-        } else {
-            val engine = engineBinding?.engine ?: return
-            (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
         if (isReused) {
             performDetach()
         } else {
             (this as? FusionMessengerHandler)?.releaseFlutterChannel()
         }
-    }
-
-    override fun onDestroy() {
         super.onDestroy()
         history.clear()
         engineBinding?.pop()
         engineBinding = null
         if (isReused) {
-            return
+            FusionStackManager.remove(activity as FusionContainer)
+        } else {
+            FusionStackManager.removeChild(this)
         }
-        FusionStackManager.removeChild(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -134,6 +139,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (isAttached) {
             return
         }
+        isAttached = true
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
         try {
@@ -150,20 +156,25 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         configureChannel()
         // Attach rendering pipeline.
         flutterView?.attachToFlutterEngine(engine)
-        isAttached = true
     }
 
     private fun performDetach() {
         if (!isAttached) {
             return
         }
+        isAttached = false
         val engine = engineBinding?.engine ?: return
         // Plugins are no longer attached to the activity.
         engine.activityControlSurface.detachFromActivity()
         releaseChannel()
         // Detach rendering pipeline.
         flutterView?.detachFromFlutterEngine()
-        isAttached = false
+        flutterView?.forEach {
+            if (it is FlutterImageView) {
+                flutterView?.removeView(it)
+                return
+            }
+        }
     }
 
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
@@ -179,6 +190,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         } else {
             super.providePlatformPlugin(activity, flutterEngine)
         }
+    }
+
+    override fun detachFromEngine() {
+        performDetach()
     }
 
     override fun detachFromFlutterEngine() {

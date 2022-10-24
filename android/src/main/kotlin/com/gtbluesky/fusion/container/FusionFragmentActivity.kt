@@ -61,4 +61,8 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         }
         super.setTaskDescription(taskDescription)
     }
+
+    override fun detachFromEngine() {
+        flutterFragment?.detachFromEngine()
+    }
 }

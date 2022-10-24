@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:fusion/fusion.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 const String kNavigationExamplePage = '''
@@ -135,19 +136,20 @@ class _WebPageState extends State<WebPage> {
             AsyncSnapshot<WebViewController> controller) {
           return FloatingActionButton(
             onPressed: () async {
-              String? url;
-              if (controller.hasData) {
-                url = await controller.data!.currentUrl();
-              }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    controller.hasData
-                        ? 'Favorited $url'
-                        : 'Unable to favorite',
-                  ),
-                ),
-              );
+              FusionNavigator.instance.push('/normal');
+              // String? url;
+              // if (controller.hasData) {
+              //   url = await controller.data!.currentUrl();
+              // }
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(
+              //       controller.hasData
+              //           ? 'Favorited $url'
+              //           : 'Unable to favorite',
+              //     ),
+              //   ),
+              // );
             },
             child: const Icon(Icons.favorite),
           );
