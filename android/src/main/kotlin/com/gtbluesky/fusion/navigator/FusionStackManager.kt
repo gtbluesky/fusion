@@ -1,6 +1,9 @@
 package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
+import android.view.ViewGroup
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.container.FusionFragment
@@ -26,14 +29,31 @@ internal object FusionStackManager {
         return pageStack.last().get()
     }
 
+    private fun getTopChildContainer(): FusionContainer? {
+        if (childPageStack.isEmpty()) return null
+        return childPageStack.last().get()
+    }
+
     fun closeTopContainer() {
-        val top = getTopContainer()
+        var top = getTopChildContainer()
+        // 关闭抽屉
+        if (top is Fragment) {
+            val frameLayout = top.view?.parent as? ViewGroup
+            val drawerLayout = frameLayout?.parent
+            if (drawerLayout is DrawerLayout && drawerLayout.isDrawerOpen(frameLayout)) {
+                drawerLayout.closeDrawer(frameLayout)
+                return
+            }
+        }
+        // 关闭容器
+        top = getTopContainer()
         if (top is Activity) {
             top.finish()
             // 透明容器则关闭退出动画
             if (top.isTransparent()) {
                 top.overridePendingTransition(0, 0)
             }
+            return
         }
     }
 

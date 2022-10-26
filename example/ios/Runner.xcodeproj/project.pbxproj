@@ -18,6 +18,7 @@
 		A7532C8327E2ED67005A1D51 /* MultiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7532C8227E2ED67005A1D51 /* MultiViewController.swift */; };
 		A763680E27DA02BB00B68450 /* HostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763680D27DA02BB00B68450 /* HostViewController.swift */; };
 		A797BAAF27DEE9E2003946CE /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797BAAE27DEE9E2003946CE /* CustomViewController.swift */; };
+		B54DDD8648D9295036C136B7 /* UIViewController+Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +56,7 @@
 		A7532C8227E2ED67005A1D51 /* MultiViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiViewController.swift; sourceTree = "<group>"; };
 		A763680D27DA02BB00B68450 /* HostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostViewController.swift; sourceTree = "<group>"; };
 		A797BAAE27DEE9E2003946CE /* CustomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
+		B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Drawer.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 				A7532C8027E2DE73005A1D51 /* NormalViewController.swift */,
 				A797BAAE27DEE9E2003946CE /* CustomViewController.swift */,
 				A7532C8227E2ED67005A1D51 /* MultiViewController.swift */,
+				B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -289,6 +292,7 @@
 				A7532C8127E2DE73005A1D51 /* NormalViewController.swift in Sources */,
 				A7532C8327E2ED67005A1D51 /* MultiViewController.swift in Sources */,
 				A797BAAF27DEE9E2003946CE /* CustomViewController.swift in Sources */,
+				B54DDD8648D9295036C136B7 /* UIViewController+Drawer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

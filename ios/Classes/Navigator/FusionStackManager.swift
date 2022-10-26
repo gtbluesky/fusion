@@ -27,17 +27,14 @@ internal class FusionStackManager {
     }
 
     func getTopContainer() -> UIViewController? {
-        let vc = UIApplication.roofViewController
-        let nc = vc?.navigationController
-        if nc?.viewControllers.count ?? 0 > 0 {
-            return nc?.topViewController
-        } else {
-            return vc
-        }
+        pageStack.isEmpty ? nil : pageStack.last?.value
     }
 
     func topIsFusionContainer() -> Bool {
-        getTopContainer() is FusionViewController
+        let vc = UIApplication.roofViewController
+        let nc = vc?.navigationController
+        let topVc = nc?.viewControllers.count ?? 0 > 0 ? nc?.topViewController : vc
+        return topVc is FusionViewController
     }
 
     func closeTopContainer() {

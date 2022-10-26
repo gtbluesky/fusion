@@ -56,9 +56,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             history.addAll(restoredHistory)
             engineBinding?.restore(restoredHistory)
         } else {
-            Handler(Looper.getMainLooper()).post {
-                engineBinding?.push(routeName, routeArguments)
-            }
+            engineBinding?.push(routeName, routeArguments)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT

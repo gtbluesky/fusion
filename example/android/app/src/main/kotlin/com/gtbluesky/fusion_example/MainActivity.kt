@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.notification.PageNotificationListener
 import com.gtbluesky.fusion_example.databinding.ActivityMainBinding
@@ -15,6 +17,13 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
+        val flutterFragment = buildFusionFragment(CustomFusionFragment::class.java, "/lifecycle")
+        supportFragmentManager.beginTransaction()
+            .replace(activityMainBinding.flutterLayout.id, flutterFragment).commit()
+        setListener()
+    }
+
+    private fun setListener() {
         activityMainBinding.tvFlutterActivity.setOnClickListener {
             FusionNavigator.open("/lifecycle", mapOf("title" to "Android Flutter Page"))
         }
@@ -29,6 +38,9 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
         }
         activityMainBinding.tvFlutterFragment.setOnClickListener {
             startActivity(Intent(this, FragmentSceneActivity::class.java))
+        }
+        activityMainBinding.tvFlutterDrawer.setOnClickListener {
+            activityMainBinding.drawerLayout.openDrawer(GravityCompat.START)
         }
     }
 

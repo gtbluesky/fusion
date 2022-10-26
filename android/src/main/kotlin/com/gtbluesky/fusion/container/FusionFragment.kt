@@ -66,9 +66,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             history.addAll(restoredHistory)
             engineBinding?.restore(restoredHistory)
         } else {
-            Handler(Looper.getMainLooper()).post {
-                engineBinding?.push(routeName, routeArguments)
-            }
+            engineBinding?.push(routeName, routeArguments)
         }
         if (isReused) {
             FusionStackManager.add(activity as FusionContainer)

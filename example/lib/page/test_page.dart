@@ -80,6 +80,7 @@ class _TestPageState extends State<TestPage>
           InkWell(
               child: const Text('push /lifecycle'),
               onTap: () async {
+                // await FusionNavigator.instance.pop();
                 final result = await FusionNavigator.instance.push<String?>(
                     '/lifecycle',
                     {'title': 'Lifecycle Test'});
