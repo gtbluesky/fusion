@@ -37,6 +37,10 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push /test'),
                 onTap: () async {
+                  if (!FusionState.isReused) {
+                    await FusionNavigator.instance.pop();
+                    await Future.delayed(const Duration(milliseconds: 300));
+                  }
                   final result = await FusionNavigator.instance
                       .push<String?>('/test', {'title': '2'});
                   if (kDebugMode) {

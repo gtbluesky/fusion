@@ -1,3 +1,7 @@
+## 2.0.6
+
+* Fixes white frame shown when flutter transparent container launched firstly.
+
 ## 2.0.5
 
 * Fixes some known bugs.
