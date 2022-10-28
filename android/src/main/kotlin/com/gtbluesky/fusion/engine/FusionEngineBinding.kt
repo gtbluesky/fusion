@@ -30,9 +30,18 @@ internal class FusionEngineBinding(
         } else {
             Fusion.defaultEngine
         }?.also {
-            navigationChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_NAVIGATION_CHANNEL)
-            notificationChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_NOTIFICATION_CHANNEL)
-            platformChannel = MethodChannel(it.dartExecutor.binaryMessenger, FusionConstant.FUSION_PLATFORM_CHANNEL)
+            navigationChannel = MethodChannel(
+                it.dartExecutor.binaryMessenger,
+                FusionConstant.FUSION_NAVIGATION_CHANNEL
+            )
+            notificationChannel = MethodChannel(
+                it.dartExecutor.binaryMessenger,
+                FusionConstant.FUSION_NOTIFICATION_CHANNEL
+            )
+            platformChannel = MethodChannel(
+                it.dartExecutor.binaryMessenger,
+                FusionConstant.FUSION_PLATFORM_CHANNEL
+            )
         }
     }
 
@@ -115,29 +124,23 @@ internal class FusionEngineBinding(
                 }
                 "pop" -> {
                     if (!isReused) {
-                        if (container?.history()?.isEmpty() == true) {
-                            result.success(true)
-                            detach()
-                        } else {
-                            // 在flutter页面中点击pop，仅关闭容器
+                        // 子页面不支持pop
+                        result.success(false)
+                        return@setMethodCallHandler
+                    }
+                    val topContainer = FusionStackManager.getTopContainer()
+                    if (topContainer is FusionContainer) {
+                        if (topContainer.history().size == 1) {
+                            // 关闭flutter容器
                             FusionStackManager.closeTopContainer()
                             result.success(false)
+                        } else {
+                            // flutter页面pop
+                            topContainer.history().removeLast()
+                            result.success(true)
                         }
                     } else {
-                        val topContainer = FusionStackManager.getTopContainer()
-                        if (topContainer is FusionContainer) {
-                            if (topContainer.history().size == 1) {
-                                // 关闭flutter容器
-                                FusionStackManager.closeTopContainer()
-                                result.success(false)
-                            } else {
-                                // flutter页面pop
-                                topContainer.history().removeLast()
-                                result.success(true)
-                            }
-                        } else {
-                            result.success(false)
-                        }
+                        result.success(false)
                     }
                 }
                 "remove" -> {
@@ -220,7 +223,21 @@ internal class FusionEngineBinding(
             mapOf(
                 "active" to active,
                 "result" to result
-            )
+            ),
+            object : MethodChannel.Result {
+                override fun success(result: Any?) {
+                    // 子页面退出后销毁Engine
+                    if (!active && !isReused) {
+                        detach()
+                    }
+                }
+
+                override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
+                }
+
+                override fun notImplemented() {
+                }
+            }
         )
     }
 

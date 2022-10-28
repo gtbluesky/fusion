@@ -82,9 +82,9 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         performDetach()
         super.onDestroy()
         history.clear()
+        FusionStackManager.remove(this)
         engineBinding?.pop()
         engineBinding = null
-        FusionStackManager.remove(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

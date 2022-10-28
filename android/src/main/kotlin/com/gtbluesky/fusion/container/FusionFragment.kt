@@ -105,20 +105,17 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     override fun onDestroy() {
-        if (isReused) {
-            performDetach()
-        } else {
-            (this as? FusionMessengerHandler)?.releaseFlutterChannel()
-        }
         super.onDestroy()
         history.clear()
-        engineBinding?.pop()
-        engineBinding = null
         if (isReused) {
+            performDetach()
             FusionStackManager.remove(activity as FusionContainer)
         } else {
+            (this as? FusionMessengerHandler)?.releaseFlutterChannel()
             FusionStackManager.removeChild(this)
         }
+        engineBinding?.pop()
+        engineBinding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -263,7 +260,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return super.createArgs().also {
                 it.putString(FusionConstant.ROUTE_NAME, routeName)
                 it.putSerializable(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
-                it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, !isReused)
+                it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, false)
                 it.putBoolean(FusionConstant.REUSE_MODE, isReused)
             }
         }

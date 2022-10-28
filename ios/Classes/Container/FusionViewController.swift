@@ -130,11 +130,11 @@ open class FusionViewController: FlutterViewController {
 
     private func destroy() {
         history.removeAll()
-        if !isReused {
+        if isReused {
+            FusionStackManager.instance.remove(self)
+        } else {
             (self as? FusionMessengerHandler)?.releaseFlutterChannel()
             FusionStackManager.instance.removeChild(self)
-        } else {
-            FusionStackManager.instance.remove(self)
         }
         engineBinding?.pop()
         engineBinding = nil

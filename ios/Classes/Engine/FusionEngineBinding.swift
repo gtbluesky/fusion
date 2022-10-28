@@ -117,35 +117,29 @@ internal class FusionEngineBinding: NSObject {
                 result(pageInfo)
             case "pop":
                 if !self.isReused {
-                    if self.container == nil || self.container?.history.isEmpty == true {
-                        result(true)
-                        self.detach()
-                    } else {
-                        // 在flutter页面中点击pop，仅关闭容器
-                        FusionStackManager.instance.closeTopContainer()
-                        result(false)
-                    }
+                    // 子页面不支持pop
+                    result(false)
+                    return
+                }
+                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
+                    // flutter容器关闭后
+                    // 仅刷新history，让容器第一个可见Flutter页面出栈
+                    result(false)
+                    return
+                }
+                if topContainer.history.count == 1 {
+                    // 仅关闭flutter容器
+                    FusionStackManager.instance.closeTopContainer()
+                    result(false)
                 } else {
-                    guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                        // flutter容器关闭后
-                        // 仅刷新history，让容器第一个可见Flutter页面出栈
-                        result(false)
-                        return
-                    }
-                    if topContainer.history.count == 1 {
-                        // 仅关闭flutter容器
-                        FusionStackManager.instance.closeTopContainer()
-                        result(false)
-                    } else {
-                        // flutter页面pop
-                        topContainer.history.removeLast()
-                        result(true)
-                    }
-                    if topContainer.history.count == 1 {
-                        self.addPopGesture()
-                    } else {
-                        self.removePopGesture()
-                    }
+                    // flutter页面pop
+                    topContainer.history.removeLast()
+                    result(true)
+                }
+                if topContainer.history.count == 1 {
+                    self.addPopGesture()
+                } else {
+                    self.removePopGesture()
                 }
             case "remove":
                 if !self.isReused {
@@ -246,7 +240,13 @@ internal class FusionEngineBinding: NSObject {
                 arguments: [
                     "active": active,
                     "result": result
-                ]
+                ],
+                result: { [weak self] (result) in
+                    // 子页面退出后销毁Engine
+                    if !active && self?.isReused == false {
+                        self?.detach()
+                    }
+                }
         )
     }
 

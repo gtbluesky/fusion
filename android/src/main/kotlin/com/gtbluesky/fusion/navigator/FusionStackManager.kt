@@ -36,25 +36,13 @@ internal object FusionStackManager {
     }
 
     fun closeTopContainer() {
-        var top = getTopChildContainer()
-        // 关闭抽屉
-        if (top is Fragment) {
-            val frameLayout = top.view?.parent as? ViewGroup
-            val drawerLayout = frameLayout?.parent
-            if (drawerLayout is DrawerLayout && drawerLayout.isDrawerOpen(frameLayout)) {
-                drawerLayout.closeDrawer(frameLayout)
-                return
-            }
-        }
-        // 关闭容器
-        top = getTopContainer()
+        val top = getTopContainer()
         if (top is Activity) {
             top.finish()
             // 透明容器则关闭退出动画
             if (top.isTransparent()) {
                 top.overridePendingTransition(0, 0)
             }
-            return
         }
     }
 
