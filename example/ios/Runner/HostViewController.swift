@@ -10,6 +10,7 @@ import UIKit
 import fusion
 
 class HostViewController: UIViewController {
+//class HostViewController: UIViewController, UIViewControllerRestoration {
 
     @IBOutlet weak var button0: UIButton!
     @IBOutlet weak var button1: UIButton!
@@ -18,6 +19,8 @@ class HostViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+//        self.restorationClass = HostViewController.self
+//        self.restorationIdentifier = NSStringFromClass(HostViewController.self)
         FusionNotificationBinding.instance.register(self)
     }
 
@@ -29,6 +32,14 @@ class HostViewController: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
+
+//    class func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "HostVC")
+//        vc.restorationClass = self
+//        vc.restorationIdentifier = identifierComponents.last
+//        return vc
+//    }
 
     @IBAction func click0(_ sender: UIButton) {
         FusionNavigator.instance.open("/lifecycle", arguments: ["title": "iOS Flutter Page"])

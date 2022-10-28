@@ -9,9 +9,19 @@ import Foundation
 import fusion
 
 class NormalViewController: UIViewController {
+//class NormalViewController: UIViewController, UIViewControllerRestoration {
+//    static func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
+//        let vc = NormalViewController()
+//        vc.restorationClass = self
+//        vc.restorationIdentifier = identifierComponents.last
+//        return vc
+//    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+//        restorationClass = NormalViewController.self
+//        restorationIdentifier = NSStringFromClass(NormalViewController.self)
         view.backgroundColor = UIColor.white
         newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 0, title: "返回", action: #selector(btnClick(btn:)))
         newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 60, title: "发送消息", action: #selector(btnClick2(btn:)))

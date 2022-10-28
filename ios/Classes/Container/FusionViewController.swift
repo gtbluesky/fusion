@@ -37,7 +37,36 @@ open class FusionViewController: FlutterViewController {
     }
 
     public required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        isReused = coder.decodeBool(forKey: "isReused")
+        if isReused {
+            engineBinding = Fusion.instance.engineBinding
+        } else {
+            engineBinding = FusionEngineBinding(false)
+        }
+        engineBinding?.engine?.viewController = nil
+        super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
+        if let engine = engineBinding?.engine {
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+        }
+        if !isReused {
+            engineBinding?.attach(self)
+        }
+        let classSet = [NSArray.self, NSDictionary.self, NSString.self, NSNumber.self]
+        if let h = coder.decodeObject(of: classSet, forKey: "history") as? [Dictionary<String, Any?>] {
+            history.append(contentsOf: h)
+            engineBinding?.restore(h)
+        }
+        if !isReused {
+            FusionStackManager.instance.addChild(self)
+        } else {
+            FusionStackManager.instance.add(self)
+        }
+    }
+
+    open override func encodeRestorableState(with coder: NSCoder) {
+        coder.encode(isReused, forKey: "isReused")
+        coder.encode(history, forKey: "history")
+        super.encodeRestorableState(with: coder)
     }
 
     open override func viewDidLoad() {

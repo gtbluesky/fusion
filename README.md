@@ -186,8 +186,6 @@ navController?.present(fusionVc, animated: false)
 
 同时Flutter页面背景也需要设置为透明
 
-> 注意：上述说的透明页面模式是指Flutter容器为透明（包括Flutter页面也为透明），此时可以看到下层的其他原生容器页面内容。另外Flutter页面本身也支持透明，如：FlutterA不透明，FlutterB透明页面，从A跳转B，可在FlutterB看到FlutterA内容，此时应当使用普通页面模式。
-
 #### 子页面模式
 
 子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
@@ -195,6 +193,8 @@ navController?.present(fusionVc, animated: false)
 Android 使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
 iOS 使用 FusionViewController 并传入 `isReused: false` 以支持子页面模式。
+
+P.S: 目前子页面模式尚不支持Engine复用，即子页面会创建新的Engine
 
 ### 3、路由API（FusionNavigator）
 
@@ -394,3 +394,7 @@ iOS侧
 ### 8、返回拦截
 
 在纯 Flutter 开发中可以使用`WillPopScope`组件拦截返回操作，Fusion 也完整支持该功能，使用方式与在纯 Flutter 开发完全一致，此外使用`FusionNavigator.maybePop`的操作也可被`WillPopScope`组件拦截。
+
+### 9、状态恢复
+
+Fusion 支持 Android 和 iOS 平台 APP 被回收后 Flutter 路由的恢复

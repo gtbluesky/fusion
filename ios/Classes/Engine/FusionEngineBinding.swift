@@ -259,6 +259,13 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
+    func restore(_ history: [Dictionary<String, Any?>]) {
+        navigationChannel?.invokeMethod(
+                "restore",
+                arguments: history
+        )
+    }
+
     func notifyPageVisible() {
         notificationChannel?.invokeMethod("notifyPageVisible", arguments: nil)
     }

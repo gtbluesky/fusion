@@ -9,8 +9,22 @@ import Foundation
 import fusion
 
 class CustomViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler {
+//class CustomViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler, UIViewControllerRestoration {
 
     private var channel: FlutterMethodChannel? = nil
+
+//    public class func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
+//        let vc = CustomViewController(coder: coder)
+//        vc.restorationClass = self
+//        vc.restorationIdentifier = identifierComponents.last
+//        return vc
+//    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+//        self.restorationClass = CustomViewController.self
+//        self.restorationIdentifier = NSStringFromClass(CustomViewController.self)
+    }
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         NSLog("\(self) configureFlutterChannel")

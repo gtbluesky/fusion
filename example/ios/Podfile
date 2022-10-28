@@ -40,4 +40,5 @@ post_install do |installer|
   end
 end
 
-pod 'SideMenu'
+pod 'SideMenu', '~> 6.5.0'
+# pod 'Toast-Swift', '~> 5.0.1'

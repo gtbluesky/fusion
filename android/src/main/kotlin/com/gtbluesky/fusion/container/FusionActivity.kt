@@ -6,8 +6,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
@@ -52,11 +50,11 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) as? List<Map<String, Any?>>
-        if (restoredHistory != null) {
+        if (restoredHistory == null) {
+            engineBinding?.push(routeName, routeArguments)
+        } else {
             history.addAll(restoredHistory)
             engineBinding?.restore(restoredHistory)
-        } else {
-            engineBinding?.push(routeName, routeArguments)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT

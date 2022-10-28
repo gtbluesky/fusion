@@ -3,8 +3,6 @@ package com.gtbluesky.fusion.container
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,11 +60,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) as? List<Map<String, Any?>>
-        if (restoredHistory != null) {
+        if (restoredHistory == null) {
+            engineBinding?.push(routeName, routeArguments)
+        } else {
             history.addAll(restoredHistory)
             engineBinding?.restore(restoredHistory)
-        } else {
-            engineBinding?.push(routeName, routeArguments)
         }
         if (isReused) {
             FusionStackManager.add(activity as FusionContainer)
