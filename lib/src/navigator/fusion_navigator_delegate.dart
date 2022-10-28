@@ -136,11 +136,14 @@ class FusionNavigatorDelegate {
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {
-    bool executable = await FusionChannel.instance.pop();
-    if (!executable) {
-      return;
+    final route = PageLifecycleBinding.instance.topRoute;
+    if (route is FusionPageRoute) {
+      bool executable = await FusionChannel.instance.pop();
+      if (!executable) {
+        return;
+      }
+      _history.removeLast();
     }
-    _history.removeLast();
     return _navigator.pop<T>(result);
   }
 
