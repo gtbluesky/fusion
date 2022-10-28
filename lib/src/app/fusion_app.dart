@@ -99,7 +99,7 @@ class _FusionAppState extends State<FusionApp> {
         FusionNavigatorObserver.instance,
         ...widget.navigatorObservers
       ],
-      home: const Scaffold(backgroundColor: Colors.transparent),
+      home: Container(color: FusionState.isReused ? Colors.transparent : Colors.white),
       builder: widget.builder,
       title: widget.title,
       onGenerateTitle: widget.onGenerateTitle,
