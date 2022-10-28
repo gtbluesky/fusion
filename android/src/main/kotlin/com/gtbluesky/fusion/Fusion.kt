@@ -24,6 +24,7 @@ object Fusion {
         private set
     private lateinit var context: Application
     private var lifecycleCallback: Application.ActivityLifecycleCallbacks? = null
+    private var isRunning = false
 
     @UiThread
     fun install(context: Application, delegate: FusionRouteDelegate) {
@@ -32,6 +33,10 @@ object Fusion {
                 "Methods marked with @UiThread must be executed on the main thread. Current thread: ${Thread.currentThread().name}"
             )
         }
+        if (isRunning) {
+            return
+        }
+        isRunning = true
         this.context = context
         this.delegate = delegate
         engineGroup = FlutterEngineGroup(context)
@@ -50,6 +55,7 @@ object Fusion {
         engineBinding = null
         engineGroup = null
         defaultEngine = null
+        isRunning = false
     }
 
     @UiThread

@@ -14,12 +14,17 @@ public class Fusion: NSObject {
     public private(set) var defaultEngine: FlutterEngine? = nil
     internal var engineBinding: FusionEngineBinding? = nil
     internal var delegate: FusionRouteDelegate? = nil
+    private var isRunning = false
 
     private override init() {
         super.init()
     }
 
     @objc public func install(_ delegate: FusionRouteDelegate) {
+        if (isRunning) {
+            return
+        }
+        isRunning = true
         self.delegate = delegate
         engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
         defaultEngine = createAndRunEngine(FusionConstant.REUSE_MODE)
@@ -34,6 +39,7 @@ public class Fusion: NSObject {
         engineBinding = nil
         engineGroup = nil
         defaultEngine = nil
+        isRunning = false
     }
 
     internal func createAndRunEngine(_ initialRoute: String = FusionConstant.INITIAL_ROUTE) -> FlutterEngine? {
