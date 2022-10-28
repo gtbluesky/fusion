@@ -21,7 +21,7 @@ import fusion
     }
 
     func pushNativeRoute(name: String, arguments: Dictionary<String, Any>?) {
-        print("pushNativeRoute: name=\(name), arguments=\(arguments)")
+        NSLog("pushNativeRoute: name=\(name), arguments=\(arguments)")
         let navController = self.window?.rootViewController as? UINavigationController
         if name == "/normal" {
             let vc = NormalViewController()
@@ -30,7 +30,7 @@ import fusion
     }
 
     func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?) {
-        print("pushFlutterRoute: name=\(name), arguments=\(arguments)")
+        NSLog("pushFlutterRoute: name=\(name), arguments=\(arguments)")
         let transparent = arguments?["transparent"] as? Bool ?? false
         let navController = self.window?.rootViewController as? UINavigationController
         let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)

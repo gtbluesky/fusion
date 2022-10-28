@@ -17,6 +17,7 @@ internal class FusionStackManager {
     }
 
     func add(_ container: FusionViewController) {
+        remove(container)
         pageStack.append(WeakReference(container))
     }
 
@@ -56,6 +57,7 @@ internal class FusionStackManager {
     }
 
     func addChild(_ container: FusionViewController) {
+        removeChild(container)
         childPageStack.append(WeakReference(container))
     }
 
@@ -83,15 +85,16 @@ internal class FusionStackManager {
         }
     }
 
-    func sendMessage(_ msgName: String, msgBody: Dictionary<String, Any>?) {
-        var msg: Dictionary<String, Any?> = ["msgName": msgName]
-        msg["msgBody"] = msgBody
-        Fusion.instance.engineBinding?.onReceive(msg)
+    func sendMessage(_ name: String, body: Dictionary<String, Any>?) {
+        // Native
+        FusionNotificationBinding.instance.dispatchMessage(name, body: body)
+        var msg: Dictionary<String, Any?> = ["name": name]
+        msg["body"] = body
+        // Default Engine
+        Fusion.instance.engineBinding?.dispatchMessage(msg)
+        // Other Engines
         childPageStack.forEach {
-            $0.value?.engineBinding?.onReceive(msg)
-        }
-        UIApplication.roofNavigationController?.viewControllers.forEach {
-            ($0 as? PageNotificationListener)?.onReceive(msgName: msgName, msgBody: msgBody)
+            $0.value?.engineBinding?.dispatchMessage(msg)
         }
     }
 }

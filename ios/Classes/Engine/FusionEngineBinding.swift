@@ -185,12 +185,12 @@ internal class FusionEngineBinding: NSObject {
         notificationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
             case "sendMessage":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let msgName = dict["msgName"] as? String else {
+                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
                     result(nil)
                     return
                 }
-                let msgBody = dict["msgBody"] as? Dictionary<String, Any>
-                FusionStackManager.instance.sendMessage(msgName, msgBody: msgBody)
+                let body = dict["body"] as? Dictionary<String, Any>
+                FusionStackManager.instance.sendMessage(name, body: body)
                 result(nil)
             default:
                 result(FlutterMethodNotImplemented)
@@ -275,8 +275,8 @@ internal class FusionEngineBinding: NSObject {
         notificationChannel?.invokeMethod("notifyEnterBackground", arguments: nil)
     }
 
-    func onReceive(_ msg: Dictionary<String, Any?>) {
-        notificationChannel?.invokeMethod("onReceive", arguments: msg)
+    func dispatchMessage(_ msg: Dictionary<String, Any?>) {
+        notificationChannel?.invokeMethod("dispatchMessage", arguments: msg)
     }
 
     func latestStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {

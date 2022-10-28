@@ -35,7 +35,7 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.remove(routeName);
   }
 
-  void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {
-    return FusionChannel.instance.sendMessage(msgName, msgBody);
+  void sendMessage(String name, [Map<String, dynamic>? body]) {
+    return FusionChannel.instance.sendMessage(name, body);
   }
 }

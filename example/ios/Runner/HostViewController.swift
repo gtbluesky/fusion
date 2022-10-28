@@ -16,6 +16,15 @@ class HostViewController: UIViewController {
     @IBOutlet weak var button2: UIButton!
     @IBOutlet weak var button3: UIButton!
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        FusionNotificationBinding.instance.register(self)
+    }
+
+    deinit {
+        FusionNotificationBinding.instance.unregister(self)
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -39,8 +48,8 @@ class HostViewController: UIViewController {
     }
 }
 
-extension HostViewController: PageNotificationListener {
-    public func onReceive(msgName: String, msgBody: Dictionary<String, Any>?) {
-        print("onReceive: msgName=\(msgName), msgBody=\(msgBody)")
+extension HostViewController: FusionNotificationListener {
+    public func onReceive(name: String, body: Dictionary<String, Any>?) {
+        NSLog("onReceive: name=\(name), body=\(body)")
     }
 }

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.container.FusionFragment
-import com.gtbluesky.fusion.notification.PageNotificationListener
+import com.gtbluesky.fusion.notification.FusionNotificationBinding
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
@@ -15,6 +15,7 @@ internal object FusionStackManager {
     private val childPageStack = mutableListOf<WeakReference<FusionFragment>>()
 
     fun add(container: FusionContainer) {
+        remove(container)
         pageStack.add(WeakReference(container))
     }
 
@@ -58,6 +59,7 @@ internal object FusionStackManager {
     }
 
     fun addChild(container: FusionFragment) {
+        removeChild(container)
         childPageStack.add(WeakReference(container))
     }
 
@@ -81,16 +83,16 @@ internal object FusionStackManager {
         }
     }
 
-    fun sendMessage(msgName: String, msgBody: Map<String, Any>?) {
-        val msg = mutableMapOf<String, Any?>("msgName" to msgName)
-        msg["msgBody"] = msgBody
-        Fusion.engineBinding?.onReceive(msg)
+    fun sendMessage(name: String, body: Map<String, Any>?) {
+        // Native
+        FusionNotificationBinding.dispatchMessage(name, body)
+        val msg = mutableMapOf<String, Any?>("name" to name)
+        msg["body"] = body
+        // Default Engine
+        Fusion.engineBinding?.dispatchMessage(msg)
+        // Other Engines
         childPageStack.forEach {
-            it.get()?.engineBinding?.onReceive(msg)
-        }
-        // 普通Activity
-        pageStack.forEach {
-            (it.get() as? PageNotificationListener)?.onReceive(msgName, msgBody)
+            it.get()?.engineBinding?.dispatchMessage(msg)
         }
     }
 }

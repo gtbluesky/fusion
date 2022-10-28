@@ -53,7 +53,7 @@ object FusionNavigator {
 
     @JvmStatic
     @JvmOverloads
-    fun sendMessage(msgName: String, msgBody: Map<String, Any>? = null) {
-        FusionStackManager.sendMessage(msgName, msgBody)
+    fun sendMessage(name: String, body: Map<String, Any>? = null) {
+        FusionStackManager.sendMessage(name, body)
     }
 }

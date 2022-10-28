@@ -7,20 +7,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion.navigator.FusionNavigator
-import com.gtbluesky.fusion.notification.PageNotificationListener
+import com.gtbluesky.fusion.notification.FusionNotificationBinding
+import com.gtbluesky.fusion.notification.FusionNotificationListener
 import com.gtbluesky.fusion_example.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), PageNotificationListener {
+class MainActivity : AppCompatActivity(), FusionNotificationListener {
     private lateinit var activityMainBinding: ActivityMainBinding
+    private var hasOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
-        val flutterFragment = buildFusionFragment(CustomFusionFragment::class.java, "/lifecycle")
-        supportFragmentManager.beginTransaction()
-            .replace(activityMainBinding.flutterLayout.id, flutterFragment).commit()
         setListener()
+        FusionNotificationBinding.register(this)
     }
 
     private fun setListener() {
@@ -40,12 +40,24 @@ class MainActivity : AppCompatActivity(), PageNotificationListener {
             startActivity(Intent(this, FragmentSceneActivity::class.java))
         }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
+            if (!hasOpened) {
+                hasOpened = true
+                val flutterFragment =
+                    buildFusionFragment(CustomFusionFragment::class.java, "/lifecycle")
+                supportFragmentManager.beginTransaction()
+                    .replace(activityMainBinding.flutterLayout.id, flutterFragment).commit()
+            }
             activityMainBinding.drawerLayout.openDrawer(GravityCompat.START)
         }
     }
 
-    override fun onReceive(msgName: String, msgBody: Map<String, Any>?) {
-        Toast.makeText(this, "onReceive: msgName=$msgName, msgBody=$msgBody", Toast.LENGTH_SHORT)
+    override fun onReceive(name: String, body: Map<String, Any>?) {
+        Toast.makeText(this, "onReceive: name=$name, body=$body", Toast.LENGTH_SHORT)
             .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FusionNotificationBinding.unregister(this)
     }
 }

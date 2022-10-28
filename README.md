@@ -210,8 +210,6 @@ replace：在当前Flutter容器中将栈顶路由替换为对应路由。目前
 
 remove：在当前Flutter容器中移除对应路由
 
-P.S. 除页面外其他类型如 Dialog 等请使用 Navigator 的 push 和 pop.
-
 ### 4、Flutter Plugin 注册
 
 框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册
@@ -345,16 +343,11 @@ PageLifecycleListener 生命周期回调函数：
 - onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；应用进入前台时也会被调用。
 - onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；应用退到后台时也会被调用。
 
-### 7、页面通信
-支持多种情况下页面消息传递：
-- Flutter -> Flutter
-- Flutter -> Native 
-- Native -> Flutter
-- Native -> Native
-
+### 7、全局通信
+支持消息在应用全局中的传递，不论是 Native 还是 Flutter 皆可接收和发送。
 #### 注册消息监听
 Flutter侧
-- ①、在需要监听消息的页面的 State 中 `implements` PageNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ①、在需要监听消息的 Widget（支持任意Widget） 的 State 中 `implements` FusionNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听
 ```dart
@@ -364,32 +357,36 @@ class TestPage extends StatefulWidget {
   State<TestPage> createState() => _TestPageState();
 }
 
-class _TestPageState extends State<TestPage> implements PageNotificationListener {
+class _TestPageState extends State<TestPage> implements FusionNotificationListener {
 
   @override
-  void onReceive(String msgName, Map<String, dynamic>? msgBody) {
+  void onReceive(String name, Map<String, dynamic>? body) {
     
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    PageNotificationBinding.instance.register(this);
+    FusionNotificationBinding.instance.register(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    PageNotificationBinding.instance.unregister(this);
+    FusionNotificationBinding.instance.unregister(this);
   }
 }
 ```
 
 Android侧
-- 在需要监听页面消息的 Activity 中 实现 PageNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ①、在需要监听消息的 Activity 或 Fragment 中实现 FusionNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ②、在适当时机使用 `FusionNotificationBinding` 的 `register` 方法注册监听
+- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听，若不手动注销，在该 Activity 或 Fragment 被销毁后 Fusion 内部则会自动注销
 
 iOS侧
-- 在需要监听页面消息的 ViewController（不支持子VC） 中 实现 PageNotificationListener 协议，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ①、在需要监听消息的 UIViewController 中实现 FusionNotificationListener 协议，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ②、在适当时机使用 `FusionNotificationBinding` 的 `register` 方法注册监听
+- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听，若不手动注销，在该 UIViewController 被销毁后 Fusion 内部则会自动注销
 
 #### 发送消息
 三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息。

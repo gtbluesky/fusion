@@ -13,15 +13,15 @@ class CustomViewController: FusionViewController, FusionMessengerHandler, Fusion
     private var channel: FlutterMethodChannel? = nil
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
-        print("\(self) configureFlutterChannel")
+        NSLog("\(self) configureFlutterChannel")
         channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
         channel?.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            print("Custom Channel：\(self)_\(call.method)")
+            NSLog("Custom Channel：\(self)_\(call.method)")
         }
     }
-    
+
     func releaseFlutterChannel() {
-        print("\(self) releaseFlutterChannel")
+        NSLog("\(self) releaseFlutterChannel")
         channel?.setMethodCallHandler(nil)
         channel = nil
     }
@@ -49,6 +49,6 @@ class CustomViewController: FusionViewController, FusionMessengerHandler, Fusion
     }
 
     deinit {
-        print("\(self) deinit")
+        NSLog("\(self) deinit")
     }
 }

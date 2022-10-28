@@ -178,13 +178,13 @@ internal class FusionEngineBinding(
         notificationChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendMessage" -> {
-                    val msgName = call.argument<String>("msgName")
-                    if (msgName.isNullOrEmpty()) {
+                    val name = call.argument<String>("name")
+                    if (name.isNullOrEmpty()) {
                         result.success(null)
                         return@setMethodCallHandler
                     }
-                    val msgBody = call.argument<MutableMap<String, Any>>("msgBody")
-                    FusionStackManager.sendMessage(msgName, msgBody)
+                    val body = call.argument<MutableMap<String, Any>>("body")
+                    FusionStackManager.sendMessage(name, body)
                     result.success(null)
                 }
                 else -> {
@@ -256,8 +256,8 @@ internal class FusionEngineBinding(
         notificationChannel?.invokeMethod("notifyEnterBackground", null)
     }
 
-    fun onReceive(msg: Map<String, Any?>) {
-        notificationChannel?.invokeMethod("onReceive", msg)
+    fun dispatchMessage(msg: Map<String, Any?>) {
+        notificationChannel?.invokeMethod("dispatchMessage", msg)
     }
 
     @Suppress("UNCHECKED_CAST")

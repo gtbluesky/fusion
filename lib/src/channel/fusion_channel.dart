@@ -5,7 +5,7 @@ import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/notification/page_notification.dart';
+import 'package:fusion/src/notification/fusion_notification.dart';
 import 'package:fusion/src/route/fusion_page_route.dart';
 
 class FusionChannel {
@@ -98,14 +98,14 @@ class FusionChannel {
         case 'notifyEnterBackground':
           PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
           break;
-        case 'onReceive':
+        case 'dispatchMessage':
           if (call.arguments is! Map) {
             return;
           }
           Map<String, dynamic> msg = Map.from(call.arguments);
-          String msgName = msg['msgName'];
-          final msgBody = (msg['msgBody'] as Map?)?.cast<String, dynamic>();
-          PageNotificationBinding.instance.dispatchPageMessage(msgName, msgBody);
+          String name = msg['name'];
+          final body = (msg['body'] as Map?)?.cast<String, dynamic>();
+          FusionNotificationBinding.instance.dispatchMessage(name, body);
           break;
         default:
           break;
@@ -204,12 +204,12 @@ class FusionChannel {
     return list;
   }
 
-  void sendMessage(String msgName, [Map<String, dynamic>? msgBody]) {
+  void sendMessage(String name, [Map<String, dynamic>? body]) {
     _notificationChannel.invokeMethod(
       'sendMessage',
       {
-        'msgName': msgName,
-        'msgBody': msgBody,
+        'name': name,
+        'body': body,
       },
     );
   }

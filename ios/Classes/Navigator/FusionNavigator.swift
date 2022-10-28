@@ -50,7 +50,7 @@ import Foundation
         Fusion.instance.engineBinding?.remove(name)
     }
 
-    public func sendMessage(_ msgName: String, msgBody: Dictionary<String, Any>? = nil) {
-        FusionStackManager.instance.sendMessage(msgName, msgBody: msgBody)
+    public func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil) {
+        FusionStackManager.instance.sendMessage(name, body: body)
     }
 }
