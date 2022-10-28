@@ -1,3 +1,7 @@
+## 2.0.7
+
+* Adjust global notification.
+
 ## 2.0.6
 
 * Fixes white frame shown when flutter transparent container launched firstly.
