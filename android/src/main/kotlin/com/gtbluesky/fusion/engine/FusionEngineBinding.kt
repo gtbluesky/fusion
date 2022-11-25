@@ -2,34 +2,28 @@ package com.gtbluesky.fusion.engine
 
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
-import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-internal class FusionEngineBinding(
-    private val isReused: Boolean
-) {
-    private var container: FusionContainer? = null
+internal class FusionEngineBinding(var engine: FlutterEngine?) {
     private var navigationChannel: MethodChannel? = null
     private var notificationChannel: MethodChannel? = null
     private var platformChannel: MethodChannel? = null
-    var engine: FlutterEngine? = null
-    private val history: List<Map<String, Any?>>
+    private val historyList: List<Map<String, Any?>>
         get() {
-            return FusionStackManager.pageStack.flatMap {
-                it.get()?.history() ?: listOf()
+            return FusionStackManager.containerStack.map {
+                mapOf(
+                    "uniqueId" to it.get()?.uniqueId(),
+                    "history" to it.get()?.history()
+                )
             }
         }
 
     init {
-        engine = if (!isReused) {
-            Fusion.createAndRunEngine()
-        } else {
-            Fusion.defaultEngine
-        }?.also {
+        engine?.let {
             navigationChannel = MethodChannel(
                 it.dartExecutor.binaryMessenger,
                 FusionConstant.FUSION_NAVIGATION_CHANNEL
@@ -45,133 +39,58 @@ internal class FusionEngineBinding(
         }
     }
 
-    fun attach(container: FusionContainer? = null) {
+    fun attach() {
         navigationChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
+                "open" -> {
+                    val name = call.argument<String>("name")
+                    if (name == null) {
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
+                    val arguments = call.argument<Map<String, Any>?>("arguments")
+                    Fusion.delegate.pushFlutterRoute(name, arguments)
+                    result.success(null)
+                }
                 "push" -> {
                     val name = call.argument<String>("name")
-                    if (name.isNullOrEmpty()) {
+                    if (name == null) {
                         result.success(null)
                         return@setMethodCallHandler
                     }
                     val arguments = call.argument<Map<String, Any>?>("arguments")
-                    val isFlutterPage = call.argument<Boolean>("flutter") ?: false
-                    if (isFlutterPage) {
-                        if (!isReused) {
-                            if (container?.history()?.isEmpty() == true) {
-                                // 在原Flutter容器打开Flutter页面
-                                // 即用户可见的第一个页面
-                                val pageInfo = mapOf(
-                                    "name" to name,
-                                    "arguments" to arguments,
-                                    "uniqueId" to UUID.randomUUID().toString(),
-                                    "home" to true
-                                )
-                                container.history().add(pageInfo)
-                                result.success(pageInfo)
-                            } else {
-                                // 在新Flutter容器打开Flutter页面
-                                Fusion.delegate.pushFlutterRoute(name, arguments)
-                                result.success(null)
-                            }
-                        } else {
-                            // 在原Flutter容器打开Flutter页面
-                            val topContainer = FusionStackManager.getTopContainer()
-                            if (topContainer !is FusionContainer) {
-                                result.success(null)
-                                return@setMethodCallHandler
-                            }
-                            val pageInfo = mapOf(
-                                "name" to name,
-                                "arguments" to arguments,
-                                "uniqueId" to UUID.randomUUID().toString(),
-                                "home" to topContainer.history().isEmpty()
-                            )
-                            topContainer.history().add(pageInfo)
-                            result.success(pageInfo)
-                        }
-                    } else {
-                        // 打开Native页面
-                        Fusion.delegate.pushNativeRoute(name, arguments)
-                        result.success(null)
-                    }
+                    Fusion.delegate.pushNativeRoute(name, arguments)
+                    result.success(null)
                 }
-                "replace" -> {
-                    if (!isReused) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val name = call.argument<String>("name")
-                    if (name.isNullOrEmpty()) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val arguments = call.argument<Map<String, Any>?>("arguments")
-                    val topContainer = FusionStackManager.getTopContainer()
-                    if (topContainer !is FusionContainer) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    topContainer.history().removeLast()
-                    val pageInfo = mapOf(
-                        "name" to name,
-                        "arguments" to arguments,
-                        "uniqueId" to UUID.randomUUID().toString(),
-                        "home" to topContainer.history().isEmpty()
-                    )
-                    topContainer.history().add(pageInfo)
-                    result.success(pageInfo)
-                }
-                "pop" -> {
-                    if (!isReused) {
-                        // 子页面不支持pop
+                "destroy" -> {
+                    val uniqueId = call.argument<String>("uniqueId")
+                    if (uniqueId == null) {
                         result.success(false)
                         return@setMethodCallHandler
                     }
-                    val topContainer = FusionStackManager.getTopContainer()
-                    if (topContainer is FusionContainer) {
-                        if (topContainer.history().size == 1) {
-                            // 关闭flutter容器
-                            FusionStackManager.closeTopContainer()
-                            result.success(false)
-                        } else {
-                            // flutter页面pop
-                            topContainer.history().removeLast()
-                            result.success(true)
-                        }
+                    val container = FusionStackManager.findContainer(uniqueId)
+                    if (container != null) {
+                        FusionStackManager.closeContainer(container)
+                        result.success(true)
                     } else {
                         result.success(false)
                     }
                 }
-                "remove" -> {
-                    if (!isReused) {
+                "restore" -> {
+                    result.success(historyList)
+                }
+                "sync" -> {
+                    val uniqueId = call.argument<String>("uniqueId")
+                    val pages = call.argument<List<Map<String, Any?>>>("pages")
+                    if (uniqueId == null || pages == null) {
                         result.success(false)
                         return@setMethodCallHandler
                     }
-                    val name = call.argument<String>("name")
-                    if (name.isNullOrEmpty()) {
-                        result.success(false)
-                        return@setMethodCallHandler
-                    }
-                    val topContainer = FusionStackManager.getTopContainer()
-                    if (topContainer !is FusionContainer) {
-                        result.success(false)
-                        return@setMethodCallHandler
-                    }
-                    val index = topContainer.history().indexOfLast {
-                        it["name"] == name
-                    }
-                    if (index >= 0) {
-                        topContainer.history().removeAt(index)
+                    FusionStackManager.findContainer(uniqueId)?.history()?.let {
+                        it.clear()
+                        it.addAll(pages)
                     }
                     result.success(true)
-                }
-                "restoreHistory" -> {
-                    if (isReused) {
-                        result.success(history)
-                    } else {
-                        result.success(null)
-                    }
                 }
                 else -> {
                     result.notImplemented()
@@ -182,7 +101,7 @@ internal class FusionEngineBinding(
             when (call.method) {
                 "sendMessage" -> {
                     val name = call.argument<String>("name")
-                    if (name.isNullOrEmpty()) {
+                    if (name == null) {
                         result.success(null)
                         return@setMethodCallHandler
                     }
@@ -197,7 +116,8 @@ internal class FusionEngineBinding(
         }
     }
 
-    fun push(name: String, arguments: Map<String, Any>? = null) {
+    // external function
+    fun push(name: String, arguments: Map<String, Any>?) {
         navigationChannel?.invokeMethod(
             "push",
             mapOf(
@@ -217,27 +137,12 @@ internal class FusionEngineBinding(
         )
     }
 
-    fun pop(active: Boolean = false, result: Any? = null) {
+    fun pop(result: Any?) {
         navigationChannel?.invokeMethod(
             "pop",
             mapOf(
-                "active" to active,
                 "result" to result
             ),
-            object : MethodChannel.Result {
-                override fun success(result: Any?) {
-                    // 子页面退出后销毁Engine
-                    if (!active && !isReused) {
-                        detach()
-                    }
-                }
-
-                override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                }
-
-                override fun notImplemented() {
-                }
-            }
         )
     }
 
@@ -250,19 +155,71 @@ internal class FusionEngineBinding(
         )
     }
 
-    fun restore(history: List<Map<String, Any?>>) {
+    // internal function
+    fun open(uniqueId: String, name: String, arguments: Map<String, Any>? = null) {
         navigationChannel?.invokeMethod(
-            "restore",
-            history
+            "open",
+            mapOf(
+                "uniqueId" to uniqueId,
+                "name" to name,
+                "arguments" to arguments
+            )
         )
     }
 
-    fun notifyPageVisible() {
-        notificationChannel?.invokeMethod("notifyPageVisible", null)
+    fun switchTop(uniqueId: String) {
+        navigationChannel?.invokeMethod(
+            "switchTop",
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
-    fun notifyPageInvisible() {
-        notificationChannel?.invokeMethod("notifyPageInvisible", null)
+    /**
+     * Restore the specified container in flutter side
+     * @param uniqueId: container's uniqueId
+     * @param history: container's history
+     */
+    fun restore(uniqueId: String, history: List<Map<String, Any?>>) {
+        navigationChannel?.invokeMethod(
+            "restore",
+            mapOf(
+                "uniqueId" to uniqueId,
+                "history" to history,
+            )
+        )
+    }
+
+    /**
+     * Destroy the specified container in flutter side
+     * @param uniqueId: container's uniqueId
+     */
+    fun destroy(uniqueId: String) {
+        navigationChannel?.invokeMethod(
+            "destroy",
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
+    }
+
+    fun notifyPageVisible(uniqueId: String) {
+        notificationChannel?.invokeMethod(
+            "notifyPageVisible",
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
+    }
+
+    fun notifyPageInvisible(uniqueId: String) {
+        notificationChannel?.invokeMethod(
+            "notifyPageInvisible",
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
     fun notifyEnterForeground() {
@@ -328,7 +285,6 @@ internal class FusionEngineBinding(
     }
 
     fun detach() {
-        container = null
         navigationChannel?.setMethodCallHandler(null)
         navigationChannel = null
         notificationChannel?.setMethodCallHandler(null)

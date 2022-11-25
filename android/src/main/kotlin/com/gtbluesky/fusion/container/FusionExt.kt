@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.gtbluesky.fusion.constant.FusionConstant
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
+import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
@@ -65,4 +66,12 @@ fun findFlutterView(view: View?): FlutterView? {
         }
     }
     return null
+}
+
+fun FusionFragment.findFlutterFragmentClass(): Class<FlutterFragment> {
+    var clz = this.javaClass.superclass
+    while (clz != FlutterFragment::class.java) {
+        clz = clz.superclass
+    }
+    return clz
 }

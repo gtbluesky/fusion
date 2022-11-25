@@ -30,7 +30,7 @@ class FusionNotificationBinding {
 
   void dispatchMessage(String name, Map<String, dynamic>? body) {
     try {
-      for (var state in _listeners) {
+      for (final state in _listeners) {
         state.onReceive(name, body);
       }} on Exception catch (e) {
       FusionLog.log(e.toString());

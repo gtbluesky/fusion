@@ -15,6 +15,8 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     private var flutterFragment: FusionFragment? = null
 
+    override fun uniqueId() = flutterFragment?.uniqueId
+
     override fun history() = flutterFragment?.history() ?: mutableListOf()
 
     override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
@@ -45,7 +47,6 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         }
         return FusionFragment.FusionFlutterFragmentBuilder(FusionFragment::class.java)
             .initialRoute(routeName, routeArguments)
-            .reuseMode(true)
             .renderMode(RenderMode.texture)
             .transparencyMode(transparencyMode)
             .build<FusionFragment>().also {
@@ -65,4 +66,6 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
     override fun detachFromEngine() {
         flutterFragment?.detachFromEngine()
     }
+
+    override fun shouldDispatchAppLifecycleState() = false
 }

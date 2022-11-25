@@ -19,7 +19,7 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage>
-    implements FusionNotificationListener {
+    implements FusionNotificationListener, PageLifecycleListener {
   String? msg;
 
   @override
@@ -33,6 +33,7 @@ class _TestPageState extends State<TestPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     FusionNotificationBinding.instance.register(this);
+    PageLifecycleBinding.instance.register(this);
   }
 
   @override
@@ -40,8 +41,37 @@ class _TestPageState extends State<TestPage>
     super.dispose();
     FusionNavigator.instance.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
+    PageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
+    }
+  }
+
+  @override
+  void onBackground() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onBackground');
+    }
+  }
+
+  @override
+  void onForeground() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onForeground');
+    }
+  }
+
+  @override
+  void onPageInvisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
+  }
+
+  @override
+  void onPageVisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
     }
   }
 
@@ -84,6 +114,25 @@ class _TestPageState extends State<TestPage>
                 final result = await FusionNavigator.instance.push<String?>(
                     '/lifecycle',
                     {'title': 'Lifecycle Test'});
+                if (kDebugMode) {
+                  print('result=$result');
+                }
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('open /lifecycle'),
+              onTap: () async {
+                FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('push /navigator'),
+              onTap: () async {
+                final result = await FusionNavigator.instance.push<String?>('/navigator');
                 if (kDebugMode) {
                   print('result=$result');
                 }

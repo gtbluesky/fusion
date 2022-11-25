@@ -1,86 +1,69 @@
 package com.gtbluesky.fusion.navigator
 
 import android.app.Activity
-import android.view.ViewGroup
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.container.FusionContainer
-import com.gtbluesky.fusion.container.FusionFragment
 import com.gtbluesky.fusion.notification.FusionNotificationBinding
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
-    val pageStack = mutableListOf<WeakReference<FusionContainer>>()
-    private val childPageStack = mutableListOf<WeakReference<FusionFragment>>()
+    val containerStack = mutableListOf<WeakReference<FusionContainer>>()
+
+    fun isEmpty() = containerStack.isEmpty()
 
     fun add(container: FusionContainer) {
         remove(container)
-        pageStack.add(WeakReference(container))
+        containerStack.add(WeakReference(container))
     }
 
     fun remove(container: FusionContainer) {
-        pageStack.removeAll {
+        containerStack.removeAll {
             it.get() == container || it.get() == null
         }
     }
 
     fun getTopContainer(): FusionContainer? {
-        if (pageStack.isEmpty()) return null
-        return pageStack.last().get()
+        if (containerStack.isEmpty()) return null
+        return containerStack.last().get()
     }
 
-    private fun getTopChildContainer(): FusionContainer? {
-        if (childPageStack.isEmpty()) return null
-        return childPageStack.last().get()
+    fun findContainer(uniqueId: String): FusionContainer? {
+        if (uniqueId.isEmpty()) return null
+        for (containerRef in containerStack) {
+            if (containerRef.get()?.uniqueId() == uniqueId) {
+                return containerRef.get()
+            }
+        }
+        return null
     }
 
-    fun closeTopContainer() {
-        val top = getTopContainer()
-        if (top is Activity) {
-            top.finish()
+    fun closeContainer(container: FusionContainer) {
+        if (container is Activity) {
+            container.finish()
             // 透明容器则关闭退出动画
-            if (top.isTransparent()) {
-                top.overridePendingTransition(0, 0)
+            if (container.isTransparent()) {
+                container.overridePendingTransition(0, 0)
             }
         }
     }
 
-    fun addChild(container: FusionFragment) {
-        removeChild(container)
-        childPageStack.add(WeakReference(container))
-    }
-
-    fun removeChild(container: FusionFragment) {
-        childPageStack.removeAll {
-            it.get() == container || it.get() == null
-        }
-    }
-
     fun notifyEnterForeground() {
-        Fusion.engineBinding?.notifyEnterForeground()
-        childPageStack.forEach {
-            it.get()?.engineBinding?.notifyEnterForeground()
+        if (containerStack.isNotEmpty()) {
+            Fusion.engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
+        Fusion.engineBinding?.notifyEnterForeground()
     }
 
     fun notifyEnterBackground() {
+        Fusion.engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         Fusion.engineBinding?.notifyEnterBackground()
-        childPageStack.forEach {
-            it.get()?.engineBinding?.notifyEnterBackground()
-        }
     }
 
     fun sendMessage(name: String, body: Map<String, Any>?) {
         // Native
         FusionNotificationBinding.dispatchMessage(name, body)
-        val msg = mutableMapOf<String, Any?>("name" to name)
-        msg["body"] = body
-        // Default Engine
+        // Flutter
+        val msg = mapOf("name" to name, "body" to body)
         Fusion.engineBinding?.dispatchMessage(msg)
-        // Other Engines
-        childPageStack.forEach {
-            it.get()?.engineBinding?.dispatchMessage(msg)
-        }
     }
 }

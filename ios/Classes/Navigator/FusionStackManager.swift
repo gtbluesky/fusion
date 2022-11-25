@@ -9,8 +9,7 @@ import Foundation
 import UIKit
 
 internal class FusionStackManager {
-    var pageStack = [WeakReference<FusionViewController>]()
-    private var childPageStack = [WeakReference<FusionViewController>]()
+    var containerStack = [WeakReference<FusionViewController>]()
     static let instance = FusionStackManager()
 
     private init() {
@@ -18,83 +17,80 @@ internal class FusionStackManager {
 
     func add(_ container: FusionViewController) {
         remove(container)
-        pageStack.append(WeakReference(container))
+        containerStack.append(WeakReference(container))
     }
 
     func remove(_ container: FusionViewController) {
-        pageStack.removeAll {
+        containerStack.removeAll {
             $0.value == container || $0.value == nil
         }
     }
 
-    func getTopContainer() -> UIViewController? {
-        pageStack.isEmpty ? nil : pageStack.last?.value
+    func getTopContainer() -> FusionViewController? {
+        if containerStack.isEmpty {
+            return  nil
+        }
+        return containerStack.last?.value
     }
 
-    func topIsFusionContainer() -> Bool {
-        let vc = UIApplication.roofViewController
-        let nc = vc?.navigationController
-        let topVc = nc?.viewControllers.count ?? 0 > 0 ? nc?.topViewController : vc
-        return topVc is FusionViewController
+    func findContainer(_ uniqueId: String) -> FusionViewController? {
+        if uniqueId.isEmpty {
+            return nil
+        }
+        for containerRef in containerStack {
+            if containerRef.value?.uniqueId == uniqueId {
+                return containerRef.value
+            }
+        }
+        return nil
     }
 
-    func closeTopContainer() {
-        let vc = UIApplication.roofViewController
-        let nc = vc?.navigationController
+    func closeContainer(_ container: FusionViewController) {
+        let vc = container
+        let nc = vc.navigationController
         if let count = nc?.viewControllers.count {
             if count > 1 {
-                nc?.popViewController(animated: true)
+                if (nc?.topViewController == vc) {
+                    nc?.popViewController(animated: true)
+                } else if nc?.viewControllers.contains(vc) == true {
+                    vc.removeFromParent()
+                }
             } else if count == 1 && nc?.presentingViewController != nil {
-                nc?.dismiss(animated: true)
+                nc?.dismiss(animated: vc.isViewOpaque)
             }
         } else {
-            if let vc = vc as? FusionViewController {
-                vc.dismiss(animated: vc.isViewOpaque)
+            if vc.modalPresentationStyle == .overFullScreen || vc.modalPresentationStyle == .overCurrentContext {
+                var nextVc = vc.presentingViewController
+                if (nextVc is UINavigationController) {
+                    nextVc = (nextVc as? UINavigationController)?.topViewController
+                }
+                if !(nextVc is FusionViewController) {
+                    vc.dismiss(animated: vc.isViewOpaque)
+                    return
+                }
+                nextVc?.beginAppearanceTransition(true, animated: false)
+                vc.dismiss(animated: vc.isViewOpaque) {
+                    nextVc?.endAppearanceTransition()
+                }
             } else {
-                vc?.dismiss(animated: true)
+                vc.dismiss(animated: vc.isViewOpaque)
             }
-        }
-    }
-
-    func addChild(_ container: FusionViewController) {
-        removeChild(container)
-        childPageStack.append(WeakReference(container))
-    }
-
-    func removeChild(_ container: FusionViewController) {
-        childPageStack.removeAll {
-            $0.value == container || $0.value == nil
         }
     }
 
     func notifyEnterForeground() {
         Fusion.instance.engineBinding?.notifyEnterForeground()
-        childPageStack.forEach {
-            if let vc = $0.value {
-                vc.engineBinding?.notifyEnterForeground()
-            }
-        }
     }
 
     func notifyEnterBackground() {
         Fusion.instance.engineBinding?.notifyEnterBackground()
-        childPageStack.forEach {
-            if let vc = $0.value {
-                vc.engineBinding?.notifyEnterBackground()
-            }
-        }
     }
 
     func sendMessage(_ name: String, body: Dictionary<String, Any>?) {
         // Native
         FusionNotificationBinding.instance.dispatchMessage(name, body: body)
-        var msg: Dictionary<String, Any?> = ["name": name]
-        msg["body"] = body
-        // Default Engine
+        // Flutter
+        let msg: Dictionary<String, Any?> = ["name": name, "body": body]
         Fusion.instance.engineBinding?.dispatchMessage(msg)
-        // Other Engines
-        childPageStack.forEach {
-            $0.value?.engineBinding?.dispatchMessage(msg)
-        }
     }
 }

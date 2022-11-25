@@ -5,11 +5,13 @@
 
 Fusion 是新一代的混合管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
 
-Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用，即使在 debug 模式下打开 Flutter 容器也拥有媲美原生页面的打开速度。
+Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用。
 
 不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 优秀的兼容性使得使用者可以更加从容地升级 Flutter 版本，目前支持 Flutter SDK 从 2.x 到 3.x 的全部版本。
 
-Fusion 更加注重细节的处理，着重解决了其他类似框架中普遍存在的问题，如：Flutter 容器与 Native 容器跳转时状态栏图标颜色可能出现显示不正确的问题； 混合开发时当栈顶是 Flutter 页面时进入到任务界面其应用名称不显示的问题；混合开发时 Android APP 在后台被系统回收后再次进入 Flutter 页面不能恢复的问题等等。
+Fusion 更加注重细节的处理，着力解决了其他类似框架中普遍存在的问题，如：Flutter 容器与 Native 容器跳转时状态栏图标颜色可能出现显示不正确的问题； 混合开发时当栈顶是 Flutter 页面时进入到任务界面其应用名称不显示的问题等。
+
+此外，Fusion 也是目前仅有的支持混合开发时应用在后台被系统回收后Flutter页面可正常恢复的混合栈框架。
 
 ## 开始使用
 
@@ -36,7 +38,7 @@ final Map<String, FusionPageFactory> routeMap = {
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 ```
-P.S: 请勿使用`/`路由，`kUnknownRoute`表示未定义路由
+P.S: `kUnknownRoute`表示未定义路由
 
 Android 侧
 
@@ -190,25 +192,29 @@ navController?.present(fusionVc, animated: false)
 
 子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
 
-Android 使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
+Android 侧使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
 
-iOS 使用 FusionViewController 并传入 `isReused: false` 以支持子页面模式。
-
-P.S: 目前子页面模式尚不支持Engine复用，即子页面会创建新的Engine
+iOS 侧与页面模式一样使用 FusionViewController 
 
 ### 3、路由API（FusionNavigator）
 
 open：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API
 
-push：在当前Flutter容器中将对应路由入栈
+push：在当前Flutter容器中将对应路由入栈，Navigator.pushNamed 与之等同
 
-pop：在当前Flutter容器中将栈顶路由出栈
+pop：在当前Flutter容器中将栈顶路由出栈，Navigator.pop 与之等同
 
 maybePop：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
 
-replace：在当前Flutter容器中将栈顶路由替换为对应路由。目前其他框架均不支持该方法。
+replace：在当前Flutter容器中将栈顶路由替换为对应路由，Navigator.pushReplacementNamed 与之等同
 
 remove：在当前Flutter容器中移除对应路由
+
+路由跳转与关闭等操作既可使用`FusionNavigator`的 API，也可使用`Navigator`中与之对应的API（仅上述提到的部分），另外连续`pop`操作，前一个`pop`需要`await`，即：
+```dart
+await FusionNavigator.instance.pop();
+FusionNavigator.instance.pop();
+```
 
 ### 4、Flutter Plugin 注册
 
@@ -220,40 +226,30 @@ remove：在当前Flutter容器中移除对应路由
 
 Android 侧
 
-①、如果使用的是 FusionFragment 容器，则需在对应的 Activity 类上实现 FusionMessengerHandler 接口，在接口方法中创建 Channel
+①、与容器无关的方法
+
+在 Application 中进行注册
 
 ```kotlin
-class MyActivity : FragmentActivity(), FusionMessengerHandler {
-  
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //...
-        //加载 FusionFragment
-    }
-  
-    override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
-        val channel = MethodChannel(binaryMessenger, "自定义的channel名")
-        channel.setMethodCallHandler { call, result -> 
-            
-        }
-    }
-  
-    override fun releaseFlutterChannel() {
-        channel?.setMethodCallHandler(null)
-        channel = null
-    }
+val channel = Fusion.defaultEngine?.dartExecutor?.binaryMessenger?.let {
+    MethodChannel(
+        it,
+        "custom_channel"
+    )
+}
+channel?.setMethodCallHandler { call, result -> 
 }
 ```
 
+②、与容器相关的方法
 
-
-②、如果使用的是 FusionActivity 或 FusionFragmentActivity 容器，则需要创建一个新的 Activity 并继承 FusionActivity 并实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
+在自实现的 FusionActivity 、 FusionFragmentActivity、FusionFragment 上实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
 
 ```kotlin
 class CustomActivity : FusionActivity(), FusionMessengerHandler {
   
     override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
-        val channel = MethodChannel(binaryMessenger, "自定义的channel名")
+        val channel = MethodChannel(binaryMessenger, "custom_channel")
         channel.setMethodCallHandler { call, result -> 
             
         }
@@ -270,7 +266,22 @@ class CustomActivity : FusionActivity(), FusionMessengerHandler {
 
 iOS 侧
 
-创建一个继承自 FusionViewController 的 ViewController 作为 Flutter 容器，实现 FusionMessengerHandler 协议，在协议方法中创建 Channel
+①、与容器无关的方法
+
+在 AppDelegate 中进行注册
+
+```swift
+var channel: FlutterMethodChannel? = nil
+if let binaryMessenger = Fusion.instance.defaultEngine?.binaryMessenger {
+    channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
+}
+channel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+}
+```
+
+②、与容器相关的方法
+
+在自实现的 FusionViewController 上实现 FusionMessengerHandler 协议，在协议方法中创建 Channel
 
 ```swift
 class CustomViewController : FusionViewController, FusionMessengerHandler {
@@ -290,7 +301,7 @@ class CustomViewController : FusionViewController, FusionMessengerHandler {
 
 > BasicMessageChannel 和 EventChannel 使用也是类似
 
-P.S.: 以上方式创建的Channel是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
+P.S.: 与容器相关的方法是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
 
 ### 6、生命周期
 目前仅支持 `页面模式` 下监听 Flutter 页面的生命周期。

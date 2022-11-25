@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
 
     private fun setListener() {
         activityMainBinding.tvFlutterActivity.setOnClickListener {
-            FusionNavigator.open("/lifecycle", mapOf("title" to "Android Flutter Page"))
+            FusionNavigator.open("/test", mapOf("title" to "Android Flutter Page"))
         }
         activityMainBinding.tvTransparentFlutterActivity.setOnClickListener {
             FusionNavigator.open(
@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
                 )
             )
         }
-        activityMainBinding.tvFlutterFragment.setOnClickListener {
-            startActivity(Intent(this, FragmentSceneActivity::class.java))
+        activityMainBinding.tvFlutterViewpager.setOnClickListener {
+            startActivity(Intent(this, ViewPagerSceneActivity::class.java))
         }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
             if (!hasOpened) {

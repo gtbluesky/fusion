@@ -19,7 +19,7 @@ class TransparentPage extends StatefulWidget {
 }
 
 class _TransparentPageState extends State<TransparentPage>
-    implements FusionNotificationListener {
+    implements FusionNotificationListener, PageLifecycleListener {
   String? msg;
 
   @override
@@ -33,6 +33,7 @@ class _TransparentPageState extends State<TransparentPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     FusionNotificationBinding.instance.register(this);
+    PageLifecycleBinding.instance.register(this);
   }
 
   @override
@@ -40,8 +41,37 @@ class _TransparentPageState extends State<TransparentPage>
     super.dispose();
     FusionNavigator.instance.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
+    PageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
+    }
+  }
+
+  @override
+  void onBackground() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onBackground');
+    }
+  }
+
+  @override
+  void onForeground() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onForeground');
+    }
+  }
+
+  @override
+  void onPageInvisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
+  }
+
+  @override
+  void onPageVisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
     }
   }
 

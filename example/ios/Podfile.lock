@@ -9,7 +9,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - fusion (from `.symlinks/plugins/fusion/ios`)
-  - SideMenu (~> 6.5.0)
+  - SideMenu (= 6.5.0)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
@@ -30,6 +30,6 @@ SPEC CHECKSUMS:
   SideMenu: f583187d21c5b1dd04c72002be544b555a2627a2
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: e73716e107e3fafc1d2cdbfcbfa795f9c29610ef
+PODFILE CHECKSUM: 5b1a484234370c1f1e42e53d157259e57e6d90c0
 
 COCOAPODS: 1.11.3

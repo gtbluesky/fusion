@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fusion/src/container/fusion_overlay.dart';
+import 'package:fusion/src/container/fusion_page.dart';
 import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
-import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/notification/fusion_notification.dart';
-import 'package:fusion/src/route/fusion_page_route.dart';
 
 class FusionChannel {
   FusionChannel._();
@@ -15,63 +15,71 @@ class FusionChannel {
 
   static FusionChannel get instance => _instance;
 
-  final MethodChannel _navigationChannel =
+  final _navigationChannel =
       const MethodChannel('fusion_navigation_channel');
-  final MethodChannel _notificationChannel =
+  final _notificationChannel =
       const MethodChannel('fusion_notification_channel');
-  final MethodChannel _platformChannel =
+  final _platformChannel =
       const MethodChannel('fusion_platform_channel');
 
   void register() {
     _navigationChannel.setMethodCallHandler((call) async {
-      // FusionLog.log('_navigationChannel method=${call.method}');
+      // print('_navigationChannel method=${call.method}');
       switch (call.method) {
-        case 'push':
-          final name = call.arguments['name'];
+        case 'open':
+          String uniqueId = call.arguments['uniqueId'];
+          String name = call.arguments['name'];
           Map<String, dynamic>? arguments;
           if (call.arguments['arguments'] != null) {
             arguments = Map<String, dynamic>.from(call.arguments['arguments']);
           }
-          await FusionNavigator.instance.push(name, arguments);
+          FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
+          break;
+        case 'push':
+          String name = call.arguments['name'];
+          Map<String, dynamic>? arguments;
+          if (call.arguments['arguments'] != null) {
+            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
+          }
+          await FusionNavigatorDelegate.instance.push(name, arguments);
           break;
         case 'replace':
-          final name = call.arguments['name'];
+          String name = call.arguments['name'];
           Map<String, dynamic>? arguments;
           if (call.arguments['arguments'] != null) {
             arguments = Map<String, dynamic>.from(call.arguments['arguments']);
           }
-          await FusionNavigator.instance.replace(name, arguments);
+          await FusionNavigatorDelegate.instance.replace(name, arguments);
           break;
         case 'pop':
-          final active = call.arguments['active'];
-          if (active) {
-            // 主动
-            final result = call.arguments['result'];
-            await FusionNavigator.instance.pop(result);
-          } else {
-            // 被动
-            // 即容器销毁后处理Flutter路由栈
-            FocusManager.instance.primaryFocus?.unfocus();
-            await FusionNavigatorDelegate.instance.directPop();
-            WidgetsBinding.instance?.drawFrame();
-          }
+          final result = call.arguments['result'];
+          await FusionNavigatorDelegate.instance.pop(result);
           break;
         case 'remove':
-          final name = call.arguments['name'];
-          await FusionNavigator.instance.remove(name);
+          String name = call.arguments['name'];
+          await FusionNavigatorDelegate.instance.remove(name);
+          break;
+        case 'destroy':
+          FocusManager.instance.primaryFocus?.unfocus();
+          String uniqueId = call.arguments['uniqueId'];
+          await FusionNavigatorDelegate.instance.destroy(uniqueId);
+          WidgetsBinding.instance?.drawFrame();
           break;
         case 'restore':
           FusionState.isRestoring = true;
-          final List<Map<String, dynamic>> list = [];
-          call.arguments?.forEach((element) {
+          String uniqueId = call.arguments['uniqueId'];
+          List history = call.arguments['history'];
+          final list = <Map<String, dynamic>>[];
+          for (var element in history) {
             list.add(element.cast<String, dynamic>());
-          });
-          if (list.isNotEmpty) {
-            for (var element in list) {
-              // print('restore:${element['name']}');
-              FusionNavigator.instance.restore(element);
-            }
           }
+          if (list.isNotEmpty) {
+            FusionNavigatorDelegate.instance.restore(uniqueId, list);
+          }
+          break;
+        case 'switchTop':
+          String uniqueId = call.arguments['uniqueId'];
+          FusionOverlayManager.instance.switchTop(uniqueId);
           break;
         default:
           break;
@@ -81,16 +89,12 @@ class FusionChannel {
       // print('_notificationChannel method=${call.method}');
       switch (call.method) {
         case 'notifyPageVisible':
-          /// 确保页面入栈后再调用生命周期方法
-          WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-            // print('_notificationChannel run=${call.method}');
-            final route = PageLifecycleBinding.instance.topRoute;
-            _handlePageVisible(route);
-          });
+          String uniqueId = call.arguments['uniqueId'];
+          _handlePageVisible(uniqueId, isFirstTime: true);
           break;
         case 'notifyPageInvisible':
-          final route = PageLifecycleBinding.instance.topRoute;
-          _handlePageInvisible(route);
+          String uniqueId = call.arguments['uniqueId'];
+          _handlePageInvisible(uniqueId);
           break;
         case 'notifyEnterForeground':
           PageLifecycleBinding.instance.dispatchPageForegroundEvent();
@@ -102,7 +106,7 @@ class FusionChannel {
           if (call.arguments is! Map) {
             return;
           }
-          Map<String, dynamic> msg = Map.from(call.arguments);
+          final msg = Map<String, dynamic>.from(call.arguments);
           String name = msg['name'];
           final body = (msg['body'] as Map?)?.cast<String, dynamic>();
           FusionNotificationBinding.instance.dispatchMessage(name, body);
@@ -123,80 +127,77 @@ class FusionChannel {
   }
 
   void _handlePageVisible(
-      Route? route, {
-        bool isFirstTime = false,
-      }) {
-    if (route is FusionPageRoute && !route.isVisible) {
-      route.containerInTop = true;
-      if (route.isVisible) {
+    String uniqueId, {
+    bool isFirstTime = false,
+  }) {
+    final page = FusionOverlayManager.instance.findContainer(uniqueId)?.topPage;
+    if (page == null) return;
+    if (!page.isVisible) {
+      page.containerVisible = true;
+      if (page.isVisible) {
         PageLifecycleBinding.instance
-            .dispatchPageVisibleEvent(route, isFirstTime: isFirstTime);
+            .dispatchPageVisibleEvent(page.route, isFirstTime: isFirstTime);
       }
     }
   }
 
-  void _handlePageInvisible(Route? route) {
-    if (route is FusionPageRoute) {
-      if (route.isVisible) {
-        PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
-      }
-      route.containerInTop = false;
+  void _handlePageInvisible(String uniqueId) {
+    final page = FusionOverlayManager.instance.findContainer(uniqueId)?.topPage;
+    if (page == null) return;
+    if (page.isVisible) {
+      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(page.route);
     }
+    page.containerVisible = false;
   }
 
-  Future<Map<String, dynamic>?> push(String name, dynamic arguments) async {
-    final isFlutterPage = FusionNavigatorDelegate.instance.isFlutterPage(name);
-    final result = await _navigationChannel.invokeMethod(
+  Future sync(String uniqueId, List<FusionPageEntity> pageEntities) {
+    final pages = pageEntities.map((e) => {
+      'uniqueId': e.uniqueId,
+      'name': e.name,
+      'arguments': e.arguments,
+    }).toList();
+    return _navigationChannel.invokeMethod(
+      'sync',
+      {
+        'uniqueId': uniqueId,
+        'pages': pages,
+      },
+    );
+  }
+
+  Future open(String name, dynamic arguments) {
+    return _navigationChannel.invokeMethod(
+      'open',
+      {
+        'name': name,
+        'arguments': arguments,
+      },
+    );
+  }
+
+  Future push(String name, dynamic arguments) async {
+    return _navigationChannel.invokeMethod(
       'push',
       {
         'name': name,
         'arguments': arguments,
-        'flutter': isFlutterPage,
       },
     );
-    if (result == null) {
-      return null;
-    }
-    return Map<String, dynamic>.from(result);
   }
 
-  Future<Map<String, dynamic>?> replace(String name, dynamic arguments) async {
-    final isFlutterPage = FusionNavigatorDelegate.instance.isFlutterPage(name);
-    if (!isFlutterPage) {
-      throw Exception('Route name is not found in route map!');
-    }
+  Future<bool> destroy(String uniqueId) async {
     final result = await _navigationChannel.invokeMethod(
-      'replace',
+      'destroy',
       {
-        'name': name,
-        'arguments': arguments,
-        'flutter': isFlutterPage,
-      },
-    );
-    if (result == null) {
-      return null;
-    }
-    return Map<String, dynamic>.from(result);
-  }
-
-  Future<bool> pop() async {
-    final result = await _navigationChannel.invokeMethod('pop');
-    return result;
-  }
-
-  Future<bool> remove(String name) async {
-    final result = await _navigationChannel.invokeMethod(
-      'remove',
-      {
-        'name': name,
+        'uniqueId': uniqueId,
       },
     );
     return result;
   }
 
-  Future<List<Map<String, dynamic>>> restoreHistory() async {
+  Future<List<Map<String, dynamic>>> restore() async {
     final result =
-        await _navigationChannel.invokeListMethod<Map>('restoreHistory');
+        await _navigationChannel.invokeListMethod<Map>('restore');
     final List<Map<String, dynamic>> list = [];
     result?.forEach((element) {
       list.add(element.cast<String, dynamic>());

@@ -9,67 +9,40 @@ import Foundation
 
 open class FusionViewController: FlutterViewController {
 
-    private var isReused = true
     internal var history: [Dictionary<String, Any?>] = []
-    internal var engineBinding: FusionEngineBinding? = nil
+    internal var uniqueId = "container_\(UUID().uuidString)"
+    private let engineBinding = Fusion.instance.engineBinding
 
-    public init(isReused: Bool = true, routeName: String, routeArguments: Dictionary<String, Any>?) {
-        self.isReused = isReused
-        if isReused {
-            engineBinding = Fusion.instance.engineBinding
-        } else {
-            engineBinding = FusionEngineBinding(false)
-        }
+    public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
         engineBinding?.engine?.viewController = nil
         super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
-        if let engine = engineBinding?.engine {
-            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
-        }
-        if !isReused {
-            engineBinding?.attach(self)
-        }
-        engineBinding?.push(routeName, arguments: routeArguments)
-        if !isReused {
-            FusionStackManager.instance.addChild(self)
-        } else {
-            FusionStackManager.instance.add(self)
-        }
+        modalPresentationStyle = .fullScreen
+        engineBinding?.open(uniqueId, name: routeName, arguments: routeArguments)
+        onContainerCreate()
     }
 
     public required init(coder: NSCoder) {
-        isReused = coder.decodeBool(forKey: "isReused")
-        if isReused {
-            engineBinding = Fusion.instance.engineBinding
-        } else {
-            engineBinding = FusionEngineBinding(false)
-        }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
-        if let engine = engineBinding?.engine {
-            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
-        }
-        if !isReused {
-            engineBinding?.attach(self)
-        }
         let classSet = [NSArray.self, NSDictionary.self, NSString.self, NSNumber.self]
-        if let h = coder.decodeObject(of: classSet, forKey: "history") as? [Dictionary<String, Any?>] {
-            history.append(contentsOf: h)
-            engineBinding?.restore(h)
+        if let uniqueId = coder.decodeObject(forKey: FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY) as? String {
+            self.uniqueId = uniqueId
         }
-        if !isReused {
-            FusionStackManager.instance.addChild(self)
-        } else {
-            FusionStackManager.instance.add(self)
+        if let history = coder.decodeObject(of: classSet, forKey: FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? [Dictionary<String, Any?>] {
+            self.history.append(contentsOf: history)
+            engineBinding?.restore(uniqueId, history: history)
         }
+        onContainerCreate()
     }
 
     open override func encodeRestorableState(with coder: NSCoder) {
-        coder.encode(isReused, forKey: "isReused")
-        coder.encode(history, forKey: "history")
+        coder.encode(uniqueId, forKey: FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)
+        coder.encode(history, forKey: FusionConstant.FUSION_RESTORATION_HISTORY_KEY)
         super.encodeRestorableState(with: coder)
     }
 
     open override func viewDidLoad() {
+        attachToFlutterEngine()
         super.viewDidLoad()
         if isViewOpaque {
             self.view.backgroundColor = UIColor.white
@@ -77,53 +50,17 @@ open class FusionViewController: FlutterViewController {
     }
 
     open override func viewWillAppear(_ animated: Bool) {
-        if isReused {
-            attachToFlutterEngine()
-            engineBinding?.latestStyle { statusBarStyle in
-                NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
-            }
+        onContainerVisible()
+        engineBinding?.latestStyle { statusBarStyle in
+            NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
         }
         super.viewWillAppear(animated)
-        if !isReused {
-            return
-        }
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     open override func viewDidAppear(_ animated: Bool) {
-        if isReused {
-            attachToFlutterEngine()
-        }
+        attachToFlutterEngine()
         super.viewDidAppear(animated)
-        if (!isReused) {
-            return
-        }
-        engineBinding?.notifyPageVisible()
-        if history.count == 1 {
-            engineBinding?.addPopGesture()
-        } else {
-            engineBinding?.removePopGesture()
-        }
-    }
-
-    open override func didMove(toParent parent: UIViewController?) {
-        super.didMove(toParent: parent)
-        // parent == nil 为 pop
-        // parent != nil 为 push
-        if parent == nil && isReused {
-            detachFromFlutterEngine()
-        }
-    }
-
-    open override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag, completion: { [weak self] in
-            if let completion = completion {
-                completion()
-            }
-            if self?.isReused == true {
-                self?.detachFromFlutterEngine()
-            }
-        })
     }
 
     open override func viewWillDisappear(_ animated: Bool) {
@@ -133,10 +70,7 @@ open class FusionViewController: FlutterViewController {
 
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if (!isReused) {
-            return
-        }
-        engineBinding?.notifyPageInvisible()
+        onContainerInvisible()
     }
 
     private func attachToFlutterEngine() {
@@ -144,9 +78,6 @@ open class FusionViewController: FlutterViewController {
             return
         }
         engineBinding?.engine?.viewController = self
-        if let engine = engineBinding?.engine {
-            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
-        }
     }
 
     private func detachFromFlutterEngine() {
@@ -154,22 +85,35 @@ open class FusionViewController: FlutterViewController {
             return
         }
         engineBinding?.engine?.viewController = nil
+    }
+
+    func onContainerCreate() {
+
+    }
+
+    func onContainerVisible() {
+        FusionStackManager.instance.add(self)
+        engineBinding?.switchTop(uniqueId)
+        engineBinding?.notifyPageVisible(uniqueId)
+        attachToFlutterEngine()
+        if let engine = engineBinding?.engine {
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+        }
+    }
+
+    func onContainerInvisible() {
+        engineBinding?.notifyPageInvisible(uniqueId)
+        detachFromFlutterEngine()
         (self as? FusionMessengerHandler)?.releaseFlutterChannel()
     }
 
-    private func destroy() {
+    func onContainerDestroy() {
         history.removeAll()
-        if isReused {
-            FusionStackManager.instance.remove(self)
-        } else {
-            (self as? FusionMessengerHandler)?.releaseFlutterChannel()
-            FusionStackManager.instance.removeChild(self)
-        }
-        engineBinding?.pop()
-        engineBinding = nil
+        FusionStackManager.instance.remove(self)
+        engineBinding?.destroy(uniqueId)
     }
 
     deinit {
-        destroy()
+        onContainerDestroy()
     }
 }

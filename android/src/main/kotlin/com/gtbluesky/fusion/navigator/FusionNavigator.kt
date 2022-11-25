@@ -4,7 +4,6 @@ import com.gtbluesky.fusion.Fusion
 
 object FusionNavigator {
 
-
     /**
      * 打开新Flutter容器并将对应路由入栈
      * Native页面跳转Flutter页面使用该API
@@ -39,7 +38,7 @@ object FusionNavigator {
     @JvmStatic
     @JvmOverloads
     fun <T> pop(result: T? = null) {
-        Fusion.engineBinding?.pop(true, result)
+        Fusion.engineBinding?.pop(result)
     }
 
     /**

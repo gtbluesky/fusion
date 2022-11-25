@@ -14,8 +14,9 @@ internal struct FusionConstant {
     static let FUSION_NAVIGATION_CHANNEL = "fusion_navigation_channel"
     static let FUSION_NOTIFICATION_CHANNEL = "fusion_notification_channel"
     static let FUSION_PLATFORM_CHANNEL = "fusion_platform_channel"
-    static let REUSE_MODE = "reuse_mode"
     static let OverlayStyleUpdateNotificationKey = "io.flutter.plugin.platform.SystemChromeOverlayNotificationKey"
+    static let FUSION_RESTORATION_HISTORY_KEY = "history"
+    static let FUSION_RESTORATION_UNIQUE_ID_KEY = "uniqueId"
 }
 
 internal extension NSNotification.Name {

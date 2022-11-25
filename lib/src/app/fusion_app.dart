@@ -1,17 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fusion/src/app/fusion_home.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/data/fusion_state.dart';
-import 'package:fusion/src/navigator/fusion_navigator.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
 
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
-  final List<NavigatorObserver> navigatorObservers;
   final TransitionBuilder? builder;
   final String title;
   final GenerateAppTitle? onGenerateTitle;
@@ -39,7 +37,6 @@ class FusionApp extends StatefulWidget {
     Map<String, FusionPageFactory> routeMap, {
     Key? key,
     this.scaffoldMessengerKey,
-    this.navigatorObservers = const <NavigatorObserver>[],
     this.builder,
     this.title = '',
     this.onGenerateTitle,
@@ -75,31 +72,28 @@ class FusionApp extends StatefulWidget {
 }
 
 class _FusionAppState extends State<FusionApp> {
+
   @override
   void initState() {
     super.initState();
+    FusionChannel.instance.register();
+    if (!kDebugMode) {
+      return;
+    }
     /// Make sure that the widget in the tree is already mounted.
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      if (!kDebugMode) {
-        return;
-      }
       if (FusionState.isRestoring) {
         return;
       }
-      _restoreHistoryAfterHotRestart();
+      FusionNavigatorDelegate.instance.restoreAfterHotRestart();
     });
-    FusionChannel.instance.register();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       scaffoldMessengerKey: widget.scaffoldMessengerKey,
-      navigatorObservers: [
-        FusionNavigatorObserver.instance,
-        ...widget.navigatorObservers
-      ],
-      home: Container(color: FusionState.isReused ? Colors.transparent : Colors.white),
+      home: const FusionHome(),
       builder: widget.builder,
       title: widget.title,
       onGenerateTitle: widget.onGenerateTitle,
@@ -123,15 +117,5 @@ class _FusionAppState extends State<FusionApp> {
       actions: widget.actions,
       restorationScopeId: widget.restorationScopeId,
     );
-  }
-
-  _restoreHistoryAfterHotRestart() async {
-    final list = await FusionChannel.instance.restoreHistory();
-    if (list.isNotEmpty) {
-      for (var element in list) {
-        // print('Hot Restart:${element['name']}');
-        FusionNavigator.instance.restore(element);
-      }
-    }
   }
 }

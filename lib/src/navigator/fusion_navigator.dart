@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
+import 'package:fusion/src/container/fusion_overlay.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 
 class FusionNavigator {
@@ -8,6 +10,13 @@ class FusionNavigator {
 
   static FusionNavigator get instance => _instance;
 
+  Future open(
+    String routeName, [
+    Map<String, dynamic>? routeArguments,
+  ]) {
+    return FusionChannel.instance.open(routeName, routeArguments);
+  }
+
   Future<T?> push<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArguments,
@@ -15,11 +24,8 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.push(routeName, routeArguments);
   }
 
-  void restore<T extends Object?>(Map<String, dynamic> pageInfo) {
-    FusionNavigatorDelegate.instance.restore(pageInfo);
-  }
-
-  Future<void> replace(String routeName, [Map<String, dynamic>? routeArguments]) async {
+  Future<T?> replace<T extends Object?>(String routeName,
+      [Map<String, dynamic>? routeArguments]) async {
     return FusionNavigatorDelegate.instance.replace(routeName, routeArguments);
   }
 
@@ -38,4 +44,6 @@ class FusionNavigator {
   void sendMessage(String name, [Map<String, dynamic>? body]) {
     return FusionChannel.instance.sendMessage(name, body);
   }
+
+  NavigatorState? get navigator => FusionOverlayManager.instance.topRoute?.navigator;
 }

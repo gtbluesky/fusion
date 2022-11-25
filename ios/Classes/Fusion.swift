@@ -27,8 +27,8 @@ public class Fusion: NSObject {
         isRunning = true
         self.delegate = delegate
         engineGroup = FlutterEngineGroup(name: "fusion", project: nil)
-        defaultEngine = createAndRunEngine(FusionConstant.REUSE_MODE)
-        engineBinding = FusionEngineBinding(true)
+        defaultEngine = createAndRunEngine()
+        engineBinding = FusionEngineBinding(defaultEngine)
         engineBinding?.attach()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -42,7 +42,7 @@ public class Fusion: NSObject {
         isRunning = false
     }
 
-    internal func createAndRunEngine(_ initialRoute: String = FusionConstant.INITIAL_ROUTE) -> FlutterEngine? {
+    private func createAndRunEngine(_ initialRoute: String = FusionConstant.INITIAL_ROUTE) -> FlutterEngine? {
         let engine = engineGroup?.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: initialRoute)
         if let engine = engine {
             let clazz = NSClassFromString("GeneratedPluginRegistrant") as? NSObject.Type
@@ -59,17 +59,17 @@ public class Fusion: NSObject {
      */
     @objc func willEnterForeground() {
         FusionStackManager.instance.notifyEnterForeground()
-        if !FusionStackManager.instance.topIsFusionContainer() {
+        guard let topVc = UIApplication.roofViewController as? FusionViewController else {
             return
         }
-        engineBinding?.notifyPageVisible()
+        engineBinding?.notifyPageVisible(topVc.uniqueId)
     }
 
     @objc func didEnterBackground() {
         FusionStackManager.instance.notifyEnterBackground()
-        if !FusionStackManager.instance.topIsFusionContainer() {
+        guard let topVc = UIApplication.roofViewController as? FusionViewController else {
             return
         }
-        engineBinding?.notifyPageInvisible()
+        engineBinding?.notifyPageInvisible(topVc.uniqueId)
     }
 }

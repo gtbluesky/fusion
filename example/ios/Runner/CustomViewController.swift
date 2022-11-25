@@ -21,9 +21,30 @@ class CustomViewController: FusionViewController, FusionMessengerHandler, Fusion
 //    }
 
     override func viewDidLoad() {
+        NSLog("\(self) func=\(#function)")
         super.viewDidLoad()
 //        self.restorationClass = CustomViewController.self
 //        self.restorationIdentifier = NSStringFromClass(CustomViewController.self)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewWillAppear(animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewDidAppear(animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewWillDisappear(animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewDidDisappear(animated)
     }
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {

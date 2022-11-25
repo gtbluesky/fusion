@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
+import 'package:fusion_example/page/navigator_page.dart';
 import 'package:fusion_example/page/test_page.dart';
 import 'package:fusion_example/page/transparent_page.dart';
 import 'package:fusion_example/page/unknown_page.dart';
@@ -38,6 +39,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/willpop': ((_) => const WillPopPage()),
   '/web': ((_) => const WebPage()),
   '/transparent': (arguments) => TransparentPage(arguments: arguments),
+  '/navigator': ((arguments) => NavigatorPage(arguments: arguments,)),
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 

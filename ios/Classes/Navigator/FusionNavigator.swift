@@ -39,7 +39,7 @@ import Foundation
      * 在当前Flutter容器中将栈顶路由出栈
      */
     public func pop<T>(_ result: T? = nil) {
-        Fusion.instance.engineBinding?.pop(active: true, result: result)
+        Fusion.instance.engineBinding?.pop(result)
     }
 
     /**

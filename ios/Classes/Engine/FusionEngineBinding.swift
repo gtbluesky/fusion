@@ -8,28 +8,24 @@
 import Foundation
 
 internal class FusionEngineBinding: NSObject {
-    private let isReused: Bool
-    weak private var container: FusionViewController? = nil
     private var navigationChannel: FlutterMethodChannel? = nil
     private var notificationChannel: FlutterMethodChannel? = nil
     private var platformChannel: FlutterMethodChannel? = nil
     var engine: FlutterEngine? = nil
-    private var history: [Dictionary<String, Any?>] {
+    private var historyList: [Dictionary<String, Any?>] {
         get {
-            FusionStackManager.instance.pageStack.flatMap {
-                ($0.value)?.history ?? []
+            FusionStackManager.instance.containerStack.map {
+                [
+                    "uniqueId": $0.value?.uniqueId,
+                    "history": $0.value?.history
+                ]
             }
         }
     }
 
-    init(_ isReused: Bool) {
-        self.isReused = isReused
+    init(_ engine: FlutterEngine?) {
         super.init()
-        if (!isReused) {
-            engine = Fusion.instance.createAndRunEngine()
-        } else {
-            engine = Fusion.instance.defaultEngine
-        }
+        self.engine = engine;
         guard let engine = engine else {
             return
         }
@@ -38,140 +34,52 @@ internal class FusionEngineBinding: NSObject {
         platformChannel = FlutterMethodChannel(name: FusionConstant.FUSION_PLATFORM_CHANNEL, binaryMessenger: engine.binaryMessenger)
     }
 
-    func attach(_ container: FusionViewController? = nil) {
-        self.container = container
+    func attach() {
         navigationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
             switch call.method {
+            case "open":
+                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                    result(nil)
+                    return
+                }
+                let arguments = dict["arguments"] as? Dictionary<String, Any>
+                Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+                result(nil)
             case "push":
                 guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
                     result(nil)
                     return
                 }
                 let arguments = dict["arguments"] as? Dictionary<String, Any>
-                let isFlutterPage = dict["flutter"] as? Bool ?? false
-                if isFlutterPage {
-                    if !self.isReused {
-                        if self.container?.history.isEmpty == true {
-                            // 在原Flutter容器打开Flutter页面
-                            // 即用户可见的第一个页面
-                            let pageInfo: Dictionary<String, Any?> = [
-                                "name": name,
-                                "arguments": arguments,
-                                "uniqueId": UUID().uuidString,
-                                "home": true
-                            ]
-                            self.container?.history.append(pageInfo)
-                            result(pageInfo)
-                        } else {
-                            // 在新Flutter容器打开Flutter页面
-                            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
-                            result(nil)
-                        }
-                    } else {
-                        // 在原Flutter容器打开Flutter页面
-                        guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                            result(nil)
-                            return
-                        }
-                        let pageInfo: Dictionary<String, Any?> = [
-                            "name": name,
-                            "arguments": arguments,
-                            "uniqueId": UUID().uuidString,
-                            "home": topContainer.history.isEmpty
-                        ]
-                        topContainer.history.append(pageInfo)
-                        result(pageInfo)
-                        if topContainer.history.count == 1 {
-                            self.addPopGesture()
-                        } else {
-                            self.removePopGesture()
-                        }
-                    }
-                } else {
-                    // 打开Native页面
-                    Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
-                    result(nil)
-                }
-            case "replace":
-                if !self.isReused {
-                    result(nil)
-                    return
-                }
-                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(nil)
-                    return
-                }
-                let arguments = dict["arguments"] as? Dictionary<String, Any>
-                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                    result(nil)
-                    return
-                }
-                topContainer.history.removeLast()
-                let pageInfo: Dictionary<String, Any?> = [
-                    "name": name,
-                    "arguments": arguments,
-                    "uniqueId": UUID().uuidString,
-                    "home": topContainer.history.isEmpty
-                ]
-                topContainer.history.append(pageInfo)
-                result(pageInfo)
-            case "pop":
-                if !self.isReused {
-                    // 子页面不支持pop
+                Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+                result(nil)
+            case "destroy":
+                guard let dict = call.arguments as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String else {
                     result(false)
                     return
                 }
-                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                    // flutter容器关闭后
-                    // 仅刷新history，让容器第一个可见Flutter页面出栈
-                    result(false)
-                    return
-                }
-                if topContainer.history.count == 1 {
-                    // 仅关闭flutter容器
-                    FusionStackManager.instance.closeTopContainer()
-                    result(false)
-                } else {
-                    // flutter页面pop
-                    topContainer.history.removeLast()
+                if let container = FusionStackManager.instance.findContainer(uniqueId) {
+                    FusionStackManager.instance.closeContainer(container)
                     result(true)
-                }
-                if topContainer.history.count == 1 {
-                    self.addPopGesture()
                 } else {
-                    self.removePopGesture()
+                    result(false)
                 }
-            case "remove":
-                if !self.isReused {
+            case "restore":
+                result(self.historyList)
+            case "sync":
+                guard let dict = call.arguments as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String, let pages = dict["pages"] as? [Dictionary<String, Any?>] else {
                     result(false)
                     return
                 }
-                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(false)
-                    return
-                }
-                guard let topContainer = FusionStackManager.instance.getTopContainer() as? FusionViewController else {
-                    result(false)
-                    return
-                }
-                let index = topContainer.history.lastIndex {
-                    $0["name"] as? String == name
-                } ?? -1
-                if index >= 0 {
-                    topContainer.history.remove(at: index)
+                let container = FusionStackManager.instance.findContainer(uniqueId)
+                container?.history.removeAll()
+                container?.history.append(contentsOf: pages)
+                if container?.history.count == 1 {
+                    self.enablePopGesture()
+                } else {
+                    self.disablePopGesture()
                 }
                 result(true)
-                if topContainer.history.count == 1 {
-                    self.addPopGesture()
-                } else {
-                    self.removePopGesture()
-                }
-            case "restoreHistory":
-                if self.isReused {
-                    result(self.history)
-                } else {
-                    result(nil)
-                }
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -192,28 +100,7 @@ internal class FusionEngineBinding: NSObject {
         }
     }
 
-    func addPopGesture() {
-        if (!isReused) {
-            return
-        }
-        let vc = UIApplication.roofViewController
-        if !(vc is FusionViewController) {
-            return
-        }
-        (vc as? FusionPopGestureHandler)?.enablePopGesture()
-    }
-
-    func removePopGesture() {
-        if (!isReused) {
-            return
-        }
-        let vc = UIApplication.roofViewController
-        if !(vc is FusionViewController) {
-            return
-        }
-        (vc as? FusionPopGestureHandler)?.disablePopGesture()
-    }
-
+    // external function
     func push(_ name: String, arguments: Dictionary<String, Any>?) {
         navigationChannel?.invokeMethod(
                 "push",
@@ -234,19 +121,12 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
-    func pop(active: Bool = false, result: Any? = nil) {
+    func pop(_ result: Any?) {
         navigationChannel?.invokeMethod(
                 "pop",
                 arguments: [
-                    "active": active,
                     "result": result
-                ],
-                result: { [weak self] (result) in
-                    // 子页面退出后销毁Engine
-                    if !active && self?.isReused == false {
-                        self?.detach()
-                    }
-                }
+                ]
         )
     }
 
@@ -259,19 +139,80 @@ internal class FusionEngineBinding: NSObject {
         )
     }
 
-    func restore(_ history: [Dictionary<String, Any?>]) {
+    // internal function
+    func enablePopGesture() {
+        (UIApplication.roofViewController as? FusionPopGestureHandler)?.enablePopGesture()
+    }
+
+    func disablePopGesture() {
+        (UIApplication.roofViewController as? FusionPopGestureHandler)?.disablePopGesture()
+    }
+
+    func open(_ uniqueId: String, name: String, arguments: Dictionary<String, Any>?) {
         navigationChannel?.invokeMethod(
-                "restore",
-                arguments: history
+                "open",
+                arguments: [
+                    "uniqueId": uniqueId,
+                    "name": name,
+                    "arguments": arguments as Any
+                ]
         )
     }
 
-    func notifyPageVisible() {
-        notificationChannel?.invokeMethod("notifyPageVisible", arguments: nil)
+    func switchTop(_ uniqueId: String) {
+        navigationChannel?.invokeMethod(
+                "switchTop",
+                arguments: [
+                    "uniqueId": uniqueId
+                ]
+        )
     }
 
-    func notifyPageInvisible() {
-        notificationChannel?.invokeMethod("notifyPageInvisible", arguments: nil)
+    /**
+     Restore the specified container in flutter side
+     - Parameters:
+       - uniqueId: container's uniqueId
+       - history: container's history
+     */
+    func restore(_ uniqueId: String, history: [Dictionary<String, Any?>]) {
+        navigationChannel?.invokeMethod(
+                "restore",
+                arguments: [
+                    "uniqueId": uniqueId,
+                    "history": history
+                ]
+        )
+    }
+
+    /**
+     Destroy the specified container in flutter side
+     - Parameter uniqueId: container's uniqueId
+     */
+    func destroy(_ uniqueId: String) {
+        navigationChannel?.invokeMethod(
+                "destroy",
+                arguments: [
+                    "uniqueId": uniqueId
+                ]
+        )
+    }
+
+    func notifyPageVisible(_ uniqueId: String) {
+        notificationChannel?.invokeMethod(
+                "notifyPageVisible",
+                arguments: [
+                    "uniqueId": uniqueId
+                ]
+        )
+    }
+
+    func notifyPageInvisible(_ uniqueId: String) {
+        notificationChannel?.invokeMethod(
+                "notifyPageInvisible",
+                arguments: [
+                    "uniqueId": uniqueId
+                ]
+        )
     }
 
     func notifyEnterForeground() {

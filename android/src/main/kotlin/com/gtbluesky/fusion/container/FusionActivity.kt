@@ -9,7 +9,6 @@ import android.os.Bundle
 import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
-import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.FlutterActivity
@@ -21,14 +20,18 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
+import java.util.*
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private val history = mutableListOf<Map<String, Any?>>()
-    private var engineBinding: FusionEngineBinding? = null
     private var platformPlugin: PlatformPlugin? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
+    private var uniqueId = "container_${UUID.randomUUID()}"
+    private var engineBinding = Fusion.engineBinding
+
+    override fun uniqueId() = uniqueId
 
     override fun history() = history
 
@@ -38,69 +41,111 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
+        // detach
         val top = FusionStackManager.getTopContainer()
         if (top != this) {
             top?.detachFromEngine()
         }
-        engineBinding = Fusion.engineBinding
         super.onCreate(savedInstanceState)
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
         val routeArguments =
             intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
+        savedInstanceState?.getString(FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)?.let {
+            uniqueId = it
+        }
         val restoredHistory =
-            savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_BUNDLE_KEY) as? List<Map<String, Any?>>
+            savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? List<Map<String, Any?>>
         if (restoredHistory == null) {
-            engineBinding?.push(routeName, routeArguments)
+            engineBinding?.open(uniqueId, routeName, routeArguments)
         } else {
             history.addAll(restoredHistory)
-            engineBinding?.restore(restoredHistory)
+            engineBinding?.restore(uniqueId, restoredHistory)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
         flutterView = findFlutterView(window.decorView)
         flutterView?.detachFromFlutterEngine()
-        FusionStackManager.add(this)
+        onContainerCreate()
     }
 
     override fun onResume() {
         super.onResume()
-        val top = FusionStackManager.getTopContainer()
-        if (top != this) {
-            top?.detachFromEngine()
-        }
-        performAttach()
+        onContainerVisible()
         engineBinding?.latestStyle { systemChromeStyle ->
             updateSystemUiOverlays(systemChromeStyle)
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        onContainerInvisible()
+        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+    }
+
     override fun onDestroy() {
-        performDetach()
+        onContainerDestroy()
         super.onDestroy()
+        if (FusionStackManager.isEmpty()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsPaused()
+        } else {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
+        engineBinding = null
+    }
+
+    private fun onContainerCreate() {
+        if (FusionStackManager.isEmpty()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
+    }
+
+    private fun onContainerVisible() {
+        val top = FusionStackManager.getTopContainer()
+        if (top != this) {
+            top?.detachFromEngine()
+        }
+        FusionStackManager.add(this)
+        engineBinding?.switchTop(uniqueId)
+        engineBinding?.notifyPageVisible(uniqueId)
+        performAttach()
+    }
+
+    private fun onContainerInvisible() {
+        engineBinding?.notifyPageInvisible(uniqueId)
+    }
+
+    private fun onContainerDestroy() {
+        performDetach()
         history.clear()
         FusionStackManager.remove(this)
-        engineBinding?.pop()
-        engineBinding = null
+        engineBinding?.destroy(uniqueId)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString(
+            FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY,
+            uniqueId
+        )
         outState.putSerializable(
-            FusionConstant.FUSION_RESTORATION_BUNDLE_KEY,
+            FusionConstant.FUSION_RESTORATION_HISTORY_KEY,
             history as? Serializable
         )
     }
 
-    override fun shouldAttachEngineToActivity(): Boolean {
-        return false
-    }
+    override fun shouldAttachEngineToActivity() = false
+
+    override fun shouldDispatchAppLifecycleState() = false
 
     private fun performAttach() {
-        if (isAttached) {
-            return
-        }
+        if (isAttached) return
         isAttached = true
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
@@ -114,9 +159,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     }
 
     private fun performDetach() {
-        if (!isAttached) {
-            return
-        }
+        if (!isAttached) return
         isAttached = false
         val engine = engineBinding?.engine ?: return
         // Plugins are no longer attached to the activity.
@@ -159,9 +202,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     }
 
     private fun configurePlatformChannel() {
-        if (platformPlugin != null) {
-            return
-        }
+        if (platformPlugin != null) return
         val platformChannel = engineBinding?.engine?.platformChannel ?: return
         platformPlugin = PlatformPlugin(this, platformChannel)
     }

@@ -5,6 +5,7 @@
         <!-- Show a splash screen on the activity. Automatically removed when
              Flutter draws its first frame -->
         <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
     <style name="FusionTransparentTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowIsTranslucent">true</item>

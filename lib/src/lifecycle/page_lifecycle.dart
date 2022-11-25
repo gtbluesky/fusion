@@ -20,8 +20,6 @@ class PageLifecycleBinding {
 
   final _listeners = <Route<dynamic>, PageLifecycleListener>{};
 
-  late Route topRoute;
-
   void register(PageLifecycleListener listener) {
     if (listener is! State) {
       return;

@@ -31,11 +31,11 @@
                 android:textSize="18sp"/>
 
             <TextView
-                android:id="@+id/tv_flutter_fragment"
+                android:id="@+id/tv_flutter_viewpager"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Flutter Fragment场景"
+                android:text="ViewPager场景"
                 android:textSize="18sp"/>
 
             <TextView

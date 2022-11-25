@@ -40,5 +40,6 @@ post_install do |installer|
   end
 end
 
-pod 'SideMenu', '~> 6.5.0'
-# pod 'Toast-Swift', '~> 5.0.1'
+pod 'SideMenu', '6.5.0'
+# pod 'MLeaksFinder', '1.0.0'
+# pod 'Toast-Swift', '5.0.1'

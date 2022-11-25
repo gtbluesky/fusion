@@ -7,7 +7,7 @@ import com.gtbluesky.fusion.container.FusionFragment
 import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion_example.databinding.ActivityFirstFragmentBinding
 
-class FragmentSceneActivity : FragmentActivity() {
+class ViewPagerSceneActivity : FragmentActivity() {
     private lateinit var binding: ActivityFirstFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

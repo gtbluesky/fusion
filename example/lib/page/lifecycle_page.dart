@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 
 class LifecyclePage extends StatefulWidget {
@@ -37,10 +40,6 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push /test'),
                 onTap: () async {
-                  if (!FusionState.isReused) {
-                    await FusionNavigator.instance.pop();
-                    await Future.delayed(const Duration(milliseconds: 300));
-                  }
                   final result = await FusionNavigator.instance
                       .push<String?>('/test', {'title': '2'});
                   if (kDebugMode) {
@@ -51,13 +50,101 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
-                child: const Text('pop'),
-                onTap: () {
-                  FusionNavigator.instance.pop('Lifecycle返回结果');
+                child: const Text('push /lifecycle'),
+                onTap: () async {
+                  // await FusionNavigator.instance.pop();
+                  final result = await FusionNavigator.instance.push<String?>(
+                      '/lifecycle',
+                      {'title': 'Lifecycle Test'});
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             const SizedBox(
               height: 20,
             ),
+            InkWell(
+                child: const Text('open /lifecycle'),
+                onTap: () async {
+                  FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('push /willpop'),
+                onTap: () async {
+                  final result = await FusionNavigator.instance.push<String?>('/willpop');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('push /web'),
+                onTap: () async {
+                  final result = await FusionNavigator.instance.push<String?>('/web');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('pop'),
+                onTap: () {
+                  FusionNavigator.instance.pop('test返回结果');
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('replace /list'),
+                onTap: () {
+                  FusionNavigator.instance.replace('/list', {'title': 'replace success'});
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('remove /lifecycle'),
+                onTap: () {
+                  FusionNavigator.instance.remove('/lifecycle');
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('platform plugin'),
+                onTap: () async {
+                  if (Platform.isAndroid) {
+                    SystemChannels.platform.invokeMethod('HapticFeedback.vibrate', 'HapticFeedbackType.mediumImpact');
+                  } else {
+                    SystemChannels.platform.invokeMethod('SystemSound.play', 'SystemSoundType.click');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('custom channel'),
+                onTap: () async {
+                  const MethodChannel('custom_channel').invokeMethod('getPlatformVersion');
+                  // if (kDebugMode) {
+                  //   print('result=$result');
+                  // }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            const TextField(),
+            const SizedBox(
+              height: 20,
+            ),
+            const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),

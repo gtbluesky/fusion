@@ -8,13 +8,13 @@
 import Foundation
 import fusion
 
-class MultiViewController: UITabBarController {
+class MultiViewController: UITabBarController, FusionPopGestureHandler {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 //        tabBar.isTranslucent = false
-        addChildVC(childVC: CustomViewController(isReused: false, routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
-        addChildVC(childVC: CustomViewController(isReused: false, routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
+        addChildVC(childVC: CustomViewController(routeName: "/test", routeArguments: ["title": "a"]), title: "消息")
+        addChildVC(childVC: CustomViewController(routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
     }
 
     private func addChildVC(childVC: FusionViewController, title: String) {
@@ -24,8 +24,30 @@ class MultiViewController: UITabBarController {
         addChild(childVC)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+    func enablePopGesture() {
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.addPopGesture()
     }
+
+    func disablePopGesture() {
+        let nc = navigationController
+        if nc == nil {
+            return
+        }
+        if nc?.isNavigationBarHidden == false {
+            return
+        }
+        nc?.removePopGesture()
+    }
+
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        navigationController?.setNavigationBarHidden(false, animated: animated)
+//    }
 }

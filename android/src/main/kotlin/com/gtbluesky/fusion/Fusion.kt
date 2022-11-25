@@ -40,8 +40,8 @@ object Fusion {
         this.context = context
         this.delegate = delegate
         engineGroup = FlutterEngineGroup(context)
-        defaultEngine = createAndRunEngine(FusionConstant.REUSE_MODE)
-        engineBinding = FusionEngineBinding(true)
+        defaultEngine = createAndRunEngine()
+        engineBinding = FusionEngineBinding(defaultEngine)
         engineBinding?.attach()
         lifecycleCallback = FusionLifecycleCallbacks()
         context.registerActivityLifecycleCallbacks(lifecycleCallback)
@@ -59,7 +59,7 @@ object Fusion {
     }
 
     @UiThread
-    fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
+    private fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
         return engineGroup?.createAndRunEngine(
             context,
             DartExecutor.DartEntrypoint.createDefault(),
@@ -80,9 +80,6 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
         if (++visibleActivityCount == 1 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterForeground()
         }
-        if (activity is FusionContainer) {
-            Fusion.engineBinding?.notifyPageVisible()
-        }
     }
 
     override fun onActivityResumed(activity: Activity) {
@@ -95,9 +92,6 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
         isActivityChangingConfigurations = activity.isChangingConfigurations
         if (--visibleActivityCount == 0 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterBackground()
-        }
-        if (activity is FusionContainer) {
-            Fusion.engineBinding?.notifyPageInvisible()
         }
     }
 

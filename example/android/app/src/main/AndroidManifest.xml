@@ -36,7 +36,7 @@
             android:label="NormalActivity"
             android:theme="@style/Theme.AppCompat.Light" />
         <activity
-            android:name=".FragmentSceneActivity"
+            android:name=".ViewPagerSceneActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="false"
             android:hardwareAccelerated="true"

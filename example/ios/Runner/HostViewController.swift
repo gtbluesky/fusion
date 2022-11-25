@@ -18,6 +18,7 @@ class HostViewController: UIViewController {
     @IBOutlet weak var button3: UIButton!
 
     override func viewDidLoad() {
+        NSLog("\(self) func=\(#function)")
         super.viewDidLoad()
 //        self.restorationClass = HostViewController.self
 //        self.restorationIdentifier = NSStringFromClass(HostViewController.self)
@@ -29,8 +30,24 @@ class HostViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewDidAppear(animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewWillDisappear(animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        NSLog("\(self) func=\(#function)")
+        super.viewDidDisappear(animated)
     }
 
 //    class func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
@@ -42,7 +59,7 @@ class HostViewController: UIViewController {
 //    }
 
     @IBAction func click0(_ sender: UIButton) {
-        FusionNavigator.instance.open("/lifecycle", arguments: ["title": "iOS Flutter Page"])
+        FusionNavigator.instance.open("/test", arguments: ["title": "iOS Flutter Page"])
     }
 
     @IBAction func click1(_ sender: Any) {
@@ -54,7 +71,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click3(_ sender: Any) {
-        let fusionVc = CustomViewController(isReused: false, routeName: "/lifecycle", routeArguments: nil)
+        let fusionVc = CustomViewController(routeName: "/lifecycle", routeArguments: nil)
         presentLeftDrawer(fusionVc, animated: true)
     }
 }
