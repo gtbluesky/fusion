@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.ColorInt
 import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
@@ -78,11 +79,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (view == flutterView) {
             view = FrameLayout(context).also {
                 it.addView(flutterView)
-                if (!isTransparent()) {
-                    maskView = View(context)
-                    maskView?.setBackgroundColor(Color.WHITE)
-                    it.addView(maskView)
-                }
             }
         }
         onContainerCreate()
@@ -160,6 +156,14 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun onContainerCreate() {
+        val frameLayout = flutterView?.parent as? FrameLayout
+        if (frameLayout != null && !isTransparent()) {
+            val backgroundColor =
+                arguments?.getInt(FusionConstant.EXTRA_BACKGROUND_COLOR) ?: Color.WHITE
+            maskView = View(context)
+            maskView?.setBackgroundColor(backgroundColor)
+            frameLayout.addView(maskView)
+        }
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
@@ -316,6 +320,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
         private var routeName: String = FusionConstant.INITIAL_ROUTE
         private var routeArguments: Map<String, Any>? = null
+        @ColorInt
+        private var backgroundColor = Color.WHITE
 
         fun initialRoute(
             name: String,
@@ -326,11 +332,17 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return this
         }
 
+        fun backgroundColor(@ColorInt color: Int): FusionFlutterFragmentBuilder {
+            backgroundColor = color
+            return this
+        }
+
         override fun createArgs(): Bundle {
             return super.createArgs().also {
                 it.putString(FusionConstant.ROUTE_NAME, routeName)
                 it.putSerializable(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
                 it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, false)
+                it.putInt(FusionConstant.EXTRA_BACKGROUND_COLOR, backgroundColor)
             }
         }
     }

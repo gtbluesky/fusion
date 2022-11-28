@@ -2,6 +2,7 @@ package com.gtbluesky.fusion.container
 
 import android.app.ActivityManager
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import com.gtbluesky.fusion.constant.FusionConstant
@@ -49,8 +50,13 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         } else {
             TransparencyMode.transparent
         }
+        val backgroundColor = intent.getIntExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, Color.WHITE)
+        if (!isTransparent()) {
+            window.setBackgroundDrawable(ColorDrawable(backgroundColor))
+        }
         return FusionFragment.FusionFlutterFragmentBuilder(FusionFragment::class.java)
             .initialRoute(routeName, routeArguments)
+            .backgroundColor(backgroundColor)
             .renderMode(RenderMode.texture)
             .transparencyMode(transparencyMode)
             .build<FusionFragment>().also {

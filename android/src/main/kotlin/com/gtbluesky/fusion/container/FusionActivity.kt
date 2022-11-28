@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -69,12 +70,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         flutterView = findFlutterView(window.decorView)
         flutterView?.detachFromFlutterEngine()
-        val frameLayout = flutterView?.parent as? FrameLayout
-        if (frameLayout != null && !isTransparent()) {
-            maskView = View(this)
-            maskView?.setBackgroundColor(Color.WHITE)
-            frameLayout.addView(maskView)
-        }
         onContainerCreate()
     }
 
@@ -115,6 +110,16 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     }
 
     private fun onContainerCreate() {
+        if (!isTransparent()) {
+            val backgroundColor = intent.getIntExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, Color.WHITE)
+            window.setBackgroundDrawable(ColorDrawable(backgroundColor))
+            val frameLayout = flutterView?.parent as? FrameLayout
+            if (frameLayout != null) {
+                maskView = View(this)
+                maskView?.setBackgroundColor(backgroundColor)
+                frameLayout.addView(maskView)
+            }
+        }
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }

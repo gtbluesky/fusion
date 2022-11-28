@@ -53,11 +53,10 @@ import fusion
     func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?) {
         NSLog("pushFlutterRoute: name=\(name), arguments=\(arguments)")
         let transparent = arguments?["transparent"] as? Bool ?? false
+        let backgroundColor = arguments?["backgroundColor"] as? Int ?? 0xFFFFFFFF
         let navController = self.window?.rootViewController as? UINavigationController
-        let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
+        let fusionVc = CustomViewController(routeName: name, routeArguments: arguments, transparent: transparent, backgroundColor: backgroundColor)
         if transparent {
-            fusionVc.isViewOpaque = false
-            fusionVc.modalPresentationStyle = .overCurrentContext
             navController?.present(fusionVc, animated: false)
         } else {
             navController?.pushViewController(fusionVc, animated: true)

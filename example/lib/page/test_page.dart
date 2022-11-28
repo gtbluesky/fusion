@@ -130,6 +130,14 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
+              child: const Text('open /background'),
+              onTap: () async {
+                FusionNavigator.instance.open('/background', {'backgroundColor': 0xFF546E7A});
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
               child: const Text('push /navigator'),
               onTap: () async {
                 final result = await FusionNavigator.instance.push<String?>('/navigator');

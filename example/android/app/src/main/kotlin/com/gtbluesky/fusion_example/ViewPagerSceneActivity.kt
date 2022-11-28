@@ -16,7 +16,7 @@ class ViewPagerSceneActivity : FragmentActivity() {
         setContentView(binding.root)
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
-        val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/test", mapOf("title" to "f0"))
+        val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/background", mapOf("backgroundColor" to 0xFF546E7A), backgroundColor = 0xFF546E7A.toInt())
         val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "f1"))
         val fragment2 = buildFusionFragment(FusionFragment::class.java,"/list", mapOf("title" to "f2"))
         adapter.addFragment(fragment0)

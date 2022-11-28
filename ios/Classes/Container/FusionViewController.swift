@@ -13,17 +13,30 @@ open class FusionViewController: FlutterViewController {
     internal var uniqueId = "container_\(UUID().uuidString)"
     private let engineBinding = Fusion.instance.engineBinding
     private var maskView: UIView? = nil
+    private var backgroundColor: UIColor = .white
 
-    public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
+    public init(routeName: String, routeArguments: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: UIColor? = nil) {
+        if let backgroundColor = backgroundColor {
+            self.backgroundColor = backgroundColor
+        }
         guard let engine = engineBinding?.engine else {
             super.init()
             return
         }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engine, nibName: nil, bundle: nil)
-        modalPresentationStyle = .fullScreen
+        isViewOpaque = !transparent
         engineBinding?.open(uniqueId, name: routeName, arguments: routeArguments)
         onContainerCreate()
+    }
+
+    public convenience init(routeName: String, routeArguments: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: Int) {
+        let alpha = CGFloat((backgroundColor & 0xFF000000) >> 24) / 255.0
+        let red = CGFloat((backgroundColor & 0xFF0000) >> 16) / 255.0
+        let green = CGFloat((backgroundColor & 0xFF00) >> 8) / 255.0
+        let blue = CGFloat(backgroundColor & 0xFF) / 255.0
+        let bgColor = UIColor(red: red, green: green, blue: blue, alpha: alpha)
+        self.init(routeName: routeName, routeArguments: routeArguments, transparent: transparent, backgroundColor: bgColor)
     }
 
     public required init(coder: NSCoder) {
@@ -33,10 +46,11 @@ open class FusionViewController: FlutterViewController {
         }
         engineBinding?.engine?.viewController = nil
         super.init(engine: engine, nibName: nil, bundle: nil)
-        let classSet = [NSArray.self, NSDictionary.self, NSString.self, NSNumber.self]
+        isViewOpaque = coder.decodeBool(forKey: FusionConstant.FUSION_RESTORATION_OPAQUE_KEY)
         if let uniqueId = coder.decodeObject(forKey: FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY) as? String {
             self.uniqueId = uniqueId
         }
+        let classSet = [NSArray.self, NSDictionary.self, NSString.self, NSNumber.self]
         if let history = coder.decodeObject(of: classSet, forKey: FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? [Dictionary<String, Any?>] {
             engineBinding?.restore(uniqueId, history: history)
         }
@@ -46,21 +60,13 @@ open class FusionViewController: FlutterViewController {
     open override func encodeRestorableState(with coder: NSCoder) {
         coder.encode(uniqueId, forKey: FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)
         coder.encode(history, forKey: FusionConstant.FUSION_RESTORATION_HISTORY_KEY)
+        coder.encode(isViewOpaque, forKey: FusionConstant.FUSION_RESTORATION_OPAQUE_KEY)
         super.encodeRestorableState(with: coder)
     }
 
     open override func viewDidLoad() {
         attachToFlutterEngine()
         super.viewDidLoad()
-        if isViewOpaque {
-            view.backgroundColor = .white
-            maskView = UIView()
-            if let maskView = maskView {
-                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                maskView.backgroundColor = .white
-                view.addSubview(maskView)
-            }
-        }
     }
 
     func removeMaskView() {
@@ -107,6 +113,18 @@ open class FusionViewController: FlutterViewController {
     }
 
     func onContainerCreate() {
+        if isViewOpaque {
+            modalPresentationStyle = .fullScreen
+            view.backgroundColor = backgroundColor
+            maskView = UIView()
+            if let maskView = maskView {
+                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                maskView.backgroundColor = backgroundColor
+                view.addSubview(maskView)
+            }
+        } else {
+            modalPresentationStyle = .overCurrentContext
+        }
         FusionStackManager.instance.add(self)
     }
 

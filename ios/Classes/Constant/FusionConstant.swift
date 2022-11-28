@@ -15,6 +15,7 @@ internal struct FusionConstant {
     static let OverlayStyleUpdateNotificationKey = "io.flutter.plugin.platform.SystemChromeOverlayNotificationKey"
     static let FUSION_RESTORATION_HISTORY_KEY = "history"
     static let FUSION_RESTORATION_UNIQUE_ID_KEY = "uniqueId"
+    static let FUSION_RESTORATION_OPAQUE_KEY = "opaque"
 }
 
 internal extension NSNotification.Name {

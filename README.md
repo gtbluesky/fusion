@@ -112,7 +112,7 @@ iOS 侧
 
 #### 普通页面模式
 
-Android 通过继承 `FusionActivity` 创建 Flutter 容器，启动 FusionActivity（或其子类）时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 需设为 false。其 xml 配置参考如下：
+Android 通过 `FusionActivity`（或其子类） 创建 Flutter 容器，启动容器时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 需设为 false。其 xml 配置参考如下：
 
 ```xml
         <activity
@@ -127,7 +127,7 @@ Android 通过继承 `FusionActivity` 创建 Flutter 容器，启动 FusionActiv
 
 
 
-iOS 通过继承 `FusionViewController` 创建 Flutter 容器，`push` 和 `present` 均支持。FusionViewController 默认隐藏了 UINavigationController。
+iOS 通过 `FusionViewController` （或其子类）创建 Flutter 容器，`push` 和 `present` 均支持。FusionViewController 默认隐藏了 UINavigationController。
 
 在 iOS 中需要处理原生右滑退出手势和 Flutter 手势冲突的问题，解决方法也很简单：只需在自定义的 Flutter 容器中实现 `FusionPopGestureHandler` 并在对应方法中启用或者关闭原生手势即可，这样可以实现如果当前 Flutter 容器存在多个 Flutter 页面时，右滑手势是退出 Flutter 页面，而当 Flutter 页面只有一个时则右滑退出 Flutter 容器。
 
@@ -183,20 +183,41 @@ iOS 侧
 使用方式与普通页面模式相似，区别如下：
 
 ```swift
-fusionVc.isViewOpaque = false
-fusionVc.modalPresentationStyle = .overCurrentContext
+let fusionVc = CustomViewController(routeName: name, routeArguments: arguments, transparent: true)
 navController?.present(fusionVc, animated: false)
 ```
 
 同时Flutter页面背景也需要设置为透明
 
+
+
 #### 子页面模式
 
 子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
 
-Android 侧使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
+Android 侧
 
-iOS 侧与页面模式一样使用 FusionViewController 
+使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
+
+iOS 侧
+
+与页面模式一样使用 FusionViewController 
+
+
+
+#### 自定义容器背景色
+
+默认情况下容器的背景为白色，这是因为考虑到绝大多数的页面都是使用白色背景，但如果打开的首个Flutter页面的背景是其他颜色，比如夜间模式下页面为深灰色，此时是为了更好的视觉效果，可以自定义容器的背景色与首个Flutter页面的背景色一致。
+
+Android 侧
+
+在 `buildFusionIntent` 和 `buildFusionFragment`方法中参数 `backgroundColor` 设为所需背景色
+
+iOS 侧
+
+在创建 FusionViewController （或其子类）对象时，参数 `backgroundColor` 设为所需背景色
+
+
 
 ### 3、路由API（FusionNavigator）
 

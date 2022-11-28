@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
+import 'package:fusion_example/page/background_page.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
 import 'package:fusion_example/page/navigator_page.dart';
@@ -40,6 +41,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/web': ((_) => const WebPage()),
   '/transparent': (arguments) => TransparentPage(arguments: arguments),
   '/navigator': ((arguments) => NavigatorPage(arguments: arguments,)),
+  '/background': ((arguments) => BackgroundPage(arguments: arguments,)),
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 

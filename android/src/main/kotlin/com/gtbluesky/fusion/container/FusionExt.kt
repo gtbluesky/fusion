@@ -2,8 +2,10 @@ package com.gtbluesky.fusion.container
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import com.gtbluesky.fusion.constant.FusionConstant
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import io.flutter.embedding.android.FlutterFragment
@@ -18,7 +20,8 @@ fun <T : FusionContainer> buildFusionIntent(
     clazz: Class<T>,
     routeName: String,
     routeArguments: Map<String, Any>? = null,
-    transparent: Boolean = false
+    transparent: Boolean = false,
+    @ColorInt backgroundColor: Int = Color.WHITE
 ): Intent {
     val backgroundMode = if (transparent) {
         BackgroundMode.transparent
@@ -30,6 +33,7 @@ fun <T : FusionContainer> buildFusionIntent(
         it.putExtra(FusionConstant.EXTRA_DESTROY_ENGINE_WITH_ACTIVITY, false)
         it.putExtra(FusionConstant.ROUTE_NAME, routeName)
         it.putExtra(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
+        it.putExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, backgroundColor)
     }
 }
 
@@ -38,7 +42,8 @@ fun <T : FusionFragment> buildFusionFragment(
     clazz: Class<T>,
     routeName: String,
     routeArguments: Map<String, Any>? = null,
-    transparent: Boolean = false
+    transparent: Boolean = false,
+    @ColorInt backgroundColor: Int = Color.WHITE
 ): T {
     val transparencyMode = if (transparent) {
         TransparencyMode.transparent
@@ -47,6 +52,7 @@ fun <T : FusionFragment> buildFusionFragment(
     }
     return FusionFragment.FusionFlutterFragmentBuilder(clazz)
         .initialRoute(routeName, routeArguments)
+        .backgroundColor(backgroundColor)
         .renderMode(RenderMode.texture)
         .transparencyMode(transparencyMode)
         .build<T>()
