@@ -22,7 +22,7 @@ class NormalViewController: UIViewController {
         super.viewDidLoad()
 //        restorationClass = NormalViewController.self
 //        restorationIdentifier = NSStringFromClass(NormalViewController.self)
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = .white
         newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 0, title: "返回", action: #selector(btnClick(btn:)))
         newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50)), offsetY: 60, title: "发送消息", action: #selector(btnClick2(btn:)))
         newButton(button: UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50)), offsetY: 120, title: "打开普通Flutter页面", action: #selector(btnClick3(btn:)))
@@ -32,7 +32,7 @@ class NormalViewController: UIViewController {
     private func newButton(button: UIButton, offsetY: Int, title: String, action: Selector) {
         button.center = CGPoint(x: view.center.x, y: view.center.y + CGFloat(offsetY))
         button.setTitle(title, for: .normal)
-        button.backgroundColor = UIColor.blue
+        button.backgroundColor = .blue
         button.addTarget(self, action: action, for: .touchUpInside)
         view.addSubview(button)
     }

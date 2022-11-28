@@ -6,6 +6,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
 import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
@@ -26,6 +28,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private val history = mutableListOf<Map<String, Any?>>()
     private var platformPlugin: PlatformPlugin? = null
+    private var maskView: View? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
@@ -67,7 +70,19 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         flutterView = findFlutterView(window.decorView)
         flutterView?.detachFromFlutterEngine()
+        val frameLayout = flutterView?.parent as? FrameLayout
+        if (frameLayout != null && !isTransparent()) {
+            maskView = View(this)
+            maskView?.setBackgroundColor(Color.WHITE)
+            frameLayout.addView(maskView)
+        }
         onContainerCreate()
+    }
+
+    override fun removeMaskView() {
+        maskView?.let {
+            (it.parent as? FrameLayout)?.removeView(it)
+        }
     }
 
     override fun onResume() {
@@ -104,6 +119,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
+        FusionStackManager.add(this)
     }
 
     private fun onContainerVisible() {

@@ -8,9 +8,27 @@
 import Foundation
 
 internal class FusionEngineBinding: NSObject {
-    private var navigationChannel: FlutterMethodChannel? = nil
-    private var notificationChannel: FlutterMethodChannel? = nil
-    private var platformChannel: FlutterMethodChannel? = nil
+    private var hostOpen: FlutterBasicMessageChannel? = nil
+    private var hostPush: FlutterBasicMessageChannel? = nil
+    private var hostDestroy: FlutterBasicMessageChannel? = nil
+    private var hostRestore: FlutterBasicMessageChannel? = nil
+    private var hostSync: FlutterBasicMessageChannel? = nil
+    private var hostSendMessage: FlutterBasicMessageChannel? = nil
+    private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
+    private var flutterOpen: FlutterBasicMessageChannel? = nil
+    private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
+    private var flutterRestore: FlutterBasicMessageChannel? = nil
+    private var flutterDestroy: FlutterBasicMessageChannel? = nil
+    private var flutterPush: FlutterBasicMessageChannel? = nil
+    private var flutterReplace: FlutterBasicMessageChannel? = nil
+    private var flutterPop: FlutterBasicMessageChannel? = nil
+    private var flutterRemove: FlutterBasicMessageChannel? = nil
+    private var flutterNotifyPageVisible: FlutterBasicMessageChannel? = nil
+    private var flutterNotifyPageInvisible: FlutterBasicMessageChannel? = nil
+    private var flutterNotifyEnterForeground: FlutterBasicMessageChannel? = nil
+    private var flutterNotifyEnterBackground: FlutterBasicMessageChannel? = nil
+    private var flutterDispatchMessage: FlutterBasicMessageChannel? = nil
+    private var flutterCheckStyle: FlutterBasicMessageChannel? = nil
     var engine: FlutterEngine? = nil
     private var historyList: [Dictionary<String, Any?>] {
         get {
@@ -29,117 +47,126 @@ internal class FusionEngineBinding: NSObject {
         guard let engine = engine else {
             return
         }
-        navigationChannel = FlutterMethodChannel(name: FusionConstant.FUSION_NAVIGATION_CHANNEL, binaryMessenger: engine.binaryMessenger)
-        notificationChannel = FlutterMethodChannel(name: FusionConstant.FUSION_NOTIFICATION_CHANNEL, binaryMessenger: engine.binaryMessenger)
-        platformChannel = FlutterMethodChannel(name: FusionConstant.FUSION_PLATFORM_CHANNEL, binaryMessenger: engine.binaryMessenger)
+        hostOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/open", binaryMessenger: engine.binaryMessenger)
+        hostPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/push", binaryMessenger: engine.binaryMessenger)
+        hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: engine.binaryMessenger)
+        hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: engine.binaryMessenger)
+        hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: engine.binaryMessenger)
+        hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: engine.binaryMessenger)
+        hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: engine.binaryMessenger)
+        flutterOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/open", binaryMessenger: engine.binaryMessenger)
+        flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: engine.binaryMessenger)
+        flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: engine.binaryMessenger)
+        flutterDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/destroy", binaryMessenger: engine.binaryMessenger)
+        flutterPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/push", binaryMessenger: engine.binaryMessenger)
+        flutterReplace = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/replace", binaryMessenger: engine.binaryMessenger)
+        flutterPop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/pop", binaryMessenger: engine.binaryMessenger)
+        flutterRemove = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/remove", binaryMessenger: engine.binaryMessenger)
+        flutterNotifyPageVisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageVisible", binaryMessenger: engine.binaryMessenger)
+        flutterNotifyPageInvisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageInvisible", binaryMessenger: engine.binaryMessenger)
+        flutterNotifyEnterForeground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterForeground", binaryMessenger: engine.binaryMessenger)
+        flutterNotifyEnterBackground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterBackground", binaryMessenger: engine.binaryMessenger)
+        flutterDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/dispatchMessage", binaryMessenger: engine.binaryMessenger)
+        flutterCheckStyle = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/checkStyle", binaryMessenger: engine.binaryMessenger)
     }
 
     func attach() {
-        navigationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            switch call.method {
-            case "open":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(nil)
-                    return
-                }
-                let arguments = dict["arguments"] as? Dictionary<String, Any>
-                Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
-                result(nil)
-            case "push":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(nil)
-                    return
-                }
-                let arguments = dict["arguments"] as? Dictionary<String, Any>
-                Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
-                result(nil)
-            case "destroy":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String else {
-                    result(false)
-                    return
-                }
-                if let container = FusionStackManager.instance.findContainer(uniqueId) {
-                    FusionStackManager.instance.closeContainer(container)
-                    result(true)
-                } else {
-                    result(false)
-                }
-            case "restore":
-                result(self.historyList)
-            case "sync":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String, let pages = dict["pages"] as? [Dictionary<String, Any?>] else {
-                    result(false)
-                    return
-                }
-                let container = FusionStackManager.instance.findContainer(uniqueId)
-                container?.history.removeAll()
-                container?.history.append(contentsOf: pages)
-                if container?.history.count == 1 {
-                    self.enablePopGesture()
-                } else {
-                    self.disablePopGesture()
-                }
-                result(true)
-            default:
-                result(FlutterMethodNotImplemented)
+        hostOpen?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                reply(nil)
+                return
+            }
+            let arguments = dict["arguments"] as? Dictionary<String, Any>
+            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+            reply(nil)
+        }
+        hostPush?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                reply(nil)
+                return
+            }
+            let arguments = dict["arguments"] as? Dictionary<String, Any>
+            Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+            reply(nil)
+        }
+        hostDestroy?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String else {
+                reply(false)
+                return
+            }
+            if let container = FusionStackManager.instance.findContainer(uniqueId) {
+                FusionStackManager.instance.closeContainer(container)
+                reply(true)
+            } else {
+                reply(false)
             }
         }
-        notificationChannel?.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            switch call.method {
-            case "sendMessage":
-                guard let dict = call.arguments as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                    result(nil)
-                    return
-                }
-                let body = dict["body"] as? Dictionary<String, Any>
-                FusionStackManager.instance.sendMessage(name, body: body)
-                result(nil)
-            default:
-                result(FlutterMethodNotImplemented)
+        hostRestore?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            reply(self.historyList)
+        }
+        hostSync?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String, let pages = dict["pages"] as? [Dictionary<String, Any?>] else {
+                reply(false)
+                return
             }
+            let container = FusionStackManager.instance.findContainer(uniqueId)
+            container?.history.removeAll()
+            container?.history.append(contentsOf: pages)
+            if container?.history.count == 1 {
+                self.enablePopGesture()
+            } else {
+                self.disablePopGesture()
+            }
+            reply(true)
+        }
+        hostSendMessage?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
+                reply(nil)
+                return
+            }
+            let body = dict["body"] as? Dictionary<String, Any>
+            FusionStackManager.instance.sendMessage(name, body: body)
+            reply(nil)
+        }
+        hostRemoveMaskView?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let dict = message as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String else {
+                reply(nil)
+                return
+            }
+            FusionStackManager.instance.findContainer(uniqueId)?.removeMaskView()
+            reply(nil)
         }
     }
 
     // external function
     func push(_ name: String, arguments: Dictionary<String, Any>?) {
-        navigationChannel?.invokeMethod(
-                "push",
-                arguments: [
-                    "name": name,
-                    "arguments": arguments as Any
-                ]
-        )
+        flutterPush?.sendMessage([
+            "name": name,
+            "arguments": arguments as Any
+        ])
     }
 
     func replace(_ name: String, arguments: Dictionary<String, Any>?) {
-        navigationChannel?.invokeMethod(
-                "replace",
-                arguments: [
-                    "name": name,
-                    "arguments": arguments as Any
-                ]
-        )
+        flutterReplace?.sendMessage([
+            "name": name,
+            "arguments": arguments as Any
+        ])
     }
 
     func pop(_ result: Any?) {
-        navigationChannel?.invokeMethod(
-                "pop",
-                arguments: [
-                    "result": result
-                ]
-        )
+        flutterPop?.sendMessage([
+            "result": result
+        ])
     }
 
     func remove(_ name: String) {
-        navigationChannel?.invokeMethod(
-                "remove",
-                arguments: [
-                    "name": name,
-                ]
-        )
+        flutterRemove?.sendMessage([
+            "name": name,
+        ])
     }
 
     // internal function
+
     func enablePopGesture() {
         (UIApplication.roofViewController as? FusionPopGestureHandler)?.enablePopGesture()
     }
@@ -149,23 +176,17 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func open(_ uniqueId: String, name: String, arguments: Dictionary<String, Any>?) {
-        navigationChannel?.invokeMethod(
-                "open",
-                arguments: [
-                    "uniqueId": uniqueId,
-                    "name": name,
-                    "arguments": arguments as Any
-                ]
-        )
+        flutterOpen?.sendMessage([
+            "uniqueId": uniqueId,
+            "name": name,
+            "arguments": arguments as Any
+        ])
     }
 
     func switchTop(_ uniqueId: String) {
-        navigationChannel?.invokeMethod(
-                "switchTop",
-                arguments: [
-                    "uniqueId": uniqueId
-                ]
-        )
+        flutterSwitchTop?.sendMessage([
+            "uniqueId": uniqueId
+        ])
     }
 
     /**
@@ -175,13 +196,10 @@ internal class FusionEngineBinding: NSObject {
        - history: container's history
      */
     func restore(_ uniqueId: String, history: [Dictionary<String, Any?>]) {
-        navigationChannel?.invokeMethod(
-                "restore",
-                arguments: [
-                    "uniqueId": uniqueId,
-                    "history": history
-                ]
-        )
+        flutterRestore?.sendMessage([
+            "uniqueId": uniqueId,
+            "history": history
+        ])
     }
 
     /**
@@ -189,61 +207,52 @@ internal class FusionEngineBinding: NSObject {
      - Parameter uniqueId: container's uniqueId
      */
     func destroy(_ uniqueId: String) {
-        navigationChannel?.invokeMethod(
-                "destroy",
-                arguments: [
-                    "uniqueId": uniqueId
-                ]
-        )
+        flutterDestroy?.sendMessage([
+            "uniqueId": uniqueId
+        ])
     }
 
     func notifyPageVisible(_ uniqueId: String) {
-        notificationChannel?.invokeMethod(
-                "notifyPageVisible",
-                arguments: [
-                    "uniqueId": uniqueId
-                ]
-        )
+        flutterNotifyPageVisible?.sendMessage([
+            "uniqueId": uniqueId
+        ])
     }
 
     func notifyPageInvisible(_ uniqueId: String) {
-        notificationChannel?.invokeMethod(
-                "notifyPageInvisible",
-                arguments: [
-                    "uniqueId": uniqueId
-                ]
-        )
+        flutterNotifyPageInvisible?.sendMessage([
+            "uniqueId": uniqueId
+        ])
     }
 
     func notifyEnterForeground() {
-        notificationChannel?.invokeMethod("notifyEnterForeground", arguments: nil)
+        flutterNotifyEnterForeground?.sendMessage(nil)
     }
 
     func notifyEnterBackground() {
-        notificationChannel?.invokeMethod("notifyEnterBackground", arguments: nil)
+        flutterNotifyEnterBackground?.sendMessage(nil)
     }
 
     func dispatchMessage(_ msg: Dictionary<String, Any?>) {
-        notificationChannel?.invokeMethod("dispatchMessage", arguments: msg)
+        flutterDispatchMessage?.sendMessage(msg)
     }
 
-    func latestStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {
+    func checkStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {
         let infoValue = Bundle.main.object(forInfoDictionaryKey: "UIViewControllerBasedStatusBarAppearance") as? Bool
         if infoValue == false {
             return
         }
-        platformChannel?.invokeMethod("latestStyle", arguments: nil, result: { (result) in
-            if (result == nil) {
+        flutterCheckStyle?.sendMessage(nil, reply: { (reply) in
+            if (reply == nil) {
                 return
             }
-            if (result is FlutterError) {
+            if (reply is FlutterError) {
                 return
             }
-            if result as? NSObject == FlutterMethodNotImplemented {
+            if reply as? NSObject == FlutterMethodNotImplemented {
                 return
             }
             var statusBarStyle: UIStatusBarStyle?
-            if let map = result as? Dictionary<String, Any> {
+            if let map = reply as? Dictionary<String, Any> {
                 let brightness = map["statusBarBrightness"] as? String
                 if brightness == nil {
                     return
@@ -268,11 +277,34 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func detach() {
-        navigationChannel?.setMethodCallHandler(nil)
-        navigationChannel = nil
-        notificationChannel?.setMethodCallHandler(nil)
-        notificationChannel = nil
-        platformChannel = nil
+        hostOpen?.setMessageHandler(nil)
+        hostOpen = nil
+        hostPush?.setMessageHandler(nil)
+        hostPush = nil
+        hostDestroy?.setMessageHandler(nil)
+        hostDestroy = nil
+        hostRestore?.setMessageHandler(nil)
+        hostRestore = nil
+        hostSync?.setMessageHandler(nil)
+        hostSync = nil
+        hostSendMessage?.setMessageHandler(nil)
+        hostSendMessage = nil
+        hostRemoveMaskView?.setMessageHandler(nil)
+        hostRemoveMaskView = nil
+        flutterOpen = nil
+        flutterSwitchTop = nil
+        flutterRestore = nil
+        flutterDestroy = nil
+        flutterPush = nil
+        flutterReplace = nil
+        flutterPop = nil
+        flutterRemove = nil
+        flutterNotifyPageVisible = nil
+        flutterNotifyPageInvisible = nil
+        flutterNotifyEnterForeground = nil
+        flutterNotifyEnterBackground = nil
+        flutterDispatchMessage = nil
+        flutterCheckStyle = nil
         engine?.viewController = nil
         engine?.destroyContext()
         engine = nil

@@ -12,18 +12,27 @@ open class FusionViewController: FlutterViewController {
     internal var history: [Dictionary<String, Any?>] = []
     internal var uniqueId = "container_\(UUID().uuidString)"
     private let engineBinding = Fusion.instance.engineBinding
+    private var maskView: UIView? = nil
 
     public init(routeName: String, routeArguments: Dictionary<String, Any>?) {
+        guard let engine = engineBinding?.engine else {
+            super.init()
+            return
+        }
         engineBinding?.engine?.viewController = nil
-        super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
+        super.init(engine: engine, nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
         engineBinding?.open(uniqueId, name: routeName, arguments: routeArguments)
         onContainerCreate()
     }
 
     public required init(coder: NSCoder) {
+        guard let engine = engineBinding?.engine else {
+            super.init()
+            return
+        }
         engineBinding?.engine?.viewController = nil
-        super.init(engine: engineBinding!.engine!, nibName: nil, bundle: nil)
+        super.init(engine: engine, nibName: nil, bundle: nil)
         let classSet = [NSArray.self, NSDictionary.self, NSString.self, NSNumber.self]
         if let uniqueId = coder.decodeObject(forKey: FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY) as? String {
             self.uniqueId = uniqueId
@@ -45,13 +54,24 @@ open class FusionViewController: FlutterViewController {
         attachToFlutterEngine()
         super.viewDidLoad()
         if isViewOpaque {
-            self.view.backgroundColor = UIColor.white
+            view.backgroundColor = .white
+            maskView = UIView()
+            if let maskView = maskView {
+                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                maskView.backgroundColor = .white
+                view.addSubview(maskView)
+            }
         }
+    }
+
+    func removeMaskView() {
+        maskView?.removeFromSuperview()
+        maskView = nil
     }
 
     open override func viewWillAppear(_ animated: Bool) {
         onContainerVisible()
-        engineBinding?.latestStyle { statusBarStyle in
+        engineBinding?.checkStyle { statusBarStyle in
             NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
         }
         super.viewWillAppear(animated)
@@ -88,7 +108,7 @@ open class FusionViewController: FlutterViewController {
     }
 
     func onContainerCreate() {
-
+        FusionStackManager.instance.add(self)
     }
 
     func onContainerVisible() {

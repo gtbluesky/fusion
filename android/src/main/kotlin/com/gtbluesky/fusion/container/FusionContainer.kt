@@ -5,6 +5,7 @@ internal interface FusionContainer {
     fun history(): MutableList<Map<String, Any?>>
     fun isTransparent(): Boolean
     fun detachFromEngine()
+    fun removeMaskView()
     /**
      * Give the host application a chance to take control of the app lifecycle events.
      * from 3.0

@@ -15,114 +15,128 @@ class FusionChannel {
 
   static FusionChannel get instance => _instance;
 
-  final _navigationChannel =
-      const MethodChannel('fusion_navigation_channel');
-  final _notificationChannel =
-      const MethodChannel('fusion_notification_channel');
-  final _platformChannel =
-      const MethodChannel('fusion_platform_channel');
+  static const _fusionChannel = 'fusion_channel';
+
+  final _hostOpen = const BasicMessageChannel('$_fusionChannel/host/open', StandardMessageCodec());
+  final _hostPush = const BasicMessageChannel('$_fusionChannel/host/push', StandardMessageCodec());
+  final _hostDestroy = const BasicMessageChannel('$_fusionChannel/host/destroy', StandardMessageCodec());
+  final _hostRestore = const BasicMessageChannel('$_fusionChannel/host/restore', StandardMessageCodec());
+  final _hostSync = const BasicMessageChannel('$_fusionChannel/host/sync', StandardMessageCodec());
+  final _hostSendMessage = const BasicMessageChannel('$_fusionChannel/host/sendMessage', StandardMessageCodec());
+  final _hostRemoveMaskView = const BasicMessageChannel('$_fusionChannel/host/removeMaskView', StandardMessageCodec());
+  final _flutterOpen = const BasicMessageChannel('$_fusionChannel/flutter/open', StandardMessageCodec());
+  final _flutterSwitchTop = const BasicMessageChannel('$_fusionChannel/flutter/switchTop', StandardMessageCodec());
+  final _flutterRestore = const BasicMessageChannel('$_fusionChannel/flutter/restore', StandardMessageCodec());
+  final _flutterDestroy = const BasicMessageChannel('$_fusionChannel/flutter/destroy', StandardMessageCodec());
+  final _flutterPush = const BasicMessageChannel('$_fusionChannel/flutter/push', StandardMessageCodec());
+  final _flutterReplace = const BasicMessageChannel('$_fusionChannel/flutter/replace', StandardMessageCodec());
+  final _flutterPop = const BasicMessageChannel('$_fusionChannel/flutter/pop', StandardMessageCodec());
+  final _flutterRemove = const BasicMessageChannel('$_fusionChannel/flutter/remove', StandardMessageCodec());
+  final _flutterNotifyPageVisible = const BasicMessageChannel('$_fusionChannel/flutter/notifyPageVisible', StandardMessageCodec());
+  final _flutterNotifyPageInvisible = const BasicMessageChannel('$_fusionChannel/flutter/notifyPageInvisible', StandardMessageCodec());
+  final _flutterNotifyEnterForeground = const BasicMessageChannel('$_fusionChannel/flutter/notifyEnterForeground', StandardMessageCodec());
+  final _flutterNotifyEnterBackground = const BasicMessageChannel('$_fusionChannel/flutter/notifyEnterBackground', StandardMessageCodec());
+  final _flutterDispatchMessage = const BasicMessageChannel('$_fusionChannel/flutter/dispatchMessage', StandardMessageCodec());
+  final _flutterCheckStyle = const BasicMessageChannel('$_fusionChannel/flutter/checkStyle', StandardMessageCodec());
 
   void register() {
-    _navigationChannel.setMethodCallHandler((call) async {
-      // print('_navigationChannel method=${call.method}');
-      switch (call.method) {
-        case 'open':
-          String uniqueId = call.arguments['uniqueId'];
-          String name = call.arguments['name'];
-          Map<String, dynamic>? arguments;
-          if (call.arguments['arguments'] != null) {
-            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
-          }
-          FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
-          break;
-        case 'push':
-          String name = call.arguments['name'];
-          Map<String, dynamic>? arguments;
-          if (call.arguments['arguments'] != null) {
-            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
-          }
-          await FusionNavigatorDelegate.instance.push(name, arguments);
-          break;
-        case 'replace':
-          String name = call.arguments['name'];
-          Map<String, dynamic>? arguments;
-          if (call.arguments['arguments'] != null) {
-            arguments = Map<String, dynamic>.from(call.arguments['arguments']);
-          }
-          await FusionNavigatorDelegate.instance.replace(name, arguments);
-          break;
-        case 'pop':
-          final result = call.arguments['result'];
-          await FusionNavigatorDelegate.instance.pop(result);
-          break;
-        case 'remove':
-          String name = call.arguments['name'];
-          await FusionNavigatorDelegate.instance.remove(name);
-          break;
-        case 'destroy':
-          FocusManager.instance.primaryFocus?.unfocus();
-          String uniqueId = call.arguments['uniqueId'];
-          await FusionNavigatorDelegate.instance.destroy(uniqueId);
-          WidgetsBinding.instance?.drawFrame();
-          break;
-        case 'restore':
-          FusionState.isRestoring = true;
-          String uniqueId = call.arguments['uniqueId'];
-          List history = call.arguments['history'];
-          final list = <Map<String, dynamic>>[];
-          for (var element in history) {
-            list.add(element.cast<String, dynamic>());
-          }
-          if (list.isNotEmpty) {
-            FusionNavigatorDelegate.instance.restore(uniqueId, list);
-          }
-          break;
-        case 'switchTop':
-          String uniqueId = call.arguments['uniqueId'];
-          FusionOverlayManager.instance.switchTop(uniqueId);
-          break;
-        default:
-          break;
+    _flutterOpen.setMessageHandler((message) async {
+      if (message is! Map) return null;
+      String uniqueId = message['uniqueId'];
+      String name = message['name'];
+      Map<String, dynamic>? arguments;
+      if (message['arguments'] != null) {
+        arguments = Map<String, dynamic>.from(message['arguments']);
       }
+      FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        WidgetsBinding.instance?.addPostFrameCallback((_) {
+          // callback of the next frame completes
+          removeMaskView(uniqueId);
+        });
+      });
+      return null;
     });
-    _notificationChannel.setMethodCallHandler((call) async {
-      // print('_notificationChannel method=${call.method}');
-      switch (call.method) {
-        case 'notifyPageVisible':
-          String uniqueId = call.arguments['uniqueId'];
-          _handlePageVisible(uniqueId, isFirstTime: true);
-          break;
-        case 'notifyPageInvisible':
-          String uniqueId = call.arguments['uniqueId'];
-          _handlePageInvisible(uniqueId);
-          break;
-        case 'notifyEnterForeground':
-          PageLifecycleBinding.instance.dispatchPageForegroundEvent();
-          break;
-        case 'notifyEnterBackground':
-          PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
-          break;
-        case 'dispatchMessage':
-          if (call.arguments is! Map) {
-            return;
-          }
-          final msg = Map<String, dynamic>.from(call.arguments);
-          String name = msg['name'];
-          final body = (msg['body'] as Map?)?.cast<String, dynamic>();
-          FusionNotificationBinding.instance.dispatchMessage(name, body);
-          break;
-        default:
-          break;
+    _flutterPush.setMessageHandler((message) async {
+      if (message is! Map) return null;
+      String name = message['name'];
+      Map<String, dynamic>? arguments;
+      if (message['arguments'] != null) {
+        arguments = Map<String, dynamic>.from(message['arguments']);
       }
+      return FusionNavigatorDelegate.instance.push(name, arguments);
     });
-    _platformChannel.setMethodCallHandler((call) async {
-      // FusionLog.log('_platformChannel method=${call.method}');
-      switch (call.method) {
-        case 'latestStyle':
-          return SystemChrome.latestStyle?.toMap();
-        default:
-          break;
+    _flutterReplace.setMessageHandler((message) async {
+      if (message is! Map) return null;
+      String name = message['name'];
+      Map<String, dynamic>? arguments;
+      if (message['arguments'] != null) {
+        arguments = Map<String, dynamic>.from(message['arguments']);
       }
+      return FusionNavigatorDelegate.instance.replace(name, arguments);
+    });
+    _flutterPop.setMessageHandler((message) async {
+      if (message is! Map) return;
+      final result = message['result'];
+      return FusionNavigatorDelegate.instance.pop(result);
+    });
+    _flutterRemove.setMessageHandler((message) async {
+      if (message is! Map) return;
+      String name = message['name'];
+      return FusionNavigatorDelegate.instance.remove(name);
+    });
+    _flutterDestroy.setMessageHandler((message) async {
+      if (message is! Map) return;
+      FocusManager.instance.primaryFocus?.unfocus();
+      String uniqueId = message['uniqueId'];
+      await FusionNavigatorDelegate.instance.destroy(uniqueId);
+      WidgetsBinding.instance?.drawFrame();
+      return null;
+    });
+    _flutterRestore.setMessageHandler((message) async {
+      if (message is! Map) return;
+      FusionState.isRestoring = true;
+      String uniqueId = message['uniqueId'];
+      List history = message['history'];
+      final list = <Map<String, dynamic>>[];
+      for (var element in history) {
+        list.add(element.cast<String, dynamic>());
+      }
+      if (list.isNotEmpty) {
+        FusionNavigatorDelegate.instance.restore(uniqueId, list);
+      }
+      return null;
+    });
+    _flutterSwitchTop.setMessageHandler((message) async {
+      if (message is! Map) return;
+      String uniqueId = message['uniqueId'];
+      return FusionOverlayManager.instance.switchTop(uniqueId);
+    });
+    _flutterNotifyPageVisible.setMessageHandler((message) async {
+      if (message is! Map) return;
+      String uniqueId = message['uniqueId'];
+      _handlePageVisible(uniqueId, isFirstTime: true);
+    });
+    _flutterNotifyPageInvisible.setMessageHandler((message) async {
+      if (message is! Map) return;
+      String uniqueId = message['uniqueId'];
+      _handlePageInvisible(uniqueId);
+    });
+    _flutterNotifyEnterForeground.setMessageHandler((message) async {
+      PageLifecycleBinding.instance.dispatchPageForegroundEvent();
+    });
+    _flutterNotifyEnterBackground.setMessageHandler((message) async {
+      PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
+    });
+    _flutterDispatchMessage.setMessageHandler((message) async {
+      if (message is! Map) return;
+      final msg = Map<String, dynamic>.from(message);
+      String name = msg['name'];
+      final body = (msg['body'] as Map?)?.cast<String, dynamic>();
+      FusionNotificationBinding.instance.dispatchMessage(name, body);
+    });
+    _flutterCheckStyle.setMessageHandler((message) async {
+      return SystemChrome.latestStyle?.toMap();
     });
   }
 
@@ -156,62 +170,53 @@ class FusionChannel {
       'name': e.name,
       'arguments': e.arguments,
     }).toList();
-    return _navigationChannel.invokeMethod(
-      'sync',
-      {
-        'uniqueId': uniqueId,
-        'pages': pages,
-      },
-    );
+    return _hostSync.send({
+      'uniqueId': uniqueId,
+      'pages': pages,
+    });
   }
 
   Future open(String name, dynamic arguments) {
-    return _navigationChannel.invokeMethod(
-      'open',
-      {
-        'name': name,
-        'arguments': arguments,
-      },
-    );
+    return _hostOpen.send({
+      'name': name,
+      'arguments': arguments,
+    });
   }
 
   Future push(String name, dynamic arguments) async {
-    return _navigationChannel.invokeMethod(
-      'push',
-      {
-        'name': name,
-        'arguments': arguments,
-      },
-    );
+    return _hostPush.send({
+      'name': name,
+      'arguments': arguments,
+    });
   }
 
   Future<bool> destroy(String uniqueId) async {
-    final result = await _navigationChannel.invokeMethod(
-      'destroy',
-      {
-        'uniqueId': uniqueId,
-      },
-    );
-    return result;
+    final result = await _hostDestroy.send({
+      'uniqueId': uniqueId,
+    });
+    return (result is bool) ? result : false;
   }
 
   Future<List<Map<String, dynamic>>> restore() async {
     final result =
-        await _navigationChannel.invokeListMethod<Map>('restore');
+        await _hostRestore.send(null);
     final List<Map<String, dynamic>> list = [];
-    result?.forEach((element) {
+    (result as List?)?.forEach((element) {
       list.add(element.cast<String, dynamic>());
     });
     return list;
   }
 
   void sendMessage(String name, [Map<String, dynamic>? body]) {
-    _notificationChannel.invokeMethod(
-      'sendMessage',
-      {
-        'name': name,
-        'body': body,
-      },
-    );
+    _hostSendMessage.send({
+      'name': name,
+      'body': body,
+    });
+  }
+
+  void removeMaskView(String uniqueId) async {
+    _hostRemoveMaskView.send({
+      'uniqueId': uniqueId,
+    });
   }
 }

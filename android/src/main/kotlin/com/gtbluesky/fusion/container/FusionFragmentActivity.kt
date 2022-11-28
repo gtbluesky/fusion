@@ -33,6 +33,10 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         }
     }
 
+    override fun removeMaskView() {
+        flutterFragment?.removeMaskView()
+    }
+
     // Fragment首次创建
     @Suppress("UNCHECKED_CAST")
     override fun createFlutterFragment(): FlutterFragment {

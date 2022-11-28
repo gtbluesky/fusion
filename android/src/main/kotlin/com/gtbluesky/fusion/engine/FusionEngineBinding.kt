@@ -5,13 +5,33 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
-import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.StandardMessageCodec
 import java.util.*
 
 internal class FusionEngineBinding(var engine: FlutterEngine?) {
-    private var navigationChannel: MethodChannel? = null
-    private var notificationChannel: MethodChannel? = null
-    private var platformChannel: MethodChannel? = null
+
+    private var hostOpen: BasicMessageChannel<Any>? = null
+    private var hostPush: BasicMessageChannel<Any>? = null
+    private var hostDestroy: BasicMessageChannel<Any>? = null
+    private var hostRestore: BasicMessageChannel<Any>? = null
+    private var hostSync: BasicMessageChannel<Any>? = null
+    private var hostSendMessage: BasicMessageChannel<Any>? = null
+    private var hostRemoveMaskView: BasicMessageChannel<Any>? = null
+    private var flutterOpen: BasicMessageChannel<Any>? = null
+    private var flutterSwitchTop: BasicMessageChannel<Any>? = null
+    private var flutterRestore: BasicMessageChannel<Any>? = null
+    private var flutterDestroy: BasicMessageChannel<Any>? = null
+    private var flutterPush: BasicMessageChannel<Any>? = null
+    private var flutterReplace: BasicMessageChannel<Any>? = null
+    private var flutterPop: BasicMessageChannel<Any>? = null
+    private var flutterRemove: BasicMessageChannel<Any>? = null
+    private var flutterNotifyPageVisible: BasicMessageChannel<Any>? = null
+    private var flutterNotifyPageInvisible: BasicMessageChannel<Any>? = null
+    private var flutterNotifyEnterForeground: BasicMessageChannel<Any>? = null
+    private var flutterNotifyEnterBackground: BasicMessageChannel<Any>? = null
+    private var flutterDispatchMessage: BasicMessageChannel<Any>? = null
+    private var flutterCheckStyle: BasicMessageChannel<Any>? = null
     private val historyList: List<Map<String, Any?>>
         get() {
             return FusionStackManager.containerStack.map {
@@ -24,156 +44,250 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
 
     init {
         engine?.let {
-            navigationChannel = MethodChannel(
+            hostOpen = BasicMessageChannel(
                 it.dartExecutor.binaryMessenger,
-                FusionConstant.FUSION_NAVIGATION_CHANNEL
+                "${FusionConstant.FUSION_CHANNEL}/host/open",
+                StandardMessageCodec.INSTANCE
             )
-            notificationChannel = MethodChannel(
+            hostPush = BasicMessageChannel(
                 it.dartExecutor.binaryMessenger,
-                FusionConstant.FUSION_NOTIFICATION_CHANNEL
+                "${FusionConstant.FUSION_CHANNEL}/host/push",
+                StandardMessageCodec.INSTANCE
             )
-            platformChannel = MethodChannel(
+            hostDestroy = BasicMessageChannel(
                 it.dartExecutor.binaryMessenger,
-                FusionConstant.FUSION_PLATFORM_CHANNEL
+                "${FusionConstant.FUSION_CHANNEL}/host/destroy",
+                StandardMessageCodec.INSTANCE
+            )
+            hostRestore = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/host/restore",
+                StandardMessageCodec.INSTANCE
+            )
+            hostSync = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/host/sync",
+                StandardMessageCodec.INSTANCE
+            )
+            hostSendMessage = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/host/sendMessage",
+                StandardMessageCodec.INSTANCE
+            )
+            hostRemoveMaskView = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/host/removeMaskView",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterOpen = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/open",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterSwitchTop = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/switchTop",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterRestore = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/restore",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterDestroy = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/destroy",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterPush = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/push",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterReplace = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/replace",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterPop = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/pop",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterRemove = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/remove",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterNotifyPageVisible = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/notifyPageVisible",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterNotifyPageInvisible = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/notifyPageInvisible",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterNotifyEnterForeground = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/notifyEnterForeground",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterNotifyEnterBackground = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/notifyEnterBackground",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterDispatchMessage = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/dispatchMessage",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterCheckStyle = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/checkStyle",
+                StandardMessageCodec.INSTANCE
             )
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun attach() {
-        navigationChannel?.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "open" -> {
-                    val name = call.argument<String>("name")
-                    if (name == null) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val arguments = call.argument<Map<String, Any>?>("arguments")
-                    Fusion.delegate.pushFlutterRoute(name, arguments)
-                    result.success(null)
-                }
-                "push" -> {
-                    val name = call.argument<String>("name")
-                    if (name == null) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val arguments = call.argument<Map<String, Any>?>("arguments")
-                    Fusion.delegate.pushNativeRoute(name, arguments)
-                    result.success(null)
-                }
-                "destroy" -> {
-                    val uniqueId = call.argument<String>("uniqueId")
-                    if (uniqueId == null) {
-                        result.success(false)
-                        return@setMethodCallHandler
-                    }
-                    val container = FusionStackManager.findContainer(uniqueId)
-                    if (container != null) {
-                        FusionStackManager.closeContainer(container)
-                        result.success(true)
-                    } else {
-                        result.success(false)
-                    }
-                }
-                "restore" -> {
-                    result.success(historyList)
-                }
-                "sync" -> {
-                    val uniqueId = call.argument<String>("uniqueId")
-                    val pages = call.argument<List<Map<String, Any?>>>("pages")
-                    if (uniqueId == null || pages == null) {
-                        result.success(false)
-                        return@setMethodCallHandler
-                    }
-                    FusionStackManager.findContainer(uniqueId)?.history()?.let {
-                        it.clear()
-                        it.addAll(pages)
-                    }
-                    result.success(true)
-                }
-                else -> {
-                    result.notImplemented()
-                }
+        hostOpen?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val name = message["name"] as? String
+            if (name == null) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val arguments = message["arguments"] as? Map<String, Any>
+            Fusion.delegate.pushFlutterRoute(name, arguments)
+            reply.reply(null)
+        }
+        hostPush?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val name = message["name"] as? String
+            if (name == null) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val arguments = message["arguments"] as? Map<String, Any>
+            Fusion.delegate.pushNativeRoute(name, arguments)
+            reply.reply(null)
+        }
+        hostDestroy?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val uniqueId = message["uniqueId"] as? String
+            if (uniqueId == null) {
+                reply.reply(false)
+                return@setMessageHandler
+            }
+            val container = FusionStackManager.findContainer(uniqueId)
+            if (container != null) {
+                FusionStackManager.closeContainer(container)
+                reply.reply(true)
+            } else {
+                reply.reply(false)
             }
         }
-        notificationChannel?.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "sendMessage" -> {
-                    val name = call.argument<String>("name")
-                    if (name == null) {
-                        result.success(null)
-                        return@setMethodCallHandler
-                    }
-                    val body = call.argument<MutableMap<String, Any>>("body")
-                    FusionStackManager.sendMessage(name, body)
-                    result.success(null)
-                }
-                else -> {
-                    result.notImplemented()
-                }
+        hostRestore?.setMessageHandler { _, reply ->
+            reply.reply(historyList)
+        }
+        hostSync?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
             }
+            val uniqueId = message["uniqueId"] as? String
+            val pages = message["pages"] as? List<Map<String, Any?>>
+            if (uniqueId == null || pages == null) {
+                reply.reply(false)
+                return@setMessageHandler
+            }
+            FusionStackManager.findContainer(uniqueId)?.history()?.let {
+                it.clear()
+                it.addAll(pages)
+            }
+            reply.reply(true)
+        }
+        hostSendMessage?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val name = message["name"] as? String
+            if (name == null) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val body = message["body"] as? Map<String, Any>
+            FusionStackManager.sendMessage(name, body)
+            reply.reply(null)
+        }
+        hostRemoveMaskView?.setMessageHandler { message, reply ->
+            if (message !is Map<*, *>) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            val uniqueId = message["uniqueId"] as? String
+            if (uniqueId == null) {
+                reply.reply(null)
+                return@setMessageHandler
+            }
+            FusionStackManager.findContainer(uniqueId)?.removeMaskView()
         }
     }
 
     // external function
     fun push(name: String, arguments: Map<String, Any>?) {
-        navigationChannel?.invokeMethod(
-            "push",
-            mapOf(
-                "name" to name,
-                "arguments" to arguments
-            )
-        )
+        flutterPush?.send(mapOf(
+            "name" to name,
+            "arguments" to arguments
+        ))
     }
 
     fun replace(name: String, arguments: Map<String, Any>?) {
-        navigationChannel?.invokeMethod(
-            "replace",
-            mapOf(
-                "name" to name,
-                "arguments" to arguments
-            )
-        )
+        flutterReplace?.send(mapOf(
+            "name" to name,
+            "arguments" to arguments
+        ))
     }
 
     fun pop(result: Any?) {
-        navigationChannel?.invokeMethod(
-            "pop",
-            mapOf(
-                "result" to result
-            ),
-        )
+        flutterPop?.send(mapOf(
+            "result" to result
+        ))
     }
 
     fun remove(name: String) {
-        navigationChannel?.invokeMethod(
-            "remove",
-            mapOf(
-                "name" to name,
-            )
-        )
+        flutterRemove?.send(mapOf(
+            "name" to name,
+        ))
     }
 
     // internal function
     fun open(uniqueId: String, name: String, arguments: Map<String, Any>? = null) {
-        navigationChannel?.invokeMethod(
-            "open",
-            mapOf(
-                "uniqueId" to uniqueId,
-                "name" to name,
-                "arguments" to arguments
-            )
-        )
+        flutterOpen?.send(mapOf(
+            "uniqueId" to uniqueId,
+            "name" to name,
+            "arguments" to arguments
+        ))
     }
 
     fun switchTop(uniqueId: String) {
-        navigationChannel?.invokeMethod(
-            "switchTop",
-            mapOf(
-                "uniqueId" to uniqueId,
-            )
-        )
+        flutterSwitchTop?.send(mapOf(
+            "uniqueId" to uniqueId,
+        ))
     }
 
     /**
@@ -182,13 +296,10 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
      * @param history: container's history
      */
     fun restore(uniqueId: String, history: List<Map<String, Any?>>) {
-        navigationChannel?.invokeMethod(
-            "restore",
-            mapOf(
-                "uniqueId" to uniqueId,
-                "history" to history,
-            )
-        )
+        flutterRestore?.send(mapOf(
+            "uniqueId" to uniqueId,
+            "history" to history,
+        ))
     }
 
     /**
@@ -196,58 +307,42 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
      * @param uniqueId: container's uniqueId
      */
     fun destroy(uniqueId: String) {
-        navigationChannel?.invokeMethod(
-            "destroy",
-            mapOf(
-                "uniqueId" to uniqueId,
-            )
-        )
+        flutterDestroy?.send(mapOf(
+            "uniqueId" to uniqueId,
+        ))
     }
 
     fun notifyPageVisible(uniqueId: String) {
-        notificationChannel?.invokeMethod(
-            "notifyPageVisible",
-            mapOf(
-                "uniqueId" to uniqueId,
-            )
-        )
+        flutterNotifyPageVisible?.send(mapOf(
+            "uniqueId" to uniqueId,
+        ))
     }
 
     fun notifyPageInvisible(uniqueId: String) {
-        notificationChannel?.invokeMethod(
-            "notifyPageInvisible",
-            mapOf(
-                "uniqueId" to uniqueId,
-            )
-        )
+        flutterNotifyPageInvisible?.send(mapOf(
+            "uniqueId" to uniqueId,
+        ))
     }
 
     fun notifyEnterForeground() {
-        notificationChannel?.invokeMethod("notifyEnterForeground", null)
+        flutterNotifyEnterForeground?.send(null)
     }
 
     fun notifyEnterBackground() {
-        notificationChannel?.invokeMethod("notifyEnterBackground", null)
+        flutterNotifyEnterBackground?.send(null)
     }
 
     fun dispatchMessage(msg: Map<String, Any?>) {
-        notificationChannel?.invokeMethod("dispatchMessage", msg)
+        flutterDispatchMessage?.send(msg)
     }
 
     @Suppress("UNCHECKED_CAST")
     fun latestStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
-        platformChannel?.invokeMethod("latestStyle", null, object : MethodChannel.Result {
-            override fun success(result: Any?) {
-                val systemChromeStyle = decodeSystemChromeStyle(result as? Map<String, Any>)
-                    ?: return
-                callback(systemChromeStyle)
-            }
-
-            override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {}
-
-            override fun notImplemented() {}
-
-        })
+        flutterCheckStyle?.send(null) {
+            val systemChromeStyle = decodeSystemChromeStyle(it as? Map<String, Any>)
+                ?: return@send
+            callback(systemChromeStyle)
+        }
     }
 
     private fun decodeSystemChromeStyle(styleMap: Map<String, Any>?): PlatformChannel.SystemChromeStyle? {
@@ -285,11 +380,34 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
     }
 
     fun detach() {
-        navigationChannel?.setMethodCallHandler(null)
-        navigationChannel = null
-        notificationChannel?.setMethodCallHandler(null)
-        notificationChannel = null
-        platformChannel = null
+        hostOpen?.setMessageHandler(null)
+        hostOpen = null
+        hostPush?.setMessageHandler(null)
+        hostPush = null
+        hostDestroy?.setMessageHandler(null)
+        hostDestroy = null
+        hostRestore?.setMessageHandler(null)
+        hostRestore = null
+        hostSync?.setMessageHandler(null)
+        hostSync = null
+        hostSendMessage?.setMessageHandler(null)
+        hostSendMessage = null
+        hostRemoveMaskView?.setMessageHandler(null)
+        hostRemoveMaskView = null
+        flutterOpen = null
+        flutterSwitchTop = null
+        flutterRestore = null
+        flutterDestroy = null
+        flutterPush = null
+        flutterReplace = null
+        flutterPop = null
+        flutterRemove = null
+        flutterNotifyPageVisible = null
+        flutterNotifyPageInvisible = null
+        flutterNotifyEnterForeground = null
+        flutterNotifyEnterBackground = null
+        flutterDispatchMessage = null
+        flutterCheckStyle = null
         engine?.destroy()
         engine = null
     }
