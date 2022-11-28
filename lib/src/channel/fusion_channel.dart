@@ -17,27 +17,48 @@ class FusionChannel {
 
   static const _fusionChannel = 'fusion_channel';
 
-  final _hostOpen = const BasicMessageChannel('$_fusionChannel/host/open', StandardMessageCodec());
-  final _hostPush = const BasicMessageChannel('$_fusionChannel/host/push', StandardMessageCodec());
-  final _hostDestroy = const BasicMessageChannel('$_fusionChannel/host/destroy', StandardMessageCodec());
-  final _hostRestore = const BasicMessageChannel('$_fusionChannel/host/restore', StandardMessageCodec());
-  final _hostSync = const BasicMessageChannel('$_fusionChannel/host/sync', StandardMessageCodec());
-  final _hostSendMessage = const BasicMessageChannel('$_fusionChannel/host/sendMessage', StandardMessageCodec());
-  final _hostRemoveMaskView = const BasicMessageChannel('$_fusionChannel/host/removeMaskView', StandardMessageCodec());
-  final _flutterOpen = const BasicMessageChannel('$_fusionChannel/flutter/open', StandardMessageCodec());
-  final _flutterSwitchTop = const BasicMessageChannel('$_fusionChannel/flutter/switchTop', StandardMessageCodec());
-  final _flutterRestore = const BasicMessageChannel('$_fusionChannel/flutter/restore', StandardMessageCodec());
-  final _flutterDestroy = const BasicMessageChannel('$_fusionChannel/flutter/destroy', StandardMessageCodec());
-  final _flutterPush = const BasicMessageChannel('$_fusionChannel/flutter/push', StandardMessageCodec());
-  final _flutterReplace = const BasicMessageChannel('$_fusionChannel/flutter/replace', StandardMessageCodec());
-  final _flutterPop = const BasicMessageChannel('$_fusionChannel/flutter/pop', StandardMessageCodec());
-  final _flutterRemove = const BasicMessageChannel('$_fusionChannel/flutter/remove', StandardMessageCodec());
-  final _flutterNotifyPageVisible = const BasicMessageChannel('$_fusionChannel/flutter/notifyPageVisible', StandardMessageCodec());
-  final _flutterNotifyPageInvisible = const BasicMessageChannel('$_fusionChannel/flutter/notifyPageInvisible', StandardMessageCodec());
-  final _flutterNotifyEnterForeground = const BasicMessageChannel('$_fusionChannel/flutter/notifyEnterForeground', StandardMessageCodec());
-  final _flutterNotifyEnterBackground = const BasicMessageChannel('$_fusionChannel/flutter/notifyEnterBackground', StandardMessageCodec());
-  final _flutterDispatchMessage = const BasicMessageChannel('$_fusionChannel/flutter/dispatchMessage', StandardMessageCodec());
-  final _flutterCheckStyle = const BasicMessageChannel('$_fusionChannel/flutter/checkStyle', StandardMessageCodec());
+  final _hostOpen = const BasicMessageChannel(
+      '$_fusionChannel/host/open', StandardMessageCodec());
+  final _hostPush = const BasicMessageChannel(
+      '$_fusionChannel/host/push', StandardMessageCodec());
+  final _hostDestroy = const BasicMessageChannel(
+      '$_fusionChannel/host/destroy', StandardMessageCodec());
+  final _hostRestore = const BasicMessageChannel(
+      '$_fusionChannel/host/restore', StandardMessageCodec());
+  final _hostSync = const BasicMessageChannel(
+      '$_fusionChannel/host/sync', StandardMessageCodec());
+  final _hostSendMessage = const BasicMessageChannel(
+      '$_fusionChannel/host/sendMessage', StandardMessageCodec());
+  final _hostRemoveMaskView = const BasicMessageChannel(
+      '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
+  final _flutterOpen = const BasicMessageChannel(
+      '$_fusionChannel/flutter/open', StandardMessageCodec());
+  final _flutterSwitchTop = const BasicMessageChannel(
+      '$_fusionChannel/flutter/switchTop', StandardMessageCodec());
+  final _flutterRestore = const BasicMessageChannel(
+      '$_fusionChannel/flutter/restore', StandardMessageCodec());
+  final _flutterDestroy = const BasicMessageChannel(
+      '$_fusionChannel/flutter/destroy', StandardMessageCodec());
+  final _flutterPush = const BasicMessageChannel(
+      '$_fusionChannel/flutter/push', StandardMessageCodec());
+  final _flutterReplace = const BasicMessageChannel(
+      '$_fusionChannel/flutter/replace', StandardMessageCodec());
+  final _flutterPop = const BasicMessageChannel(
+      '$_fusionChannel/flutter/pop', StandardMessageCodec());
+  final _flutterRemove = const BasicMessageChannel(
+      '$_fusionChannel/flutter/remove', StandardMessageCodec());
+  final _flutterNotifyPageVisible = const BasicMessageChannel(
+      '$_fusionChannel/flutter/notifyPageVisible', StandardMessageCodec());
+  final _flutterNotifyPageInvisible = const BasicMessageChannel(
+      '$_fusionChannel/flutter/notifyPageInvisible', StandardMessageCodec());
+  final _flutterNotifyEnterForeground = const BasicMessageChannel(
+      '$_fusionChannel/flutter/notifyEnterForeground', StandardMessageCodec());
+  final _flutterNotifyEnterBackground = const BasicMessageChannel(
+      '$_fusionChannel/flutter/notifyEnterBackground', StandardMessageCodec());
+  final _flutterDispatchMessage = const BasicMessageChannel(
+      '$_fusionChannel/flutter/dispatchMessage', StandardMessageCodec());
+  final _flutterCheckStyle = const BasicMessageChannel(
+      '$_fusionChannel/flutter/checkStyle', StandardMessageCodec());
 
   void register() {
     _flutterOpen.setMessageHandler((message) async {
@@ -164,16 +185,32 @@ class FusionChannel {
     page.containerVisible = false;
   }
 
-  Future sync(String uniqueId, List<FusionPageEntity> pageEntities) {
-    final pages = pageEntities.map((e) => {
-      'uniqueId': e.uniqueId,
-      'name': e.name,
-      'arguments': e.arguments,
-    }).toList();
-    return _hostSync.send({
-      'uniqueId': uniqueId,
-      'pages': pages,
-    });
+  void sync(String uniqueId, List<FusionPageEntity> pageEntities) {
+    final pages = pageEntities
+        .map((e) => {
+              'uniqueId': e.uniqueId,
+              'name': e.name,
+              'arguments': e.arguments,
+            })
+        .toList();
+    if (pages.length == 1) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        final topRoute = FusionOverlayManager.instance.topRoute;
+        if (topRoute is PageRoute) {
+          _hostSync.send({
+            'hostPopGesture': !topRoute.hasScopedWillPopCallback,
+            'uniqueId': uniqueId,
+            'pages': pages,
+          });
+        }
+      });
+    } else {
+      _hostSync.send({
+        'hostPopGesture': false,
+        'uniqueId': uniqueId,
+        'pages': pages,
+      });
+    }
   }
 
   Future open(String name, dynamic arguments) {
@@ -198,8 +235,7 @@ class FusionChannel {
   }
 
   Future<List<Map<String, dynamic>>> restore() async {
-    final result =
-        await _hostRestore.send(null);
+    final result = await _hostRestore.send(null);
     final List<Map<String, dynamic>> list = [];
     (result as List?)?.forEach((element) {
       list.add(element.cast<String, dynamic>());
