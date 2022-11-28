@@ -209,14 +209,14 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
                 return@setMessageHandler
             }
             val uniqueId = message["uniqueId"] as? String
-            val pages = message["pages"] as? List<Map<String, Any?>>
-            if (uniqueId == null || pages == null) {
+            val history = message["history"] as? List<Map<String, Any?>>
+            if (uniqueId == null || history == null) {
                 reply.reply(false)
                 return@setMessageHandler
             }
             FusionStackManager.findContainer(uniqueId)?.history()?.let {
                 it.clear()
-                it.addAll(pages)
+                it.addAll(history)
             }
             reply.reply(true)
         }

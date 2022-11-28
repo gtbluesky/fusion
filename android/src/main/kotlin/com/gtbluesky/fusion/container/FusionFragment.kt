@@ -62,7 +62,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (restoredHistory == null) {
             engineBinding?.open(uniqueId, routeName, routeArguments)
         } else {
-            history.addAll(restoredHistory)
             engineBinding?.restore(uniqueId, restoredHistory)
         }
     }

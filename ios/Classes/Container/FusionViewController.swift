@@ -38,7 +38,6 @@ open class FusionViewController: FlutterViewController {
             self.uniqueId = uniqueId
         }
         if let history = coder.decodeObject(of: classSet, forKey: FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? [Dictionary<String, Any?>] {
-            self.history.append(contentsOf: history)
             engineBinding?.restore(uniqueId, history: history)
         }
         onContainerCreate()

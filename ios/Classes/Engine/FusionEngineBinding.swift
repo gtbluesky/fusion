@@ -105,13 +105,13 @@ internal class FusionEngineBinding: NSObject {
             reply(self.historyList)
         }
         hostSync?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
-            guard let dict = message as? Dictionary<String, Any>, let hostPopGesture = dict["hostPopGesture"] as? Bool, let uniqueId = dict["uniqueId"] as? String, let pages = dict["pages"] as? [Dictionary<String, Any?>] else {
+            guard let dict = message as? Dictionary<String, Any>, let hostPopGesture = dict["hostPopGesture"] as? Bool, let uniqueId = dict["uniqueId"] as? String, let history = dict["history"] as? [Dictionary<String, Any?>] else {
                 reply(false)
                 return
             }
             let container = FusionStackManager.instance.findContainer(uniqueId)
             container?.history.removeAll()
-            container?.history.append(contentsOf: pages)
+            container?.history.append(contentsOf: history)
             if container?.history.count == 1 && hostPopGesture {
                 self.enablePopGesture()
             } else {
@@ -166,7 +166,6 @@ internal class FusionEngineBinding: NSObject {
     }
 
     // internal function
-
     func enablePopGesture() {
         (UIApplication.roofViewController as? FusionPopGestureHandler)?.enablePopGesture()
     }

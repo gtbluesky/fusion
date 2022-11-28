@@ -62,7 +62,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         if (restoredHistory == null) {
             engineBinding?.open(uniqueId, routeName, routeArguments)
         } else {
-            history.addAll(restoredHistory)
             engineBinding?.restore(uniqueId, restoredHistory)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

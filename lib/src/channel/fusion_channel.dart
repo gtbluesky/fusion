@@ -70,12 +70,7 @@ class FusionChannel {
         arguments = Map<String, dynamic>.from(message['arguments']);
       }
       FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        WidgetsBinding.instance?.addPostFrameCallback((_) {
-          // callback of the next frame completes
-          removeMaskView(uniqueId);
-        });
-      });
+      removeMaskView(uniqueId);
       return null;
     });
     _flutterPush.setMessageHandler((message) async {
@@ -123,10 +118,11 @@ class FusionChannel {
       for (var element in history) {
         list.add(element.cast<String, dynamic>());
       }
-      if (list.isNotEmpty) {
-        FusionNavigatorDelegate.instance.restore(uniqueId, list);
+      if (list.isEmpty) {
+        return;
       }
-      return null;
+      FusionNavigatorDelegate.instance.restore(uniqueId, list);
+      removeMaskView(uniqueId);
     });
     _flutterSwitchTop.setMessageHandler((message) async {
       if (message is! Map) return;
@@ -186,21 +182,21 @@ class FusionChannel {
   }
 
   void sync(String uniqueId, List<FusionPageEntity> pageEntities) {
-    final pages = pageEntities
+    final history = pageEntities
         .map((e) => {
               'uniqueId': e.uniqueId,
               'name': e.name,
               'arguments': e.arguments,
             })
         .toList();
-    if (pages.length == 1) {
+    if (history.length == 1) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         final topRoute = FusionOverlayManager.instance.topRoute;
         if (topRoute is PageRoute) {
           _hostSync.send({
             'hostPopGesture': !topRoute.hasScopedWillPopCallback,
             'uniqueId': uniqueId,
-            'pages': pages,
+            'history': history,
           });
         }
       });
@@ -208,7 +204,7 @@ class FusionChannel {
       _hostSync.send({
         'hostPopGesture': false,
         'uniqueId': uniqueId,
-        'pages': pages,
+        'history': history,
       });
     }
   }
@@ -250,9 +246,14 @@ class FusionChannel {
     });
   }
 
-  void removeMaskView(String uniqueId) async {
-    _hostRemoveMaskView.send({
-      'uniqueId': uniqueId,
+  void removeMaskView(String uniqueId) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        // callback of the next frame completes
+        _hostRemoveMaskView.send({
+          'uniqueId': uniqueId,
+        });
+      });
     });
   }
 }

@@ -166,6 +166,7 @@ class FusionNavigatorDelegate {
     _handlePageVisible(pages.last.route, isFirstTime: true);
     /// Insert overlay into the container
     FusionOverlayManager.instance.add(container);
+    FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
   }
 
   /// Hot Restart Restore
