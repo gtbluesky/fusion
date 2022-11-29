@@ -11,7 +11,6 @@ typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);
 
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
-  final TransitionBuilder? builder;
   final String title;
   final GenerateAppTitle? onGenerateTitle;
   final Color? color;
@@ -39,7 +38,6 @@ class FusionApp extends StatefulWidget {
     Map<String, FusionPageCustomFactory>? customRouteMap,
     Key? key,
     this.scaffoldMessengerKey,
-    this.builder,
     this.title = '',
     this.onGenerateTitle,
     this.color,
@@ -98,7 +96,7 @@ class _FusionAppState extends State<FusionApp> {
     return MaterialApp(
       scaffoldMessengerKey: widget.scaffoldMessengerKey,
       home: const FusionHome(),
-      builder: widget.builder,
+      builder: (_, __) => const FusionHome(),
       title: widget.title,
       onGenerateTitle: widget.onGenerateTitle,
       color: widget.color,
