@@ -140,7 +140,7 @@ class _TestPageState extends State<TestPage>
           InkWell(
               child: const Text('push /navigator'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push<String?>('/navigator');
+                final result = await FusionNavigator.instance.push<String?>('/navigator', {'title': '系统导航'});
                 if (kDebugMode) {
                   print('result=$result');
                 }
@@ -151,7 +151,7 @@ class _TestPageState extends State<TestPage>
           InkWell(
               child: const Text('push /willpop'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push<String?>('/willpop');
+                final result = await FusionNavigator.instance.push('/willpop');
                 if (kDebugMode) {
                   print('result=$result');
                 }

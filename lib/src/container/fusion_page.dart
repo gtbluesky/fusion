@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fusion/src/app/fusion_app.dart';
+import 'package:fusion/src/constant/fusion_constant.dart';
 import 'package:fusion/src/container/fusion_container.dart';
 import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/constant/fusion_constant.dart';
 import 'package:fusion/src/page/unknown_page.dart';
 
 // ignore: must_be_immutable
@@ -26,18 +25,38 @@ class FusionPage<T> extends Page<T> {
       : pageEntity = FusionPageEntity(name, arguments),
         super(key: key, name: name, arguments: arguments);
 
-  static FusionPage<T> createPage<T>(
+  static FusionPage<dynamic> createPage(
     String name, [
     Map<String, dynamic>? arguments,
   ]) {
-    final page =
-        FusionPage<T>(key: UniqueKey(), name: name, arguments: arguments);
+    final page = FusionPage(key: UniqueKey(), name: name, arguments: arguments);
     final routeMap = FusionNavigatorDelegate.instance.routeMap;
-    FusionPageFactory? pageFactory = routeMap[name] ?? routeMap[kUnknownRoute];
-    final pageWidget =
-        pageFactory != null ? pageFactory(arguments) : const UnknownPage();
-    /// TODO 支持其他route
-    page._route = FusionPageRoute(page: page, child: pageWidget);
+    var pageFactory = routeMap?[name];
+    if (pageFactory != null) {
+      final pageWidget = pageFactory(arguments);
+      page._route = FusionPageRoute(page: page, child: pageWidget);
+      return page;
+    }
+    final customRouteMap = FusionNavigatorDelegate.instance.customRouteMap;
+    var pageCustomFactory = customRouteMap?[name];
+    if (pageCustomFactory != null) {
+      final pageRoute = pageCustomFactory(page);
+      page._route = pageRoute;
+      return page;
+    }
+    pageFactory = routeMap?[kUnknownRoute];
+    if (pageFactory != null) {
+      final pageWidget = pageFactory(arguments);
+      page._route = FusionPageRoute(page: page, child: pageWidget);
+      return page;
+    }
+    pageCustomFactory = customRouteMap?[kUnknownRoute];
+    if (pageCustomFactory != null) {
+      final pageRoute = pageCustomFactory(page);
+      page._route = pageRoute;
+      return page;
+    }
+    page._route = FusionPageRoute(page: page, child: const UnknownPage());
     return page;
   }
 

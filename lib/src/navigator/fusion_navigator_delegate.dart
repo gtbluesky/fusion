@@ -13,10 +13,12 @@ class FusionNavigatorDelegate {
 
   static FusionNavigatorDelegate get instance => _instance;
 
-  late Map<String, FusionPageFactory> routeMap;
+  Map<String, FusionPageFactory>? routeMap;
+
+  Map<String, FusionPageCustomFactory>? customRouteMap;
 
   bool isFlutterPage(String routeName) {
-    return routeMap.containsKey(routeName);
+    return routeMap?.containsKey(routeName) == true || customRouteMap?.containsKey(routeName) == true;
   }
 
   void open(
@@ -46,13 +48,12 @@ class FusionNavigatorDelegate {
         /// Sync
         FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
       });
-      final page = FusionPage.createPage<T>(routeName, arguments);
-
+      final page = FusionPage.createPage(routeName, arguments);
       /// Page's Visibility Change
       final previousRoute = FusionOverlayManager.instance.topRoute;
       _handlePageInvisible(previousRoute);
       _handlePageVisible(page.route, isFirstTime: true);
-      return container.push(page);
+      return await container.push<dynamic>(page);
     } else {
       /// Notify native's pushNativeRoute
       FusionChannel.instance.push(routeName, arguments);
@@ -73,14 +74,14 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     });
-    final page = FusionPage.createPage<T>(routeName, arguments);
+    final page = FusionPage.createPage(routeName, arguments);
 
     /// Page's Visibility Change
     final oldRoute = topRoute;
     final newRoute = page.route;
     _handlePageInvisible(oldRoute);
     _handlePageVisible(newRoute);
-    return container.replace(page);
+    return await container.replace<dynamic>(page);
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

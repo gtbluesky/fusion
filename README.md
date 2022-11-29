@@ -221,7 +221,7 @@ iOS 侧
 
 ### 3、路由API（FusionNavigator）
 
-open：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API
+open：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API（可连续使用）
 
 push：在当前Flutter容器中将对应路由入栈，Navigator.pushNamed 与之等同
 
@@ -233,12 +233,7 @@ replace：在当前Flutter容器中将栈顶路由替换为对应路由，Naviga
 
 remove：在当前Flutter容器中移除对应路由
 
-路由跳转与关闭等操作既可使用`FusionNavigator`的 API，也可使用`Navigator`中与之对应的API（仅上述提到的部分），另外连续`pop`操作，前一个`pop`需要`await`，即：
-```dart
-await FusionNavigator.instance.pop();
-FusionNavigator.instance.pop();
-```
-
+路由跳转与关闭等操作既可使用`FusionNavigator`的 API，也可使用`Navigator`中与之对应的API（仅上述提到的部分）
 ### 4、Flutter Plugin 注册
 
 框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册

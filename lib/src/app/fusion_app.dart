@@ -7,6 +7,7 @@ import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
+typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);
 
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
@@ -33,8 +34,9 @@ class FusionApp extends StatefulWidget {
   final Map<Type, Action<Intent>>? actions;
   final String? restorationScopeId;
 
-  FusionApp(
-    Map<String, FusionPageFactory> routeMap, {
+  FusionApp({
+    Map<String, FusionPageFactory>? routeMap,
+    Map<String, FusionPageCustomFactory>? customRouteMap,
     Key? key,
     this.scaffoldMessengerKey,
     this.builder,
@@ -62,7 +64,9 @@ class FusionApp extends StatefulWidget {
     Duration transitionDuration = const Duration(milliseconds: 300),
     Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
+    assert(routeMap != null || customRouteMap != null);
     FusionNavigatorDelegate.instance.routeMap = routeMap;
+    FusionNavigatorDelegate.instance.customRouteMap = customRouteMap;
     FusionData.transitionDuration = transitionDuration;
     FusionData.reverseTransitionDuration = reverseTransitionDuration;
   }

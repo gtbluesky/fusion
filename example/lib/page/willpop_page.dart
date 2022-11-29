@@ -65,6 +65,14 @@ class _WillPopPageState extends State<WillPopPage> {
                 child: const Text(
                   'pop',
                 ),
+              ),
+              TextButton(
+                onPressed: () {
+                  FusionNavigator.instance.pop(1);
+                },
+                child: const Text(
+                  'pop 1',
+                ),
               )
             ],
           ),

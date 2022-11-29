@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/background_page.dart';
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FusionApp(
-      routeMap,
+      routeMap: routeMap,
+      customRouteMap: customRouteMap,
       debugShowCheckedModeBanner: false,
       transitionDuration: const Duration(milliseconds: 400),
       reverseTransitionDuration: const Duration(milliseconds: 400),
@@ -36,13 +38,20 @@ class MyApp extends StatelessWidget {
 final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
   '/list': (arguments) => ListPage(arguments: arguments),
-  '/lifecycle': ((arguments) => LifecyclePage(arguments: arguments)),
+  '/lifecycle': (arguments) => LifecyclePage(arguments: arguments),
   '/willpop': ((_) => const WillPopPage()),
-  '/web': ((_) => const WebPage()),
+  '/web': (_) => const WebPage(),
   '/transparent': (arguments) => TransparentPage(arguments: arguments),
-  '/navigator': ((arguments) => NavigatorPage(arguments: arguments,)),
-  '/background': ((arguments) => BackgroundPage(arguments: arguments,)),
+  '/background': (arguments) => BackgroundPage(arguments: arguments),
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
+};
+
+final Map<String, FusionPageCustomFactory> customRouteMap = {
+  '/navigator': (settings) => PageRouteBuilder(
+      opaque: false,
+      settings: settings,
+      pageBuilder: (_, __, ___) => NavigatorPage(
+          arguments: settings.arguments as Map<String, dynamic>?)),
 };
 
 const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =
