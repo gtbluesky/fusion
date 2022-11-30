@@ -17,6 +17,8 @@ class FusionPage<T> extends Page<T> {
 
   Route<T> get route => _route;
 
+  bool _animated = true;
+
   set containerVisible(bool value) => container.isVisible = value;
 
   bool get isVisible => container.isVisible && container.topPage == this;
@@ -28,8 +30,10 @@ class FusionPage<T> extends Page<T> {
   static FusionPage<dynamic> createPage(
     String name, [
     Map<String, dynamic>? arguments,
+    bool animated = true,
   ]) {
     final page = FusionPage(key: UniqueKey(), name: name, arguments: arguments);
+    page._animated = animated;
     final routeMap = FusionNavigatorDelegate.instance.routeMap;
     var pageFactory = routeMap?[name];
     if (pageFactory != null) {
@@ -96,7 +100,7 @@ class FusionPageRoute<T> extends PageRoute<T>
   final Widget child;
 
   @override
-  Duration get transitionDuration => FusionData.transitionDuration;
+  Duration get transitionDuration => ((settings as FusionPage?)?._animated == true) ? FusionData.transitionDuration : const Duration(seconds: 0);
 
   @override
   Duration get reverseTransitionDuration =>

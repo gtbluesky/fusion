@@ -18,7 +18,8 @@ class FusionNavigatorDelegate {
   Map<String, FusionPageCustomFactory>? customRouteMap;
 
   bool isFlutterPage(String routeName) {
-    return routeMap?.containsKey(routeName) == true || customRouteMap?.containsKey(routeName) == true;
+    return routeMap?.containsKey(routeName) == true ||
+        customRouteMap?.containsKey(routeName) == true;
   }
 
   void open(
@@ -29,8 +30,10 @@ class FusionNavigatorDelegate {
     /// Create a container and a page
     FusionPage page = FusionPage.createPage(routeName, arguments);
     FusionContainer container = FusionContainer(uniqueId, page);
+
     /// Insert an overlay into the container
     FusionOverlayManager.instance.add(container);
+
     /// Sync
     FusionChannel.instance.sync(uniqueId, container.pageEntities);
   }
@@ -49,6 +52,7 @@ class FusionNavigatorDelegate {
         FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
       });
       final page = FusionPage.createPage(routeName, arguments);
+
       /// Page's Visibility Change
       final previousRoute = FusionOverlayManager.instance.topRoute;
       _handlePageInvisible(previousRoute);
@@ -74,7 +78,7 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     });
-    final page = FusionPage.createPage(routeName, arguments);
+    final page = FusionPage.createPage(routeName, arguments, false);
 
     /// Page's Visibility Change
     final oldRoute = topRoute;
@@ -161,10 +165,12 @@ class FusionNavigatorDelegate {
       pages.add(page);
     }
     final container = FusionContainer.restore(uniqueId, pages);
+
     /// Page's Visibility Change
     final previousRoute = FusionOverlayManager.instance.topRoute;
     _handlePageInvisible(previousRoute);
     _handlePageVisible(pages.last.route, isFirstTime: true);
+
     /// Insert overlay into the container
     FusionOverlayManager.instance.add(container);
     FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
@@ -198,6 +204,7 @@ class FusionNavigatorDelegate {
       return;
     }
     FusionOverlayManager.instance.restore(containers);
+
     /// Page's Visibility Change
     final page = containers.last.topPage;
     page.containerVisible = true;
