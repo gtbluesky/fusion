@@ -27,8 +27,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(
-              onPressed: () {
+            InkWell(
+              onTap: () {
                 FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
               },
               child: const Text(
@@ -39,8 +39,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
             const SizedBox(
               height: 20,
             ),
-            TextButton(
-              onPressed: () {
+            InkWell(
+              onTap: () {
                 FusionNavigator.instance.pop('pop');
               },
               child: const Text(

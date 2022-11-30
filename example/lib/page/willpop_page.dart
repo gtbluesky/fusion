@@ -25,13 +25,13 @@ class _WillPopPageState extends State<WillPopPage> {
                 title: const Text('提示'),
                 content: const Text('确定要退出吗？'),
                 actions: [
-                  TextButton(
-                      onPressed: () {
+                  InkWell(
+                      onTap: () {
                         Navigator.of(context).pop(false);
                       },
                       child: const Text('取消（拦截）')),
-                  TextButton(
-                      onPressed: () {
+                  InkWell(
+                      onTap: () {
                         Navigator.of(context).pop(true);
                       },
                       child: const Text('确定（不拦截）'))
@@ -50,24 +50,24 @@ class _WillPopPageState extends State<WillPopPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   FusionNavigator.instance.maybePop('maybePop');
                 },
                 child: const Text(
                   'maybePop',
                 ),
               ),
-              TextButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   FusionNavigator.instance.pop('pop');
                 },
                 child: const Text(
                   'pop',
                 ),
               ),
-              TextButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   FusionNavigator.instance.pop(1);
                 },
                 child: const Text(
