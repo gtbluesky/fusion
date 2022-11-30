@@ -1,3 +1,7 @@
+## 3.0.0
+
+* BREAKING CHANGE: Reused engine is supported in all modes.
+
 ## 2.0.7
 
 * Adjust global notification.

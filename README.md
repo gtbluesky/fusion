@@ -25,19 +25,33 @@ Fusion 彻底解决了混合栈框架普遍存在的黑屏、白屏、闪屏等�
 
 Flutter 侧
 
-使用 FusionApp 替换之前使用的 App Widget，并传入自定义的路由表
+使用 FusionApp 替换之前使用的 App Widget，并传入所需路由表，默认路由表和自定义路由表可单独设置也可同时设置。
 
 ```dart
 void main() {
   runApp(FusionApp(
-    routeMap,
+    // 默认路由表
+    routeMap: routeMap,
+    // 自定义路由表
+    customRouteMap: customRouteMap,
   ));
 }
 
-// 路由表
+// 默认路由表，使用默认的 PageRoute
+// 使用统一的路由动画
 final Map<String, FusionPageFactory> routeMap = {
   '/test': (arguments) => TestPage(arguments: arguments),
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
+};
+
+// 自定义路由表，可自定义 PageRoute
+// 比如：某些页面需要特定的路由动画则可使用该路由表
+final Map<String, FusionPageCustomFactory> customRouteMap = {
+  '/mine': (settings) => PageRouteBuilder(
+      opaque: false,
+      settings: settings,
+      pageBuilder: (_, __, ___) => MinePage(
+          arguments: settings.arguments as Map<String, dynamic>?)),
 };
 ```
 P.S: `kUnknownRoute`表示未定义路由
@@ -135,27 +149,13 @@ iOS 通过 `FusionViewController` （或其子类）创建 Flutter 容器，`pus
     // 启用原生手势
     func enablePopGesture() {
         // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
-        let nc = navigationController
-        if nc == nil {
-            return
-        }
-        if nc?.isNavigationBarHidden == false {
-            return
-        }
-        nc?.addPopGesture()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 
     // 关闭原生手势
     func disablePopGesture() {
         // 以下代码仅做演示，不可直接照搬，需根据APP实际情况自行实现
-        let nc = navigationController
-        if nc == nil {
-            return
-        }
-        if nc?.isNavigationBarHidden == false {
-            return
-        }
-        nc?.removePopGesture()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 ```
 
@@ -322,7 +322,6 @@ class CustomViewController : FusionViewController, FusionMessengerHandler {
 P.S.: 与容器相关的方法是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
 
 ### 6、生命周期
-目前仅支持 `页面模式` 下监听 Flutter 页面的生命周期。
 - ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听
