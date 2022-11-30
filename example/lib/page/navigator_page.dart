@@ -27,7 +27,8 @@ class _NavigatorPageState extends State<NavigatorPage>
             InkWell(
                 child: const Text('pushNamed /test'),
                 onTap: () async {
-                  final result = await Navigator.of(context).pushNamed<String?>('/test');
+                  final result =
+                      await Navigator.of(context).pushNamed<String?>('/test');
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -46,7 +47,8 @@ class _NavigatorPageState extends State<NavigatorPage>
             InkWell(
                 child: const Text('replace /list'),
                 onTap: () {
-                  Navigator.of(context).pushReplacementNamed('/list', arguments: {'title': 'replace success'});
+                  Navigator.of(context).pushReplacementNamed('/list',
+                      arguments: {'title': 'replace success'});
                 }),
           ],
         ),

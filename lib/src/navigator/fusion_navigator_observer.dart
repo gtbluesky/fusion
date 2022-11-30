@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fusion/src/container/fusion_overlay.dart';
 
 class FusionNavigatorObserver extends NavigatorObserver {
-
   @override
   void didPush(Route route, Route? previousRoute) {
     FusionOverlayManager.instance.addRoute(route);

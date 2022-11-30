@@ -14,7 +14,8 @@ class FusionOverlayManager {
 
   Route? get topRoute => routes.isNotEmpty ? routes.last : null;
 
-  Route? get nextRoute => routes.length >= 2 ? routes.elementAt(routes.length - 2) : null;
+  Route? get nextRoute =>
+      routes.length >= 2 ? routes.elementAt(routes.length - 2) : null;
 
   void add(FusionContainer container) {
     final entry = FusionOverlayEntry(container);
@@ -107,7 +108,6 @@ class FusionOverlayManager {
   void removeRoute(Route route) {
     routes.remove(route);
   }
-
 }
 
 class FusionOverlayEntry extends OverlayEntry {

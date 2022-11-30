@@ -9,8 +9,10 @@ extension SystemUiOverlayStyleExtension on SystemUiOverlayStyle {
       'statusBarColor': statusBarColor?.value,
       'statusBarBrightness': statusBarBrightness?.toString(),
       'statusBarIconBrightness': statusBarIconBrightness?.toString(),
-      'systemNavigationBarIconBrightness': systemNavigationBarIconBrightness?.toString(),
-      'systemNavigationBarContrastEnforced': systemNavigationBarContrastEnforced,
+      'systemNavigationBarIconBrightness':
+          systemNavigationBarIconBrightness?.toString(),
+      'systemNavigationBarContrastEnforced':
+          systemNavigationBarContrastEnforced,
     };
   }
 }

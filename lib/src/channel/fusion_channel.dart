@@ -113,6 +113,7 @@ class FusionChannel {
       FocusManager.instance.primaryFocus?.unfocus();
       String uniqueId = message['uniqueId'];
       await FusionNavigatorDelegate.instance.destroy(uniqueId);
+      // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.drawFrame();
       return null;
     });
@@ -130,6 +131,7 @@ class FusionChannel {
       }
       FusionNavigatorDelegate.instance.restore(uniqueId, list);
       removeMaskView(uniqueId);
+      return;
     });
     _flutterSwitchTop.setMessageHandler((message) async {
       if (message is! Map) return;
@@ -140,17 +142,21 @@ class FusionChannel {
       if (message is! Map) return;
       String uniqueId = message['uniqueId'];
       _handlePageVisible(uniqueId, isFirstTime: true);
+      return;
     });
     _flutterNotifyPageInvisible.setMessageHandler((message) async {
       if (message is! Map) return;
       String uniqueId = message['uniqueId'];
       _handlePageInvisible(uniqueId);
+      return;
     });
     _flutterNotifyEnterForeground.setMessageHandler((message) async {
       PageLifecycleBinding.instance.dispatchPageForegroundEvent();
+      return;
     });
     _flutterNotifyEnterBackground.setMessageHandler((message) async {
       PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
+      return;
     });
     _flutterDispatchMessage.setMessageHandler((message) async {
       if (message is! Map) return;
@@ -158,8 +164,10 @@ class FusionChannel {
       String name = msg['name'];
       final body = (msg['body'] as Map?)?.cast<String, dynamic>();
       FusionNotificationBinding.instance.dispatchMessage(name, body);
+      return;
     });
     _flutterCheckStyle.setMessageHandler((message) async {
+      // ignore: invalid_use_of_visible_for_testing_member
       return SystemChrome.latestStyle?.toMap();
     });
   }
@@ -197,10 +205,12 @@ class FusionChannel {
             })
         .toList();
     if (history.length == 1) {
+      // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         final topRoute = FusionOverlayManager.instance.topRoute;
         if (topRoute is PageRoute) {
           _hostSync.send({
+            // ignore: invalid_use_of_protected_member
             'hostPopGesture': !topRoute.hasScopedWillPopCallback,
             'uniqueId': uniqueId,
             'history': history,
@@ -254,7 +264,9 @@ class FusionChannel {
   }
 
   void removeMaskView(String uniqueId) {
+    // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         // callback of the next frame completes
         _hostRemoveMaskView.send({

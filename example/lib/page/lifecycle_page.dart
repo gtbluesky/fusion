@@ -30,8 +30,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
               child: const Text('push /normal'),
               onTap: () {
-                FusionNavigator.instance
-                    .push('/normal', {'title': '12121'});
+                FusionNavigator.instance.push('/normal', {'title': '12121'});
               },
             ),
             const SizedBox(
@@ -53,9 +52,8 @@ class _LifecyclePageState extends State<LifecyclePage>
                 child: const Text('push /lifecycle'),
                 onTap: () async {
                   // await FusionNavigator.instance.pop();
-                  final result = await FusionNavigator.instance.push<String?>(
-                      '/lifecycle',
-                      {'title': 'Lifecycle Test'});
+                  final result = await FusionNavigator.instance
+                      .push<String?>('/lifecycle', {'title': 'Lifecycle Test'});
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -66,7 +64,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('open /lifecycle'),
                 onTap: () async {
-                  FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
+                  FusionNavigator.instance
+                      .open('/lifecycle', {'title': 'Open'});
                 }),
             const SizedBox(
               height: 20,
@@ -74,7 +73,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push /willpop'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>('/willpop');
+                  final result =
+                      await FusionNavigator.instance.push<String?>('/willpop');
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -85,7 +85,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push /web'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>('/web');
+                  final result =
+                      await FusionNavigator.instance.push<String?>('/web');
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -104,7 +105,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('replace /list'),
                 onTap: () {
-                  FusionNavigator.instance.replace('/list', {'title': 'replace success'});
+                  FusionNavigator.instance
+                      .replace('/list', {'title': 'replace success'});
                 }),
             const SizedBox(
               height: 20,
@@ -121,9 +123,12 @@ class _LifecyclePageState extends State<LifecyclePage>
                 child: const Text('platform plugin'),
                 onTap: () async {
                   if (Platform.isAndroid) {
-                    SystemChannels.platform.invokeMethod('HapticFeedback.vibrate', 'HapticFeedbackType.mediumImpact');
+                    SystemChannels.platform.invokeMethod(
+                        'HapticFeedback.vibrate',
+                        'HapticFeedbackType.mediumImpact');
                   } else {
-                    SystemChannels.platform.invokeMethod('SystemSound.play', 'SystemSoundType.click');
+                    SystemChannels.platform.invokeMethod(
+                        'SystemSound.play', 'SystemSoundType.click');
                   }
                 }),
             const SizedBox(
@@ -132,7 +137,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('custom channel'),
                 onTap: () async {
-                  const MethodChannel('custom_channel').invokeMethod('getPlatformVersion');
+                  const MethodChannel('custom_channel')
+                      .invokeMethod('getPlatformVersion');
                   // if (kDebugMode) {
                   //   print('result=$result');
                   // }

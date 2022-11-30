@@ -45,6 +45,7 @@ class PageLifecycleBinding {
   }) {
     /// 确保didChangeDependencies后调用生命周期方法
     if (isFirstTime) {
+      // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         try {
           _listeners[route]?.onPageVisible();

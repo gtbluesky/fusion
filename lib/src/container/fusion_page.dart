@@ -100,7 +100,10 @@ class FusionPageRoute<T> extends PageRoute<T>
   final Widget child;
 
   @override
-  Duration get transitionDuration => ((settings as FusionPage?)?._animated == true) ? FusionData.transitionDuration : const Duration(seconds: 0);
+  Duration get transitionDuration =>
+      ((settings as FusionPage?)?._animated == true)
+          ? FusionData.transitionDuration
+          : const Duration(seconds: 0);
 
   @override
   Duration get reverseTransitionDuration =>

@@ -10,7 +10,6 @@ class FusionHome extends StatefulWidget {
 }
 
 class _FusionHomeState extends State<FusionHome> {
-
   @override
   Widget build(BuildContext context) {
     return Overlay(

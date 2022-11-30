@@ -8,7 +8,8 @@ class FusionNotificationListener {
 class FusionNotificationBinding {
   FusionNotificationBinding._();
 
-  static final FusionNotificationBinding _instance = FusionNotificationBinding._();
+  static final FusionNotificationBinding _instance =
+      FusionNotificationBinding._();
 
   static FusionNotificationBinding get instance => _instance;
 
@@ -32,7 +33,8 @@ class FusionNotificationBinding {
     try {
       for (final state in _listeners) {
         state.onReceive(name, body);
-      }} on Exception catch (e) {
+      }
+    } on Exception catch (e) {
       FusionLog.log(e.toString());
     }
   }

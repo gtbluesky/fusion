@@ -74,7 +74,6 @@ class FusionApp extends StatefulWidget {
 }
 
 class _FusionAppState extends State<FusionApp> {
-
   @override
   void initState() {
     super.initState();
@@ -82,7 +81,9 @@ class _FusionAppState extends State<FusionApp> {
     if (!kDebugMode) {
       return;
     }
+
     /// Make sure that the widget in the tree is already mounted.
+    // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       if (FusionState.isRestoring) {
         return;

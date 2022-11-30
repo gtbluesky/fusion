@@ -45,5 +45,6 @@ class FusionNavigator {
     return FusionChannel.instance.sendMessage(name, body);
   }
 
-  NavigatorState? get navigator => FusionOverlayManager.instance.topRoute?.navigator;
+  NavigatorState? get navigator =>
+      FusionOverlayManager.instance.topRoute?.navigator;
 }

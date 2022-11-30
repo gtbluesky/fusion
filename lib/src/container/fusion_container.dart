@@ -5,12 +5,14 @@ import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
 class FusionContainer extends ChangeNotifier {
-  FusionContainer(this.uniqueId, FusionPage page): key = ValueKey<String>(uniqueId) {
+  FusionContainer(this.uniqueId, FusionPage page)
+      : key = ValueKey<String>(uniqueId) {
     page.container = this;
     _pages.add(page);
   }
 
-  FusionContainer.restore(this.uniqueId, List<FusionPage> pages): key = ValueKey<String>(uniqueId) {
+  FusionContainer.restore(this.uniqueId, List<FusionPage> pages)
+      : key = ValueKey<String>(uniqueId) {
     for (final page in pages) {
       page.container = this;
     }
@@ -25,7 +27,8 @@ class FusionContainer extends ChangeNotifier {
 
   List<FusionPage> get pages => List.unmodifiable(_pages);
 
-  List<FusionPageEntity> get pageEntities => _pages.map((e) => e.pageEntity).toList();
+  List<FusionPageEntity> get pageEntities =>
+      _pages.map((e) => e.pageEntity).toList();
 
   FusionPage get topPage => _pages.last;
 
@@ -165,11 +168,11 @@ class NavigatorExtension extends Navigator {
     PopPageCallback? onPopPage,
     List<NavigatorObserver> observers = const <NavigatorObserver>[],
   }) : super(
-    key: key,
-    pages: pages,
-    onPopPage: onPopPage,
-    observers: observers,
-  );
+          key: key,
+          pages: pages,
+          onPopPage: onPopPage,
+          observers: observers,
+        );
 
   @override
   NavigatorState createState() {
@@ -188,14 +191,18 @@ class NavigatorExtensionState extends NavigatorState {
       return FusionNavigatorDelegate.instance.push(routeName, arguments);
     }
     if (arguments is Map) {
-      return FusionNavigatorDelegate.instance.push(routeName, Map<String, dynamic>.from(arguments));
+      return FusionNavigatorDelegate.instance
+          .push(routeName, Map<String, dynamic>.from(arguments));
     } else {
       return FusionNavigatorDelegate.instance.push(routeName);
     }
   }
 
   @override
-  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(String routeName, {TO? result, Object? arguments}) {
+  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(
+      String routeName,
+      {TO? result,
+      Object? arguments}) {
     if (arguments == null) {
       return FusionNavigatorDelegate.instance.replace(routeName);
     }
@@ -203,7 +210,8 @@ class NavigatorExtensionState extends NavigatorState {
       return FusionNavigatorDelegate.instance.replace(routeName, arguments);
     }
     if (arguments is Map) {
-      return FusionNavigatorDelegate.instance.replace(routeName, Map<String, dynamic>.from(arguments));
+      return FusionNavigatorDelegate.instance
+          .replace(routeName, Map<String, dynamic>.from(arguments));
     } else {
       return FusionNavigatorDelegate.instance.replace(routeName);
     }
