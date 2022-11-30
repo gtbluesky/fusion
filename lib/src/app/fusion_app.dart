@@ -95,7 +95,6 @@ class _FusionAppState extends State<FusionApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       scaffoldMessengerKey: widget.scaffoldMessengerKey,
-      home: const FusionHome(),
       builder: (_, __) => const FusionHome(),
       title: widget.title,
       onGenerateTitle: widget.onGenerateTitle,

@@ -22,6 +22,7 @@ internal class FusionEngineBinding: NSObject {
     private var flutterPush: FlutterBasicMessageChannel? = nil
     private var flutterReplace: FlutterBasicMessageChannel? = nil
     private var flutterPop: FlutterBasicMessageChannel? = nil
+    private var flutterMaybePop: FlutterBasicMessageChannel? = nil
     private var flutterRemove: FlutterBasicMessageChannel? = nil
     private var flutterNotifyPageVisible: FlutterBasicMessageChannel? = nil
     private var flutterNotifyPageInvisible: FlutterBasicMessageChannel? = nil
@@ -61,6 +62,7 @@ internal class FusionEngineBinding: NSObject {
         flutterPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/push", binaryMessenger: engine.binaryMessenger)
         flutterReplace = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/replace", binaryMessenger: engine.binaryMessenger)
         flutterPop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/pop", binaryMessenger: engine.binaryMessenger)
+        flutterMaybePop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/maybePop", binaryMessenger: engine.binaryMessenger)
         flutterRemove = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/remove", binaryMessenger: engine.binaryMessenger)
         flutterNotifyPageVisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageVisible", binaryMessenger: engine.binaryMessenger)
         flutterNotifyPageInvisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageInvisible", binaryMessenger: engine.binaryMessenger)
@@ -155,6 +157,12 @@ internal class FusionEngineBinding: NSObject {
 
     func pop(_ result: Any?) {
         flutterPop?.sendMessage([
+            "result": result
+        ])
+    }
+
+    func maybePop(_ result: Any?) {
+        flutterMaybePop?.sendMessage([
             "result": result
         ])
     }
@@ -297,6 +305,7 @@ internal class FusionEngineBinding: NSObject {
         flutterPush = nil
         flutterReplace = nil
         flutterPop = nil
+        flutterMaybePop = nil
         flutterRemove = nil
         flutterNotifyPageVisible = nil
         flutterNotifyPageInvisible = nil

@@ -25,6 +25,7 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
     private var flutterPush: BasicMessageChannel<Any>? = null
     private var flutterReplace: BasicMessageChannel<Any>? = null
     private var flutterPop: BasicMessageChannel<Any>? = null
+    private var flutterMaybePop: BasicMessageChannel<Any>? = null
     private var flutterRemove: BasicMessageChannel<Any>? = null
     private var flutterNotifyPageVisible: BasicMessageChannel<Any>? = null
     private var flutterNotifyPageInvisible: BasicMessageChannel<Any>? = null
@@ -112,6 +113,11 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
             flutterPop = BasicMessageChannel(
                 it.dartExecutor.binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/pop",
+                StandardMessageCodec.INSTANCE
+            )
+            flutterMaybePop = BasicMessageChannel(
+                it.dartExecutor.binaryMessenger,
+                "${FusionConstant.FUSION_CHANNEL}/flutter/maybePop",
                 StandardMessageCodec.INSTANCE
             )
             flutterRemove = BasicMessageChannel(
@@ -269,6 +275,12 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
         ))
     }
 
+    fun maybePop(result: Any?) {
+        flutterMaybePop?.send(mapOf(
+            "result" to result
+        ))
+    }
+
     fun remove(name: String) {
         flutterRemove?.send(mapOf(
             "name" to name,
@@ -401,6 +413,7 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
         flutterPush = null
         flutterReplace = null
         flutterPop = null
+        flutterMaybePop = null
         flutterRemove = null
         flutterNotifyPageVisible = null
         flutterNotifyPageInvisible = null

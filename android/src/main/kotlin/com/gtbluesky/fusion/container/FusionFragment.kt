@@ -315,6 +315,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         platformPlugin?.updateSystemUiOverlays()
     }
 
+    override fun onBackPressed() {
+        engineBinding?.maybePop(null)
+    }
+
     internal class FusionFlutterFragmentBuilder(fragmentClass: Class<out FusionFragment>) :
         NewEngineFragmentBuilder(fragmentClass) {
 

@@ -251,4 +251,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         super.setTaskDescription(taskDescription)
     }
+
+    override fun onBackPressed() {
+        engineBinding?.maybePop(null)
+    }
 }

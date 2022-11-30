@@ -43,6 +43,13 @@ import Foundation
     }
 
     /**
+     * 在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
+     */
+    public func maybePop<T>(_ result: T? = nil) {
+        Fusion.instance.engineBinding?.maybePop(result)
+    }
+
+    /**
      * 在当前Flutter容器中移除对应路由
      * @param name: 路由名
      */

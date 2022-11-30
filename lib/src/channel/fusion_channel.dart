@@ -45,6 +45,8 @@ class FusionChannel {
       '$_fusionChannel/flutter/replace', StandardMessageCodec());
   final _flutterPop = const BasicMessageChannel(
       '$_fusionChannel/flutter/pop', StandardMessageCodec());
+  final _flutterMaybePop = const BasicMessageChannel(
+      '$_fusionChannel/flutter/maybePop', StandardMessageCodec());
   final _flutterRemove = const BasicMessageChannel(
       '$_fusionChannel/flutter/remove', StandardMessageCodec());
   final _flutterNotifyPageVisible = const BasicMessageChannel(
@@ -95,6 +97,11 @@ class FusionChannel {
       if (message is! Map) return;
       final result = message['result'];
       return FusionNavigatorDelegate.instance.pop(result);
+    });
+    _flutterMaybePop.setMessageHandler((message) async {
+      if (message is! Map) return false;
+      final result = message['result'];
+      return FusionNavigatorDelegate.instance.maybePop(result);
     });
     _flutterRemove.setMessageHandler((message) async {
       if (message is! Map) return;
