@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
+import 'package:meta/meta.dart';
 
 class Fusion {
   Fusion._();
@@ -25,6 +26,7 @@ class Fusion {
     FusionChannel.instance.register();
   }
 
+  @internal
   void runJob(Function function) {
     if (_mounted) {
       function.call();
@@ -33,9 +35,10 @@ class Fusion {
     }
   }
 
+  @internal
   void mounted() {
     _mounted = true;
-    while(_jobQueue.isNotEmpty) {
+    while (_jobQueue.isNotEmpty) {
       _jobQueue.removeFirst().call();
     }
   }
