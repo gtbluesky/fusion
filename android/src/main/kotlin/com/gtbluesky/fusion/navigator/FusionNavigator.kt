@@ -1,6 +1,7 @@
 package com.gtbluesky.fusion.navigator
 
 import com.gtbluesky.fusion.Fusion
+import com.gtbluesky.fusion.container.FusionStackManager
 
 object FusionNavigator {
 

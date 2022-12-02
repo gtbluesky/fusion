@@ -1,6 +1,9 @@
 package com.gtbluesky.fusion_example
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.container.FusionFragment
@@ -14,11 +17,12 @@ class ViewPagerSceneActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFirstFragmentBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureStatusBarForFullscreenFlutterExperience()
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
         val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/background", mapOf("backgroundColor" to 0xFF546E7A), backgroundColor = 0xFF546E7A.toInt())
-        val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "f1"))
-        val fragment2 = buildFusionFragment(FusionFragment::class.java,"/list", mapOf("title" to "f2"))
+        val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "flutter1"))
+        val fragment2 = buildFusionFragment(FusionFragment::class.java,"/web", mapOf("title" to "flutter2"))
         adapter.addFragment(fragment0)
         adapter.addFragment(fragment1)
         adapter.addFragment(fragment2)
@@ -58,6 +62,15 @@ class ViewPagerSceneActivity : FragmentActivity() {
                     binding.vp.currentItem = 2
                 }
             }
+        }
+    }
+
+    private fun configureStatusBarForFullscreenFlutterExperience() {
+        window.let {
+            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            it.statusBarColor = Color.TRANSPARENT
+            it.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
     }
 }

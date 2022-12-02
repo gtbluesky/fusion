@@ -16,11 +16,13 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     private var flutterFragment: FusionFragment? = null
 
-    override fun uniqueId() = flutterFragment?.uniqueId
+    override fun uniqueId() = flutterFragment?.uniqueId()
 
     override fun history() = flutterFragment?.history() ?: mutableListOf()
 
     override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
+
+    override fun isAttached() = flutterFragment?.isAttached() ?: false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

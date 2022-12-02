@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -73,6 +74,15 @@ class WebPage extends StatefulWidget {
 class _WebPageState extends State<WebPage> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    FusionNavigator.instance.sendMessage("close");
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:dispose');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -416,16 +426,16 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  // static Future<String> _prepareLocalFile() async {
-  //   final String tmpDir = (await getTemporaryDirectory()).path;
-  //   final File indexFile = File(
-  //       <String>{tmpDir, 'www', 'index.html'}.join(Platform.pathSeparator));
-  //
-  //   await indexFile.create(recursive: true);
-  //   await indexFile.writeAsString(kLocalExamplePage);
-  //
-  //   return indexFile.path;
-  // }
+// static Future<String> _prepareLocalFile() async {
+//   final String tmpDir = (await getTemporaryDirectory()).path;
+//   final File indexFile = File(
+//       <String>{tmpDir, 'www', 'index.html'}.join(Platform.pathSeparator));
+//
+//   await indexFile.create(recursive: true);
+//   await indexFile.writeAsString(kLocalExamplePage);
+//
+//   return indexFile.path;
+// }
 }
 
 class NavigationControls extends StatelessWidget {

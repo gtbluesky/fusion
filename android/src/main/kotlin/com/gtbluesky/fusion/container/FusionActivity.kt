@@ -13,7 +13,6 @@ import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
-import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import io.flutter.embedding.android.FlutterImageView
@@ -40,6 +39,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun history() = history
 
     override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
+
+    override fun isAttached() = isAttached
 
     override fun getRenderMode() = RenderMode.texture
 

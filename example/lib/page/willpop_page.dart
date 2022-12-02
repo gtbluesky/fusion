@@ -58,6 +58,9 @@ class _WillPopPageState extends State<WillPopPage> {
                   'maybePop',
                 ),
               ),
+              const SizedBox(
+                height: 20,
+              ),
               InkWell(
                 onTap: () {
                   FusionNavigator.instance.pop('pop');
@@ -65,6 +68,9 @@ class _WillPopPageState extends State<WillPopPage> {
                 child: const Text(
                   'pop',
                 ),
+              ),
+              const SizedBox(
+                height: 20,
               ),
               InkWell(
                 onTap: () {

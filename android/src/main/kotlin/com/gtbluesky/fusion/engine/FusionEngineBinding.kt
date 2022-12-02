@@ -2,7 +2,7 @@ package com.gtbluesky.fusion.engine
 
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
-import com.gtbluesky.fusion.navigator.FusionStackManager
+import com.gtbluesky.fusion.container.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.common.BasicMessageChannel
@@ -256,50 +256,64 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
 
     // external function
     fun push(name: String, arguments: Map<String, Any>?) {
-        flutterPush?.send(mapOf(
-            "name" to name,
-            "arguments" to arguments
-        ))
+        flutterPush?.send(
+            mapOf(
+                "name" to name,
+                "arguments" to arguments
+            )
+        )
     }
 
     fun replace(name: String, arguments: Map<String, Any>?) {
-        flutterReplace?.send(mapOf(
-            "name" to name,
-            "arguments" to arguments
-        ))
+        flutterReplace?.send(
+            mapOf(
+                "name" to name,
+                "arguments" to arguments
+            )
+        )
     }
 
     fun pop(result: Any?) {
-        flutterPop?.send(mapOf(
-            "result" to result
-        ))
+        flutterPop?.send(
+            mapOf(
+                "result" to result
+            )
+        )
     }
 
     fun maybePop(result: Any?) {
-        flutterMaybePop?.send(mapOf(
-            "result" to result
-        ))
+        flutterMaybePop?.send(
+            mapOf(
+                "result" to result
+            )
+        )
     }
 
     fun remove(name: String) {
-        flutterRemove?.send(mapOf(
-            "name" to name,
-        ))
+        flutterRemove?.send(
+            mapOf(
+                "name" to name,
+            )
+        )
     }
 
     // internal function
     fun open(uniqueId: String, name: String, arguments: Map<String, Any>? = null) {
-        flutterOpen?.send(mapOf(
-            "uniqueId" to uniqueId,
-            "name" to name,
-            "arguments" to arguments
-        ))
+        flutterOpen?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+                "name" to name,
+                "arguments" to arguments
+            )
+        )
     }
 
     fun switchTop(uniqueId: String) {
-        flutterSwitchTop?.send(mapOf(
-            "uniqueId" to uniqueId,
-        ))
+        flutterSwitchTop?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
     /**
@@ -308,10 +322,12 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
      * @param history: container's history
      */
     fun restore(uniqueId: String, history: List<Map<String, Any?>>) {
-        flutterRestore?.send(mapOf(
-            "uniqueId" to uniqueId,
-            "history" to history,
-        ))
+        flutterRestore?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+                "history" to history,
+            )
+        )
     }
 
     /**
@@ -319,21 +335,32 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
      * @param uniqueId: container's uniqueId
      */
     fun destroy(uniqueId: String) {
-        flutterDestroy?.send(mapOf(
-            "uniqueId" to uniqueId,
-        ))
+        if (!FusionStackManager.isAttached()) {
+            engine?.let {
+                it.platformViewsController.attach(null, null, it.dartExecutor)
+            }
+        }
+        flutterDestroy?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
     fun notifyPageVisible(uniqueId: String) {
-        flutterNotifyPageVisible?.send(mapOf(
-            "uniqueId" to uniqueId,
-        ))
+        flutterNotifyPageVisible?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
     fun notifyPageInvisible(uniqueId: String) {
-        flutterNotifyPageInvisible?.send(mapOf(
-            "uniqueId" to uniqueId,
-        ))
+        flutterNotifyPageInvisible?.send(
+            mapOf(
+                "uniqueId" to uniqueId,
+            )
+        )
     }
 
     fun notifyEnterForeground() {

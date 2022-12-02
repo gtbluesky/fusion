@@ -1,8 +1,7 @@
-package com.gtbluesky.fusion.navigator
+package com.gtbluesky.fusion.container
 
 import android.app.Activity
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.notification.FusionNotificationBinding
 import java.lang.ref.WeakReference
 
@@ -45,6 +44,15 @@ internal object FusionStackManager {
                 container.overridePendingTransition(0, 0)
             }
         }
+    }
+
+    fun isAttached(): Boolean {
+        containerStack.forEach {
+            if (it.get()?.isAttached() == true) {
+                return true
+            }
+        }
+        return false
     }
 
     fun notifyEnterForeground() {

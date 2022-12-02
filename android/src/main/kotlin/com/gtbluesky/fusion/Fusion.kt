@@ -6,9 +6,8 @@ import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.UiThread
 import com.gtbluesky.fusion.constant.FusionConstant
-import com.gtbluesky.fusion.container.FusionContainer
 import com.gtbluesky.fusion.engine.FusionEngineBinding
-import com.gtbluesky.fusion.navigator.FusionStackManager
+import com.gtbluesky.fusion.container.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor

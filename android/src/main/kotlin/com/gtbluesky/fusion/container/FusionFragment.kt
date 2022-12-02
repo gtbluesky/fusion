@@ -13,7 +13,6 @@ import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
-import com.gtbluesky.fusion.navigator.FusionStackManager
 import io.flutter.embedding.android.*
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
@@ -28,7 +27,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     private var maskView: View? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
-    internal var uniqueId = "container_${UUID.randomUUID()}"
+    private var uniqueId = "container_${UUID.randomUUID()}"
     private var engineBinding = Fusion.engineBinding
 
     override fun uniqueId() = uniqueId
@@ -36,6 +35,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     override fun history() = history
 
     override fun isTransparent() = transparencyMode.name == TransparencyMode.transparent.name
+
+    override fun isAttached() = isAttached
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,6 +141,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding?.engine?.lifecycleChannel?.appIsResumed()
     }
 
+    override fun onDestroyView() {
+        onContainerDestroy()
+        super.onDestroyView()
+    }
+
     override fun onDetach() {
         super.onDetach()
         if (FusionStackManager.isEmpty()) {
@@ -148,11 +154,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
         engineBinding = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        onContainerDestroy()
     }
 
     private fun onContainerCreate() {

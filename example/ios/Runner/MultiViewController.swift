@@ -13,8 +13,9 @@ class MultiViewController: UITabBarController, FusionPopGestureHandler {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        tabBar.isTranslucent = false
-        addChildVC(childVC: CustomViewController(routeName: "/background", routeArguments: ["backgroundColor": 0xFF546E7A], backgroundColor: 0xFF546E7A), title: "消息")
-        addChildVC(childVC: CustomViewController(routeName: "/lifecycle", routeArguments: ["title": "b"]), title: "我的")
+        addChildVC(childVC: CustomViewController(routeName: "/background", routeArguments: ["backgroundColor": 0xFF546E7A], backgroundColor: 0xFF546E7A), title: "主页")
+        addChildVC(childVC: CustomViewController(routeName: "/lifecycle", routeArguments: ["title": "flutter1"]), title: "消息")
+        addChildVC(childVC: CustomViewController(routeName: "/web", routeArguments: ["title": "flutter2"]), title: "我的")
     }
 
     private func addChildVC(childVC: FusionViewController, title: String) {
