@@ -123,7 +123,7 @@ open class FusionViewController: FlutterViewController {
                 view.addSubview(maskView)
             }
         } else {
-            modalPresentationStyle = .overCurrentContext
+            modalPresentationStyle = .overFullScreen
         }
         FusionStackManager.instance.add(self)
     }
