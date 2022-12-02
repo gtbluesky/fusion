@@ -56,6 +56,22 @@ final Map<String, FusionPageCustomFactory> customRouteMap = {
 ```
 P.S: `kUnknownRoute`表示未定义路由
 
+注意：如果项目使用了 `flutter_screenutil`，需要在 runApp 前调用 `Fusion.instance.install()`，没有使用 `flutter_screenutil`则无须该步骤。
+
+```dart
+void main() {
+  Fusion.instance.install();
+  runApp(FusionApp(
+    // 默认路由表
+    routeMap: routeMap,
+    // 自定义路由表
+    customRouteMap: customRouteMap,
+  ));
+}
+```
+
+
+
 Android 侧
 
 在 Application 中进行初始化，并实现 FusionRouteDelegate 接口

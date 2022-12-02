@@ -44,7 +44,7 @@ class FusionOverlayManager {
   }
 
   void switchTop(String uniqueId) {
-    if (_entryList.last.uniqueId == uniqueId) {
+    if (_entryList.isEmpty || _entryList.last.uniqueId == uniqueId) {
       return;
     }
     final entry = findEntry(uniqueId);

@@ -156,6 +156,7 @@ class FusionNavigatorDelegate {
 
   /// APP Restore
   void restore(String uniqueId, List<Map<String, dynamic>> history) {
+    if (history.isEmpty) return;
     /// Restore the container and pages
     final pages = <FusionPage>[];
     for (final map in history) {

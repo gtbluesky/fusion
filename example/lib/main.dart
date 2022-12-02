@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/background_page.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
@@ -14,6 +15,7 @@ import 'package:fusion_example/page/willpop_page.dart';
 
 void main() {
   print('defaultRouteName=${ui.window.defaultRouteName}');
+  Fusion.instance.install();
   runApp(const MyApp());
 }
 
@@ -22,16 +24,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FusionApp(
-      routeMap: routeMap,
-      customRouteMap: customRouteMap,
-      debugShowCheckedModeBanner: false,
-      transitionDuration: const Duration(milliseconds: 400),
-      reverseTransitionDuration: const Duration(milliseconds: 400),
-      theme: ThemeData(
-          pageTransitionsTheme:
-              const PageTransitionsTheme(builders: _defaultBuilders)),
-    );
+    // return FusionApp(
+    //   routeMap: routeMap,
+    //   customRouteMap: customRouteMap,
+    //   debugShowCheckedModeBanner: false,
+    //   transitionDuration: const Duration(milliseconds: 400),
+    //   reverseTransitionDuration: const Duration(milliseconds: 400),
+    //   theme: ThemeData(
+    //       pageTransitionsTheme:
+    //       const PageTransitionsTheme(builders: _defaultBuilders)),
+    // );
+    return ScreenUtilInit(
+        designSize: const Size(375, 667),
+        minTextAdapt: true,
+        builder: (_, __) => FusionApp(
+              routeMap: routeMap,
+              customRouteMap: customRouteMap,
+              debugShowCheckedModeBanner: false,
+              transitionDuration: const Duration(milliseconds: 400),
+              reverseTransitionDuration: const Duration(milliseconds: 400),
+              theme: ThemeData(
+                  pageTransitionsTheme:
+                      const PageTransitionsTheme(builders: _defaultBuilders)),
+            ),);
   }
 }
 

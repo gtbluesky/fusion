@@ -4,6 +4,7 @@ import 'package:fusion/src/container/fusion_overlay.dart';
 import 'package:fusion/src/container/fusion_page.dart';
 import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
+import 'package:fusion/src/fusion.dart';
 import 'package:fusion/src/lifecycle/page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/notification/fusion_notification.dart';
@@ -64,15 +65,17 @@ class FusionChannel {
 
   void register() {
     _flutterOpen.setMessageHandler((message) async {
-      if (message is! Map) return null;
-      String uniqueId = message['uniqueId'];
-      String name = message['name'];
-      Map<String, dynamic>? arguments;
-      if (message['arguments'] != null) {
-        arguments = Map<String, dynamic>.from(message['arguments']);
-      }
-      FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
-      removeMaskView(uniqueId);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return null;
+        String uniqueId = message['uniqueId'];
+        String name = message['name'];
+        Map<String, dynamic>? arguments;
+        if (message['arguments'] != null) {
+          arguments = Map<String, dynamic>.from(message['arguments']);
+        }
+        FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
+        removeMaskView(uniqueId);
+      });
       return null;
     });
     _flutterPush.setMessageHandler((message) async {
@@ -118,36 +121,45 @@ class FusionChannel {
       return null;
     });
     _flutterRestore.setMessageHandler((message) async {
-      if (message is! Map) return;
-      FusionState.isRestoring = true;
-      String uniqueId = message['uniqueId'];
-      List history = message['history'];
-      final list = <Map<String, dynamic>>[];
-      for (var element in history) {
-        list.add(element.cast<String, dynamic>());
-      }
-      if (list.isEmpty) {
-        return;
-      }
-      FusionNavigatorDelegate.instance.restore(uniqueId, list);
-      removeMaskView(uniqueId);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return;
+        FusionState.isRestoring = true;
+        String uniqueId = message['uniqueId'];
+        List history = message['history'];
+        final list = <Map<String, dynamic>>[];
+        for (var element in history) {
+          list.add(element.cast<String, dynamic>());
+        }
+        if (list.isEmpty) {
+          return;
+        }
+        FusionNavigatorDelegate.instance.restore(uniqueId, list);
+        removeMaskView(uniqueId);
+      });
       return;
     });
     _flutterSwitchTop.setMessageHandler((message) async {
-      if (message is! Map) return;
-      String uniqueId = message['uniqueId'];
-      return FusionOverlayManager.instance.switchTop(uniqueId);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return;
+        String uniqueId = message['uniqueId'];
+        FusionOverlayManager.instance.switchTop(uniqueId);
+      });
+      return null;
     });
     _flutterNotifyPageVisible.setMessageHandler((message) async {
-      if (message is! Map) return;
-      String uniqueId = message['uniqueId'];
-      _handlePageVisible(uniqueId, isFirstTime: true);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return;
+        String uniqueId = message['uniqueId'];
+        _handlePageVisible(uniqueId, isFirstTime: true);
+      });
       return;
     });
     _flutterNotifyPageInvisible.setMessageHandler((message) async {
-      if (message is! Map) return;
-      String uniqueId = message['uniqueId'];
-      _handlePageInvisible(uniqueId);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return;
+        String uniqueId = message['uniqueId'];
+        _handlePageInvisible(uniqueId);
+      });
       return;
     });
     _flutterNotifyEnterForeground.setMessageHandler((message) async {
@@ -159,11 +171,13 @@ class FusionChannel {
       return;
     });
     _flutterDispatchMessage.setMessageHandler((message) async {
-      if (message is! Map) return;
-      final msg = Map<String, dynamic>.from(message);
-      String name = msg['name'];
-      final body = (msg['body'] as Map?)?.cast<String, dynamic>();
-      FusionNotificationBinding.instance.dispatchMessage(name, body);
+      Fusion.instance.runJob(() {
+        if (message is! Map) return;
+        final msg = Map<String, dynamic>.from(message);
+        String name = msg['name'];
+        final body = (msg['body'] as Map?)?.cast<String, dynamic>();
+        FusionNotificationBinding.instance.dispatchMessage(name, body);
+      });
       return;
     });
     _flutterCheckStyle.setMessageHandler((message) async {

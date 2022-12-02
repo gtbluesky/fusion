@@ -21,7 +21,6 @@ class MultiViewController: UITabBarController, FusionPopGestureHandler {
     private func addChildVC(childVC: FusionViewController, title: String) {
         tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.red], for: .highlighted)
         childVC.title = title
-//        let nav = UINavigationController(rootViewController: childVC)
         addChild(childVC)
     }
 

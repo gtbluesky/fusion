@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/src/app/fusion_home.dart';
-import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/data/fusion_state.dart';
+import 'package:fusion/src/fusion.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
@@ -77,15 +77,12 @@ class _FusionAppState extends State<FusionApp> {
   @override
   void initState() {
     super.initState();
-    FusionChannel.instance.register();
-    if (!kDebugMode) {
-      return;
-    }
-
+    Fusion.instance.install();
     /// Make sure that the widget in the tree is already mounted.
     // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      if (FusionState.isRestoring) {
+      Fusion.instance.mounted();
+      if (!kDebugMode || FusionState.isRestoring) {
         return;
       }
       FusionNavigatorDelegate.instance.restoreAfterHotRestart();
