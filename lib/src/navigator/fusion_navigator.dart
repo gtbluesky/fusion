@@ -24,9 +24,12 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.push(routeName, routeArguments);
   }
 
-  Future<T?> replace<T extends Object?>(String routeName,
-      [Map<String, dynamic>? routeArguments]) async {
-    return FusionNavigatorDelegate.instance.replace(routeName, routeArguments);
+  Future<T?> replace<T extends Object?>(
+    String routeName, [
+    Map<String, dynamic>? routeArguments,
+    bool animated = false,
+  ]) async {
+    return FusionNavigatorDelegate.instance.replace(routeName, routeArguments, animated);
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

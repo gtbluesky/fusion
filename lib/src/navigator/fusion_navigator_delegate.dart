@@ -65,8 +65,11 @@ class FusionNavigatorDelegate {
     }
   }
 
-  Future<T?> replace<T extends Object?>(String routeName,
-      [Map<String, dynamic>? arguments]) async {
+  Future<T?> replace<T extends Object?>(
+    String routeName, [
+    Map<String, dynamic>? arguments,
+    bool animated = false,
+  ]) async {
     final topRoute = FusionOverlayManager.instance.topRoute;
     if (topRoute is! PageRoute) {
       return null;
@@ -78,7 +81,7 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     });
-    final page = FusionPage.createPage(routeName, arguments, false);
+    final page = FusionPage.createPage(routeName, arguments, animated);
 
     /// Page's Visibility Change
     final oldRoute = topRoute;
@@ -157,6 +160,7 @@ class FusionNavigatorDelegate {
   /// APP Restore
   void restore(String uniqueId, List<Map<String, dynamic>> history) {
     if (history.isEmpty) return;
+
     /// Restore the container and pages
     final pages = <FusionPage>[];
     for (final map in history) {
