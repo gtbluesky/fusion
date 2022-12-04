@@ -78,6 +78,7 @@ class _FusionAppState extends State<FusionApp> {
   void initState() {
     super.initState();
     Fusion.instance.install();
+
     /// Make sure that the widget in the tree is already mounted.
     // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {

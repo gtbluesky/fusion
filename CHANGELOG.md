@@ -1,3 +1,8 @@
+## 3.0.1
+
+* Fixes memory leak caused by using `PlatformView` on Android.
+* Fixes some known bugs.
+
 ## 3.0.0
 
 * BREAKING CHANGE: Reused engine is supported in all modes.

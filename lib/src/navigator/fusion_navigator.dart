@@ -29,7 +29,8 @@ class FusionNavigator {
     Map<String, dynamic>? routeArguments,
     bool animated = false,
   ]) async {
-    return FusionNavigatorDelegate.instance.replace(routeName, routeArguments, animated);
+    return FusionNavigatorDelegate.instance
+        .replace(routeName, routeArguments, animated);
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

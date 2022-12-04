@@ -35,18 +35,19 @@ class MyApp extends StatelessWidget {
     //       const PageTransitionsTheme(builders: _defaultBuilders)),
     // );
     return ScreenUtilInit(
-        designSize: const Size(375, 667),
-        minTextAdapt: true,
-        builder: (_, __) => FusionApp(
-              routeMap: routeMap,
-              customRouteMap: customRouteMap,
-              debugShowCheckedModeBanner: false,
-              transitionDuration: const Duration(milliseconds: 400),
-              reverseTransitionDuration: const Duration(milliseconds: 400),
-              theme: ThemeData(
-                  pageTransitionsTheme:
-                      const PageTransitionsTheme(builders: _defaultBuilders)),
-            ),);
+      designSize: const Size(375, 667),
+      minTextAdapt: true,
+      builder: (_, __) => FusionApp(
+        routeMap: routeMap,
+        customRouteMap: customRouteMap,
+        debugShowCheckedModeBanner: false,
+        transitionDuration: const Duration(milliseconds: 400),
+        reverseTransitionDuration: const Duration(milliseconds: 400),
+        theme: ThemeData(
+            pageTransitionsTheme:
+                const PageTransitionsTheme(builders: _defaultBuilders)),
+      ),
+    );
   }
 }
 
