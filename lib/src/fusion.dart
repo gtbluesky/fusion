@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
-import 'package:meta/meta.dart';
 
 class Fusion {
   Fusion._();
@@ -15,8 +14,6 @@ class Fusion {
 
   bool _mounted = false;
 
-  final _jobQueue = DoubleLinkedQueue<Function>();
-
   void install() {
     if (_installed) {
       return;
@@ -25,19 +22,27 @@ class Fusion {
     WidgetsFlutterBinding.ensureInitialized();
     FusionChannel.instance.register();
   }
+}
 
-  @internal
+class FusionJobQueue {
+  FusionJobQueue._();
+
+  static final FusionJobQueue _instance = FusionJobQueue._();
+
+  static FusionJobQueue get instance => _instance;
+
+  final _jobQueue = DoubleLinkedQueue<Function>();
+
   void runJob(Function function) {
-    if (_mounted) {
+    if (Fusion.instance._mounted) {
       function.call();
     } else {
       _jobQueue.addLast(function);
     }
   }
 
-  @internal
   void mounted() {
-    _mounted = true;
+    Fusion.instance._mounted = true;
     while (_jobQueue.isNotEmpty) {
       _jobQueue.removeFirst().call();
     }

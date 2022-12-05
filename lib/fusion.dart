@@ -1,6 +1,6 @@
 library fusion;
 
-export 'src/fusion.dart';
+export 'src/fusion.dart' show Fusion;
 export 'src/app/fusion_app.dart';
 export 'src/constant/fusion_constant.dart';
 export 'src/lifecycle/page_lifecycle.dart';

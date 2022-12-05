@@ -82,7 +82,7 @@ class _FusionAppState extends State<FusionApp> {
     /// Make sure that the widget in the tree is already mounted.
     // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Fusion.instance.mounted();
+      FusionJobQueue.instance.mounted();
       if (!kDebugMode || FusionState.isRestoring) {
         return;
       }

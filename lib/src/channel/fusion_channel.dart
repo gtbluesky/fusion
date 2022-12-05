@@ -65,7 +65,7 @@ class FusionChannel {
 
   void register() {
     _flutterOpen.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return null;
         String uniqueId = message['uniqueId'];
         String name = message['name'];
@@ -121,7 +121,7 @@ class FusionChannel {
       return null;
     });
     _flutterRestore.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         FusionState.isRestoring = true;
         String uniqueId = message['uniqueId'];
@@ -139,7 +139,7 @@ class FusionChannel {
       return;
     });
     _flutterSwitchTop.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         String uniqueId = message['uniqueId'];
         FusionOverlayManager.instance.switchTop(uniqueId);
@@ -147,7 +147,7 @@ class FusionChannel {
       return null;
     });
     _flutterNotifyPageVisible.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         String uniqueId = message['uniqueId'];
         _handlePageVisible(uniqueId, isFirstTime: true);
@@ -155,7 +155,7 @@ class FusionChannel {
       return;
     });
     _flutterNotifyPageInvisible.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         String uniqueId = message['uniqueId'];
         _handlePageInvisible(uniqueId);
@@ -171,7 +171,7 @@ class FusionChannel {
       return;
     });
     _flutterDispatchMessage.setMessageHandler((message) async {
-      Fusion.instance.runJob(() {
+      FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         final msg = Map<String, dynamic>.from(message);
         String name = msg['name'];
