@@ -15,6 +15,7 @@ internal class FusionEngineBinding: NSObject {
     private var hostSync: FlutterBasicMessageChannel? = nil
     private var hostSendMessage: FlutterBasicMessageChannel? = nil
     private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
+    private var hostResetPopGesture: FlutterBasicMessageChannel? = nil
     private var flutterOpen: FlutterBasicMessageChannel? = nil
     private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
     private var flutterRestore: FlutterBasicMessageChannel? = nil
@@ -55,6 +56,7 @@ internal class FusionEngineBinding: NSObject {
         hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: engine.binaryMessenger)
         hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: engine.binaryMessenger)
         hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: engine.binaryMessenger)
+        hostResetPopGesture = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/resetPopGesture", binaryMessenger: engine.binaryMessenger)
         flutterOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/open", binaryMessenger: engine.binaryMessenger)
         flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: engine.binaryMessenger)
         flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: engine.binaryMessenger)
@@ -136,6 +138,18 @@ internal class FusionEngineBinding: NSObject {
                 return
             }
             FusionStackManager.instance.findContainer(uniqueId)?.removeMaskView()
+            reply(nil)
+        }
+        hostResetPopGesture?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+            guard let enabled = message as? Bool else {
+                reply(nil)
+                return
+            }
+            if enabled {
+                self.enablePopGesture()
+            } else {
+                self.disablePopGesture()
+            }
             reply(nil)
         }
     }
@@ -298,6 +312,8 @@ internal class FusionEngineBinding: NSObject {
         hostSendMessage = nil
         hostRemoveMaskView?.setMessageHandler(nil)
         hostRemoveMaskView = nil
+        hostResetPopGesture?.setMessageHandler(nil)
+        hostResetPopGesture = nil
         flutterOpen = nil
         flutterSwitchTop = nil
         flutterRestore = nil

@@ -32,6 +32,8 @@ class FusionChannel {
       '$_fusionChannel/host/sendMessage', StandardMessageCodec());
   final _hostRemoveMaskView = const BasicMessageChannel(
       '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
+  final _hostResetPopGesture = const BasicMessageChannel(
+      '$_fusionChannel/host/resetPopGesture', StandardMessageCodec());
   final _flutterOpen = const BasicMessageChannel(
       '$_fusionChannel/flutter/open', StandardMessageCodec());
   final _flutterSwitchTop = const BasicMessageChannel(
@@ -288,5 +290,9 @@ class FusionChannel {
         });
       });
     });
+  }
+
+  void resetPopGesture(bool enabled) {
+    _hostResetPopGesture.send(enabled);
   }
 }

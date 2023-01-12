@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/container/fusion_overlay.dart';
@@ -47,6 +49,22 @@ class FusionNavigator {
 
   void sendMessage(String name, [Map<String, dynamic>? body]) {
     return FusionChannel.instance.sendMessage(name, body);
+  }
+
+  /// only for iOS
+  void enableHostPopGesture() {
+    if (!Platform.isIOS) {
+      return;
+    }
+    FusionChannel.instance.resetPopGesture(true);
+  }
+
+  /// only for iOS
+  void disableHostPopGesture() {
+    if (!Platform.isIOS) {
+      return;
+    }
+    FusionChannel.instance.resetPopGesture(false);
   }
 
   NavigatorState? get navigator =>
