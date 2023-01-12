@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Exposes iOS's pop gesture function in FusionNavigator.
+
 ## 3.0.1
 
 * Fixes memory leak caused by using `PlatformView` on Android.
