@@ -60,12 +60,4 @@ import Foundation
     public func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil) {
         FusionStackManager.instance.sendMessage(name, body: body)
     }
-
-    public func enableHostPopGesture() {
-        Fusion.instance.engineBinding?.enablePopGesture()
-    }
-
-    public func disableHostPopGesture() {
-        Fusion.instance.engineBinding?.disablePopGesture()
-    }
 }
