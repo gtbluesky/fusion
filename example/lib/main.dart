@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/background_page.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       builder: (_, __) => FusionApp(
         routeMap: routeMap,
         customRouteMap: customRouteMap,
+        // builder: EasyLoading.init(),
         debugShowCheckedModeBanner: false,
         transitionDuration: const Duration(milliseconds: 400),
         reverseTransitionDuration: const Duration(milliseconds: 400),

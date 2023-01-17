@@ -1,3 +1,8 @@
+## 3.0.3
+
+* Adds a builder option in FusionApp.
+* Removes iOS's pop gesture function in FusionNavigator.
+
 ## 3.0.2
 
 * Exposes iOS's pop gesture function in FusionNavigator.

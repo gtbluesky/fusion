@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fusion/fusion.dart';
 
 class TestPage extends StatefulWidget {
@@ -231,6 +232,40 @@ class _TestPageState extends State<TestPage>
                 //   print('result=$result');
                 // }
               }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('show toast'),
+              onTap: () {
+                EasyLoading.showToast('This is a toast');
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+            child: const Text('show dialog'),
+            onTap: () {
+              showDialog<bool>(
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: const RoundedRectangleBorder(),
+                      backgroundColor: Colors.red,
+                      elevation: 0,
+                      title: const Text('提示'),
+                      content: const Text('确定要退出吗？'),
+                      actions: [
+                        InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: const Text('关闭')),
+                      ],
+                    );
+                  },
+                  context: context);
+            },
+          ),
           const SizedBox(
             height: 20,
           ),

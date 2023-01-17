@@ -27,3 +27,18 @@ class FusionNavigatorObserver extends NavigatorObserver {
     }
   }
 }
+
+class FusionRootNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    if (route is PageRoute) {
+      return;
+    }
+    FusionOverlayManager.instance.addRoute(route);
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    FusionOverlayManager.instance.removeRoute(route);
+  }
+}

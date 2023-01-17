@@ -5,12 +5,14 @@ import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/fusion.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
+import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
 typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);
 
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
+  final TransitionBuilder? builder;
   final String title;
   final GenerateAppTitle? onGenerateTitle;
   final Color? color;
@@ -38,6 +40,7 @@ class FusionApp extends StatefulWidget {
     Map<String, FusionPageCustomFactory>? customRouteMap,
     Key? key,
     this.scaffoldMessengerKey,
+    this.builder,
     this.title = '',
     this.onGenerateTitle,
     this.color,
@@ -93,8 +96,10 @@ class _FusionAppState extends State<FusionApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [FusionRootNavigatorObserver()],
       scaffoldMessengerKey: widget.scaffoldMessengerKey,
-      builder: (_, __) => const FusionHome(),
+      builder: widget.builder,
+      home: const FusionHome(),
       title: widget.title,
       onGenerateTitle: widget.onGenerateTitle,
       color: widget.color,
