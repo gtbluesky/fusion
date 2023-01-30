@@ -226,23 +226,23 @@ class _TestPageState extends State<TestPage>
           InkWell(
               child: const Text('custom channel'),
               onTap: () async {
-                const MethodChannel('custom_channel')
-                    .invokeMethod('getPlatformVersion');
-                // if (kDebugMode) {
-                //   print('result=$result');
-                // }
+                final result = await const MethodChannel('custom_channel')
+                    .invokeMethod('custom channel');
+                if (kDebugMode) {
+                  print('result=$result');
+                }
               }),
           const SizedBox(
             height: 20,
           ),
-          InkWell(
-              child: const Text('show toast'),
-              onTap: () {
-                EasyLoading.showToast('This is a toast');
-              }),
-          const SizedBox(
-            height: 20,
-          ),
+          // InkWell(
+          //     child: const Text('show toast'),
+          //     onTap: () {
+          //       EasyLoading.showToast('This is a toast');
+          //     }),
+          // const SizedBox(
+          //   height: 20,
+          // ),
           InkWell(
             child: const Text('show dialog'),
             onTap: () {

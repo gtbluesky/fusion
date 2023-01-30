@@ -137,11 +137,11 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('custom channel'),
                 onTap: () async {
-                  const MethodChannel('custom_channel')
-                      .invokeMethod('getPlatformVersion');
-                  // if (kDebugMode) {
-                  //   print('result=$result');
-                  // }
+                  final result = await const MethodChannel('custom_channel')
+                      .invokeMethod('custom channel');
+                  if (kDebugMode) {
+                    print('result=$result');
+                  }
                 }),
             const SizedBox(
               height: 20,
