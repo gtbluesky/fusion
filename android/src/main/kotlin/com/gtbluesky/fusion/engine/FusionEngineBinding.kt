@@ -5,6 +5,7 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionStackManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
+import io.flutter.embedding.engine.systemchannels.PlatformViewsChannel
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import java.util.*
@@ -337,7 +338,18 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
     fun destroy(uniqueId: String) {
         if (!FusionStackManager.isAttached()) {
             engine?.let {
-                it.platformViewsController.attach(null, null, it.dartExecutor)
+                try {
+                    val platformViewsChannelField = it.platformViewsController.javaClass.getDeclaredField("platformViewsChannel")
+                    platformViewsChannelField.isAccessible = true
+                    val platformViewsChannel = PlatformViewsChannel(it.dartExecutor)
+                    platformViewsChannelField.set(it.platformViewsController, platformViewsChannel)
+                    val channelHandlerField = it.platformViewsController.javaClass.getDeclaredField("channelHandler")
+                    channelHandlerField.isAccessible = true
+                    val channelHandler = channelHandlerField.get(it.platformViewsController) as? PlatformViewsChannel.PlatformViewsHandler
+                    platformViewsChannel.setPlatformViewsHandler(channelHandler)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
         flutterDestroy?.send(
