@@ -5,6 +5,7 @@
 //  Created by gtbluesky on 2022/3/10.
 //
 
+import Flutter
 import Foundation
 
 open class FusionViewController: FlutterViewController {

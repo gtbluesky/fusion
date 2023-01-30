@@ -5,7 +5,7 @@
 //  Created by gtbluesky on 2022/3/10.
 //
 
-import Foundation
+import Flutter
 import UIKit
 
 public class Fusion: NSObject {

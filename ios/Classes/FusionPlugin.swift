@@ -1,11 +1,11 @@
 import Flutter
 import UIKit
 
-public class SwiftFusionPlugin: NSObject, FlutterPlugin {
+public class FusionPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fusion", binaryMessenger: registrar.messenger())
-        let instance = SwiftFusionPlugin()
+        let instance = FusionPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
