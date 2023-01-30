@@ -10,6 +10,7 @@ class FusionNavigator {
 
   static FusionNavigator get instance => _instance;
 
+  /// Open a new container and push a new flutter page on the route stack.
   Future open(
     String routeName, [
     Map<String, dynamic>? routeArguments,
@@ -17,6 +18,7 @@ class FusionNavigator {
     return FusionChannel.instance.open(routeName, routeArguments);
   }
 
+  /// Push a new flutter page in the current container.
   Future<T?> push<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArguments,
@@ -24,6 +26,7 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.push(routeName, routeArguments);
   }
 
+  /// Replace a designated flutter page with a new flutter page in the current container.
   Future<T?> replace<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArguments,
@@ -33,18 +36,23 @@ class FusionNavigator {
         .replace(routeName, routeArguments, animated);
   }
 
+  /// Pop in the current container.
   Future<void> pop<T extends Object?>([T? result]) async {
     return FusionNavigatorDelegate.instance.pop(result);
   }
 
+  /// Pop in the current container.
+  /// Can be used with [WillPopScope].
   Future<bool> maybePop<T extends Object?>([T? result]) async {
     return FusionNavigatorDelegate.instance.maybePop(result);
   }
 
+  /// Remove a designated flutter page in all containers.
   Future<void> remove(String routeName) async {
     return FusionNavigatorDelegate.instance.remove(routeName);
   }
 
+  /// Send a message to flutter side and native side.
   void sendMessage(String name, [Map<String, dynamic>? body]) {
     return FusionChannel.instance.sendMessage(name, body);
   }

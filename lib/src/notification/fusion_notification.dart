@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusion/src/log/fusion_log.dart';
 
 class FusionNotificationListener {
+  /// Called when messages are received.
   void onReceive(String name, Map<String, dynamic>? body) {}
 }
 
@@ -15,6 +16,7 @@ class FusionNotificationBinding {
 
   final _listeners = <FusionNotificationListener>{};
 
+  /// Register the notification listener.
   void register(FusionNotificationListener listener) {
     if (listener is! State) {
       return;
@@ -22,6 +24,7 @@ class FusionNotificationBinding {
     _listeners.add(listener);
   }
 
+  /// Unregister the notification listener.
   void unregister(FusionNotificationListener listener) {
     if (listener is! State) {
       return;

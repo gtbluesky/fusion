@@ -14,6 +14,7 @@ class Fusion {
 
   bool _mounted = false;
 
+  /// If use `flutter_screenutil`, must call this method before runApp.
   void install() {
     if (_installed) {
       return;

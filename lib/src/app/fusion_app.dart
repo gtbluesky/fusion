@@ -10,6 +10,7 @@ import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
 typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);
 
+/// Default App Widget instead of MaterialApp.
 class FusionApp extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
   final TransitionBuilder? builder;

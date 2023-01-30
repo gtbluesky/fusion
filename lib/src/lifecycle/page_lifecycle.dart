@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:fusion/src/log/fusion_log.dart';
 
 class PageLifecycleListener {
+  /// Called when the flutter page is visible.
   void onPageVisible() {}
 
+  /// Called when the flutter page is invisible.
   void onPageInvisible() {}
 
+  /// Called when the app switches from the background to the foreground.
   void onForeground() {}
 
+  /// Called when the app switches from the foreground to the background.
   void onBackground() {}
 }
 
@@ -20,6 +24,7 @@ class PageLifecycleBinding {
 
   final _listeners = <Route<dynamic>, PageLifecycleListener>{};
 
+  /// Register the page's lifecycle listener.
   void register(PageLifecycleListener listener) {
     if (listener is! State) {
       return;
@@ -32,6 +37,7 @@ class PageLifecycleBinding {
     _listeners[route] = listener;
   }
 
+  /// Unregister the page's lifecycle listener.
   void unregister(PageLifecycleListener listener) {
     if (listener is! State) {
       return;
