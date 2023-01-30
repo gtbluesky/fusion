@@ -1,3 +1,8 @@
+## 3.0.4
+
+* Fixes a compilation error on Flutter 3.0+.
+* Removes all objective-c codes.
+
 ## 3.0.3
 
 * Adds a builder option in FusionApp.
