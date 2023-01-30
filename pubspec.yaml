@@ -1,7 +1,9 @@
 name: fusion
 description: A Flutter plugin that manages hybrid stack on Android and iOS.
 version: 3.0.4
-homepage: https://github.com/gtbluesky/fusion
+homepage: https://github.com/gtbluesky
+#repository: https://github.com/gtbluesky/fusion
+issue_tracker: https://github.com/gtbluesky/fusion_issue_tracker/issues
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -15,6 +17,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+#  pana: ^0.21.25
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
