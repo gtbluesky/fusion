@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/container/fusion_overlay.dart';
