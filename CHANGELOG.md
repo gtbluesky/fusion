@@ -1,3 +1,7 @@
+## 3.0.6
+
+* Adjust display effect when view's size has changed on iOS side.
+
 ## 3.0.5
 
 * Dialog can use `Navigator.pop` to dismiss.

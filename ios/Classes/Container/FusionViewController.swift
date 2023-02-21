@@ -81,7 +81,8 @@ open class FusionViewController: FlutterViewController {
             NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
         }
         super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        viewDidLayoutSubviews()
     }
 
     open override func viewDidAppear(_ animated: Bool) {
