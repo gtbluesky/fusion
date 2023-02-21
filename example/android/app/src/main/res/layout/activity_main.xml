@@ -36,6 +36,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="ViewPager场景"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tv_flutter_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Tab场景"
                 android:textSize="18sp"/>
 
             <TextView

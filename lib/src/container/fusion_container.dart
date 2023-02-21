@@ -219,8 +219,11 @@ class NavigatorExtensionState extends NavigatorState {
 
   @override
   void pop<T extends Object?>([T? result]) {
-    if (FusionOverlayManager.instance.topRoute is PageRoute) {
+    final topRoute = FusionOverlayManager.instance.topRoute;
+    if (topRoute is PageRoute) {
       FusionNavigatorDelegate.instance.pop(result);
+    } else if (topRoute is PopupRoute && this != topRoute.navigator) {
+      topRoute.navigator?.pop(result);
     } else {
       super.pop(result);
     }

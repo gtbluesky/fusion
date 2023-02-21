@@ -1,3 +1,7 @@
+## 3.0.5
+
+* Dialog can use `Navigator.pop` to dismiss.
+
 ## 3.0.4
 
 * Fixes a compilation error on Flutter 3.0+.

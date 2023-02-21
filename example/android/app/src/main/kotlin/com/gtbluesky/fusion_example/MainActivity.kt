@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
         activityMainBinding.tvFlutterViewpager.setOnClickListener {
             startActivity(Intent(this, ViewPagerSceneActivity::class.java))
         }
+        activityMainBinding.tvFlutterTab.setOnClickListener {
+            startActivity(Intent(this, TabSceneActivity::class.java))
+        }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
             if (!hasOpened) {
                 hasOpened = true
