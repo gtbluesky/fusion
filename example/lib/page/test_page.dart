@@ -121,6 +121,14 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
+              child: const Text('push /refresh'),
+              onTap: () async {
+                FusionNavigator.instance.push('/refresh');
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
               child: const Text('open /lifecycle'),
               onTap: () async {
                 FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});

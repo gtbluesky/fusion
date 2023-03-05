@@ -8,6 +8,7 @@ import 'package:fusion_example/page/background_page.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
 import 'package:fusion_example/page/navigator_page.dart';
+import 'package:fusion_example/page/refresh_page.dart';
 import 'package:fusion_example/page/test_page.dart';
 import 'package:fusion_example/page/transparent_page.dart';
 import 'package:fusion_example/page/unknown_page.dart';
@@ -61,6 +62,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/web': (_) => const WebPage(),
   '/transparent': (arguments) => TransparentPage(arguments: arguments),
   '/background': (arguments) => BackgroundPage(arguments: arguments),
+  '/refresh': (_) => const RefreshPage(),
   kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
 };
 

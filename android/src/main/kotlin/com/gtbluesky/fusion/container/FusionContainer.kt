@@ -7,9 +7,4 @@ internal interface FusionContainer {
     fun isAttached(): Boolean
     fun detachFromEngine()
     fun removeMaskView()
-    /**
-     * Give the host application a chance to take control of the app lifecycle events.
-     * from 3.0
-     */
-    fun shouldDispatchAppLifecycleState(): Boolean
 }

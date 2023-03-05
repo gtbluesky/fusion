@@ -32,6 +32,7 @@ dependencies:
   webview_flutter: ^3.0.4
   flutter_screenutil: ^5.6.0
   flutter_easyloading: ^3.0.5
+  easy_refresh: ^3.3.1
 
 dev_dependencies:
   flutter_test:

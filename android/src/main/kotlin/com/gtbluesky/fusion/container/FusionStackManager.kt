@@ -8,7 +8,11 @@ import java.lang.ref.WeakReference
 internal object FusionStackManager {
     val containerStack = mutableListOf<WeakReference<FusionContainer>>()
 
+    var visibleContainerCount = 0
+
     fun isEmpty() = containerStack.isEmpty()
+
+    fun isContainerVisible() = visibleContainerCount > 0
 
     fun add(container: FusionContainer) {
         remove(container)
@@ -56,7 +60,7 @@ internal object FusionStackManager {
     }
 
     fun notifyEnterForeground() {
-        if (containerStack.isNotEmpty()) {
+        if (isContainerVisible()) {
             Fusion.engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
         Fusion.engineBinding?.notifyEnterForeground()

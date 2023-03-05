@@ -1,3 +1,7 @@
+## 3.0.7
+
+* Adjust the strategy of Flutter's frame scheduling.
+
 ## 3.0.6
 
 * Adjust display effect when view's size has changed on iOS side.

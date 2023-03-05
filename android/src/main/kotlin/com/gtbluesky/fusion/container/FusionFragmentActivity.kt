@@ -78,6 +78,4 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
     override fun detachFromEngine() {
         flutterFragment?.detachFromEngine()
     }
-
-    override fun shouldDispatchAppLifecycleState() = false
 }

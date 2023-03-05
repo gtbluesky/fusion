@@ -91,21 +91,25 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun onPause() {
         super.onPause()
         onContainerInvisible()
-        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        if (FusionStackManager.isContainerVisible()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        if (FusionStackManager.isContainerVisible()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
     }
 
     override fun onDestroy() {
         onContainerDestroy()
         super.onDestroy()
-        if (FusionStackManager.isEmpty()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsPaused()
-        } else {
+        if (FusionStackManager.isContainerVisible()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        } else {
+            engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }
         engineBinding = null
     }
@@ -136,10 +140,12 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding?.switchTop(uniqueId)
         engineBinding?.notifyPageVisible(uniqueId)
         performAttach()
+        ++FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerInvisible() {
         engineBinding?.notifyPageInvisible(uniqueId)
+        --FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerDestroy() {
@@ -162,8 +168,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     }
 
     override fun shouldAttachEngineToActivity() = false
-
-    override fun shouldDispatchAppLifecycleState() = false
 
     private fun performAttach() {
         if (isAttached) return

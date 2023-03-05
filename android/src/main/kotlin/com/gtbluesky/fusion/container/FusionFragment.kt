@@ -29,6 +29,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
     private var engineBinding = Fusion.engineBinding
+    private var isContainerVisible = false
 
     override fun uniqueId() = uniqueId
 
@@ -132,13 +133,19 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onPause() {
         super.onPause()
-        onContainerInvisible()
-        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        if (isContainerVisible) {
+            onContainerInvisible()
+        }
+        if (FusionStackManager.isContainerVisible()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        if (FusionStackManager.isContainerVisible()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
     }
 
     override fun onDestroyView() {
@@ -148,10 +155,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onDetach() {
         super.onDetach()
-        if (FusionStackManager.isEmpty()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsPaused()
-        } else {
+        if (FusionStackManager.isContainerVisible()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        } else {
+            engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }
         engineBinding = null
     }
@@ -176,6 +183,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun onContainerVisible() {
+        isContainerVisible = true
         val top = FusionStackManager.getTopContainer()
         if (activity is FusionFragmentActivity) {
             if (top != activity) {
@@ -195,10 +203,13 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding?.switchTop(uniqueId)
         engineBinding?.notifyPageVisible(uniqueId)
         performAttach()
+        ++FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerInvisible() {
+        isContainerVisible = false
         engineBinding?.notifyPageInvisible(uniqueId)
+        --FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerDestroy() {
@@ -225,8 +236,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     override fun shouldAttachEngineToActivity() = false
-
-    override fun shouldDispatchAppLifecycleState() = false
 
     @Suppress("UNCHECKED_CAST")
     private fun performAttach() {
