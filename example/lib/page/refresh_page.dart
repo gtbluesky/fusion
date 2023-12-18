@@ -1,5 +1,6 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:fusion/fusion.dart';
 
 class RefreshPage extends StatefulWidget {
   const RefreshPage({Key? key}) : super(key: key);
@@ -61,13 +62,22 @@ class _RefreshPageState extends State<RefreshPage> {
         },
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return Card(
-              child: Container(
-                alignment: Alignment.center,
-                height: 80,
-                child: Text('${index + 1}'),
-              ),
-            );
+            if (index == 0) {
+              return InkWell(
+                child: const Text('push /normal'),
+                onTap: () {
+                  FusionNavigator.instance.push('/normal', {'title': '12121'});
+                },
+              );
+            } else {
+              return Card(
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 80,
+                  child: Text('${index + 1}'),
+                ),
+              );
+            }
           },
           itemCount: _count,
         ),
