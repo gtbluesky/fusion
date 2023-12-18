@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
@@ -192,10 +191,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         releaseChannel()
         // Detach rendering pipeline.
         flutterView?.detachFromFlutterEngine()
+        // Fixed since 3.0 stable
         flutterView?.forEach {
             if (it is FlutterImageView) {
                 flutterView?.removeView(it)
-                return
             }
         }
     }
@@ -229,7 +228,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     private fun configurePlatformChannel() {
         if (platformPlugin != null) return
         val platformChannel = engineBinding?.engine?.platformChannel ?: return
-        platformPlugin = PlatformPlugin(this, platformChannel)
+        platformPlugin = PlatformPlugin(this, platformChannel, this)
     }
 
     private fun releasePlatformChannel() {

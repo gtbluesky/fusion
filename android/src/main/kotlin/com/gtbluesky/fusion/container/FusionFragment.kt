@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
-import androidx.core.view.forEach
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
@@ -29,7 +28,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
     private var engineBinding = Fusion.engineBinding
-    private var isContainerVisible = false
 
     override fun uniqueId() = uniqueId
 
@@ -95,6 +93,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     /**
      * Fragment Hide & Show 时调用
+     * 首个Fragment显示时不调用
      */
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -123,7 +122,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onResume() {
         super.onResume()
-        if (!isHidden) {
+        if (!isHidden && userVisibleHint) {
             onContainerVisible()
         }
         engineBinding?.latestStyle { systemChromeStyle ->
@@ -133,7 +132,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onPause() {
         super.onPause()
-        if (isContainerVisible) {
+        if (!isHidden && userVisibleHint) {
             onContainerInvisible()
         }
         if (FusionStackManager.isContainerVisible()) {
@@ -183,7 +182,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun onContainerVisible() {
-        isContainerVisible = true
         val top = FusionStackManager.getTopContainer()
         if (activity is FusionFragmentActivity) {
             if (top != activity) {
@@ -207,7 +205,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun onContainerInvisible() {
-        isContainerVisible = false
         engineBinding?.notifyPageInvisible(uniqueId)
         --FusionStackManager.visibleContainerCount
     }
@@ -269,10 +266,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         releaseChannel()
         // Detach rendering pipeline.
         flutterView?.detachFromFlutterEngine()
+        // Fixed since 3.0 stable
         flutterView?.forEach {
             if (it is FlutterImageView) {
                 flutterView?.removeView(it)
-                return
             }
         }
     }
@@ -306,7 +303,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     private fun configurePlatformChannel() {
         if (platformPlugin != null) return
         val platformChannel = engineBinding?.engine?.platformChannel ?: return
-        platformPlugin = activity?.let { PlatformPlugin(it, platformChannel) } ?: return
+        platformPlugin = activity?.let { PlatformPlugin(it, platformChannel, this) } ?: return
     }
 
     private fun releasePlatformChannel() {

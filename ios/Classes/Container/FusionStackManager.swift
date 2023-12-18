@@ -27,7 +27,7 @@ internal class FusionStackManager {
 
     func getTopContainer() -> FusionViewController? {
         if containerStack.isEmpty {
-            return  nil
+            return nil
         }
         return containerStack.last?.value
     }

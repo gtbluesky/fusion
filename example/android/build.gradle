@@ -1,8 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.5.30'
+    ext.kotlin_version = '1.7.10'
     repositories {
-        maven{url "https://maven.aliyun.com/repository/public"}
-        maven{url "https://maven.aliyun.com/repository/google"}
         google()
         mavenCentral()
     }
@@ -15,8 +13,6 @@ buildscript {
 
 allprojects {
     repositories {
-        maven{url "https://maven.aliyun.com/repository/public"}
-        maven{url "https://maven.aliyun.com/repository/google"}
         google()
         mavenCentral()
     }
@@ -30,6 +26,6 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

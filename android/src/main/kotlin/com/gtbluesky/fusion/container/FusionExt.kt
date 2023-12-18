@@ -81,3 +81,10 @@ fun FusionFragment.findFlutterFragmentClass(): Class<FlutterFragment> {
     }
     return clz
 }
+
+/** Performs the given action on each view in this view group. */
+inline fun ViewGroup.forEach(action: (view: View) -> Unit) {
+    for (index in 0 until childCount) {
+        action(getChildAt(index))
+    }
+}
