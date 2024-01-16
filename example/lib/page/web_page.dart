@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -34,7 +35,7 @@ class _WebPageState extends State<WebPage> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('http://192.168.56.41:8080'));
+      ..loadRequest(Uri.parse('https://bilibili.com'));
   }
 
   @override
@@ -43,5 +44,13 @@ class _WebPageState extends State<WebPage> {
       appBar: AppBar(title: const Text('Flutter Simple Example')),
       body: WebViewWidget(controller: controller),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:dispose');
+    }
   }
 }
