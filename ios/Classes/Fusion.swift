@@ -32,6 +32,11 @@ public class Fusion: NSObject {
         engineBinding?.attach()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        let fvc = FlutterViewController(engine: defaultEngine!, nibName: nil, bundle: nil)
+        fvc.beginAppearanceTransition(true, animated: false)
+        fvc.endAppearanceTransition()
+        fvc.beginAppearanceTransition(false, animated: false)
+        fvc.endAppearanceTransition()
     }
 
     @objc public func uninstall() {

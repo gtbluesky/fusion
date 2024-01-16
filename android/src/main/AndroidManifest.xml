@@ -3,6 +3,15 @@
 
     <application>
         <activity
+            android:name=".container.FusionWarmUpActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:theme="@style/FusionTransparentTheme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".container.FusionActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="false"

@@ -2,12 +2,14 @@ package com.gtbluesky.fusion
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.UiThread
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.container.FusionWarmUpActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -44,6 +46,7 @@ object Fusion {
         engineBinding?.attach()
         lifecycleCallback = FusionLifecycleCallbacks()
         context.registerActivityLifecycleCallbacks(lifecycleCallback)
+//        context.startActivity(Intent(context, FusionWarmUpActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     @UiThread
