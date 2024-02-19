@@ -1,0 +1,109 @@
+import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine'
+import FlutterEngineGroup from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngineGroup'
+import { Options } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngineGroup'
+import FusionEngineBinding from './engine/FusionEngineBinding'
+import FusionRouteDelegate from './FusionRouteDelegate'
+import FusionConstant from './constant/FusionConstant'
+import { DartEntrypoint } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/dart/DartExecutor'
+import AbilityLifecycleCallback from '@ohos.app.ability.AbilityLifecycleCallback'
+import UIAbility from '@ohos.app.ability.UIAbility'
+import FlutterManager from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/FlutterManager'
+import window from '@ohos.window'
+
+export default class Fusion {
+  private static _instance = new Fusion()
+  private _engineGroup: FlutterEngineGroup | null = null
+
+  get engineGroup(): FlutterEngineGroup | null {
+    return this._engineGroup
+  }
+
+  private _defaultEngine: FlutterEngine | null = null
+
+  get defaultEngine(): FlutterEngine | null {
+    return this._defaultEngine
+  }
+
+  private _engineBinding: FusionEngineBinding | null = null
+
+  get engineBinding(): FusionEngineBinding | null {
+    return this._engineBinding
+  }
+
+  private _delegate: FusionRouteDelegate | null = null
+
+  get delegate(): FusionRouteDelegate | null {
+    return this._delegate
+  }
+
+  private context: Context | null = null
+  private lifecycleCallback: AbilityLifecycleCallback | null = null
+  private isRunning = false
+  private callbackId = -1
+
+  static get instance(): Fusion {
+    return Fusion._instance
+  }
+
+  private constructor() {
+  }
+
+  public async install(context: Context, delegate: FusionRouteDelegate): Promise<void> {
+    if (this.isRunning) {
+      return
+    }
+    this.isRunning = true
+    this.context = context
+    this._delegate = delegate
+    this._engineGroup = new FlutterEngineGroup()
+    this._defaultEngine = await this.createAndRunEngine()
+    this._engineBinding = new FusionEngineBinding(this._defaultEngine)
+    this._engineBinding?.attach()
+    this.lifecycleCallback = new FusionLifecycleCallback()
+    this.callbackId = this.context.getApplicationContext().on('abilityLifecycle', this.lifecycleCallback)
+  }
+
+  private async createAndRunEngine(initialRoute: string = FusionConstant.INITIAL_ROUTE): Promise<FlutterEngine | null> {
+    let option = new Options(this.context!)
+    option.setDartEntrypoint(DartEntrypoint.createDefault())
+    option.setInitialRoute(initialRoute)
+    // GeneratedPluginRegister里会通过getPlugins()来注册插件
+    // 而getPlugins()需要自行在Ability里实现，即自行调用GeneratedPluginRegistrant.registerWithRegistry并将结果返回
+    return this._engineGroup!.createAndRunEngineByOptions(option)
+  }
+
+  public uninstall(): void {
+    this.context?.getApplicationContext().off('abilityLifecycle', this.callbackId)
+    this.lifecycleCallback = null
+    this._engineBinding?.detach()
+    this._engineBinding = null
+    this._engineGroup = null
+    this._defaultEngine = null
+    this.isRunning = false
+  }
+}
+
+class FusionLifecycleCallback extends AbilityLifecycleCallback {
+
+  onAbilityCreate(ability: UIAbility): void {
+    FlutterManager.getInstance().pushUIAbility(ability)
+  }
+
+  onWindowStageCreate(ability: UIAbility, windowStage: window.WindowStage): void {
+    FlutterManager.getInstance().pushWindowStage(ability, windowStage)
+  }
+
+  onWindowStageDestroy(ability: UIAbility, windowStage: window.WindowStage): void {
+    FlutterManager.getInstance().popWindowStage(ability)
+  }
+
+  onAbilityDestroy(ability: UIAbility): void {
+    FlutterManager.getInstance().popUIAbility(ability)
+  }
+
+  onAbilityForeground(ability: UIAbility): void {
+  }
+
+  onAbilityBackground(ability: UIAbility): void {
+  }
+}
