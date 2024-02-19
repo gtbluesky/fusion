@@ -59,6 +59,7 @@ object Fusion {
 
     @UiThread
     private fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
+        /// GeneratedPluginRegister里会通过反射调用GeneratedPluginRegistrant来注册插件
         return engineGroup?.createAndRunEngine(
             context,
             DartExecutor.DartEntrypoint.createDefault(),

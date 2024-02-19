@@ -22,6 +22,7 @@ class _LifecyclePageState extends State<LifecyclePage>
       appBar: AppBar(
         title: Text(widget.arguments?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
+            backgroundColor: Colors.blueGrey,
       ),
       body: Center(
         child: Column(

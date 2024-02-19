@@ -22,7 +22,9 @@ class _WebPageState extends State<WebPage> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            // Update loading bar.
+            if (kDebugMode) {
+              print('progress=$progress');
+            }
           },
           onPageStarted: (String url) {},
           onPageFinished: (String url) {},

@@ -31,7 +31,9 @@ internal class FusionEngineBinding: NSObject {
     private var flutterNotifyEnterBackground: FlutterBasicMessageChannel? = nil
     private var flutterDispatchMessage: FlutterBasicMessageChannel? = nil
     private var flutterCheckStyle: FlutterBasicMessageChannel? = nil
+
     var engine: FlutterEngine? = nil
+
     private var historyList: [Dictionary<String, Any?>] {
         get {
             FusionStackManager.instance.containerStack.map {
@@ -49,28 +51,29 @@ internal class FusionEngineBinding: NSObject {
         guard let engine = engine else {
             return
         }
-        hostOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/open", binaryMessenger: engine.binaryMessenger)
-        hostPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/push", binaryMessenger: engine.binaryMessenger)
-        hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: engine.binaryMessenger)
-        hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: engine.binaryMessenger)
-        hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: engine.binaryMessenger)
-        hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: engine.binaryMessenger)
-        hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: engine.binaryMessenger)
-        flutterOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/open", binaryMessenger: engine.binaryMessenger)
-        flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: engine.binaryMessenger)
-        flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: engine.binaryMessenger)
-        flutterDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/destroy", binaryMessenger: engine.binaryMessenger)
-        flutterPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/push", binaryMessenger: engine.binaryMessenger)
-        flutterReplace = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/replace", binaryMessenger: engine.binaryMessenger)
-        flutterPop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/pop", binaryMessenger: engine.binaryMessenger)
-        flutterMaybePop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/maybePop", binaryMessenger: engine.binaryMessenger)
-        flutterRemove = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/remove", binaryMessenger: engine.binaryMessenger)
-        flutterNotifyPageVisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageVisible", binaryMessenger: engine.binaryMessenger)
-        flutterNotifyPageInvisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageInvisible", binaryMessenger: engine.binaryMessenger)
-        flutterNotifyEnterForeground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterForeground", binaryMessenger: engine.binaryMessenger)
-        flutterNotifyEnterBackground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterBackground", binaryMessenger: engine.binaryMessenger)
-        flutterDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/dispatchMessage", binaryMessenger: engine.binaryMessenger)
-        flutterCheckStyle = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/checkStyle", binaryMessenger: engine.binaryMessenger)
+        let binaryMessenger = engine.binaryMessenger
+        hostOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/open", binaryMessenger: binaryMessenger)
+        hostPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/push", binaryMessenger: binaryMessenger)
+        hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: binaryMessenger)
+        hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: binaryMessenger)
+        hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: binaryMessenger)
+        hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: binaryMessenger)
+        hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: binaryMessenger)
+        flutterOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/open", binaryMessenger: binaryMessenger)
+        flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: binaryMessenger)
+        flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: binaryMessenger)
+        flutterDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/destroy", binaryMessenger: binaryMessenger)
+        flutterPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/push", binaryMessenger: binaryMessenger)
+        flutterReplace = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/replace", binaryMessenger: binaryMessenger)
+        flutterPop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/pop", binaryMessenger: binaryMessenger)
+        flutterMaybePop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/maybePop", binaryMessenger: binaryMessenger)
+        flutterRemove = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/remove", binaryMessenger: binaryMessenger)
+        flutterNotifyPageVisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageVisible", binaryMessenger: binaryMessenger)
+        flutterNotifyPageInvisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageInvisible", binaryMessenger: binaryMessenger)
+        flutterNotifyEnterForeground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterForeground", binaryMessenger: binaryMessenger)
+        flutterNotifyEnterBackground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterBackground", binaryMessenger: binaryMessenger)
+        flutterDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/dispatchMessage", binaryMessenger: binaryMessenger)
+        flutterCheckStyle = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/checkStyle", binaryMessenger: binaryMessenger)
     }
 
     func attach() {
@@ -136,7 +139,7 @@ internal class FusionEngineBinding: NSObject {
                 reply(nil)
                 return
             }
-            FusionStackManager.instance.findContainer(uniqueId)?.removeMaskView()
+            FusionStackManager.instance.findContainer(uniqueId)?.removeMask()
             reply(nil)
         }
     }

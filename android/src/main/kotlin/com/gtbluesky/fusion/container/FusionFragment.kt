@@ -14,20 +14,18 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import io.flutter.embedding.android.*
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
 import java.util.*
 
 open class FusionFragment : FlutterFragment(), FusionContainer {
-
     private val history = mutableListOf<Map<String, Any?>>()
-    private var platformPlugin: PlatformPlugin? = null
     private var maskView: View? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
     private var engineBinding = Fusion.engineBinding
+    private var platformPlugin: PlatformPlugin? = null
 
     override fun uniqueId() = uniqueId
 
@@ -37,17 +35,146 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun isAttached() = isAttached
 
+    override fun removeMask() {
+        maskView?.let {
+            (it.parent as? FrameLayout)?.removeView(it)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        // detach
+    private fun attachToContainer() {
+        if (isAttached) return
+        isAttached = true
+        val engine = engineBinding?.engine ?: return
+        // Attach plugins to the activity.
+        try {
+            val delegateField = findFlutterFragmentClass().getDeclaredField("delegate")
+            delegateField.isAccessible = true
+            (delegateField.get(this) as? ExclusiveAppComponent<Activity>)?.let {
+                engine.activityControlSurface.attachToActivity(
+                    it,
+                    lifecycle
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        // Attach rendering pipeline.
+        flutterView?.attachToFlutterEngine(engine)
+        // 配置PlatformChannel和CustomChannel是因为其和Activity相关联
+        // 而三方插件和Activity无关，一个Engine配置一次即可
+        // Configure platform channel
+        if (platformPlugin == null) {
+            val platformChannel = engineBinding?.engine?.platformChannel ?: return
+            platformPlugin = activity?.let { PlatformPlugin(it, platformChannel, this) } ?: return
+        }
+        // Configure custom channel
+        (activity as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+    }
+
+    override fun detachFromContainer() {
+        if (!isAttached) return
+        isAttached = false
+        val engine = engineBinding?.engine ?: return
+        // Plugins are no longer attached to the activity.
+        engine.activityControlSurface.detachFromActivity()
+        // Detach rendering pipeline.
+        flutterView?.detachFromFlutterEngine()
+        // Fixed since 3.0 stable
+        flutterView?.forEach {
+            if (it is FlutterImageView) {
+                flutterView?.removeView(it)
+            }
+        }
+        // Release platform channel
+        platformPlugin?.destroy()
+        platformPlugin = null
+        // Release custom channel
+        (activity as? FusionMessengerHandler)?.releaseFlutterChannel()
+    }
+
+    private fun onContainerCreate() {
+        val frameLayout = flutterView?.parent as? FrameLayout
+        if (frameLayout != null && !isTransparent()) {
+            val backgroundColor =
+                arguments?.getInt(FusionConstant.EXTRA_BACKGROUND_COLOR) ?: Color.WHITE
+            maskView = View(context)
+            maskView?.setBackgroundColor(backgroundColor)
+            frameLayout.addView(maskView)
+        }
+        if (FusionStackManager.isEmpty()) {
+            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
+        }
+        if (activity is FusionFragmentActivity) {
+            FusionStackManager.add(activity as FusionContainer)
+        } else {
+            FusionStackManager.add(this)
+        }
+    }
+
+    private fun onContainerVisible() {
         val top = FusionStackManager.getTopContainer()
         if (activity is FusionFragmentActivity) {
             if (top != activity) {
-                top?.detachFromEngine()
+                top?.detachFromContainer()
             }
         } else {
             if (top != this) {
-                top?.detachFromEngine()
+                top?.detachFromContainer()
+            }
+        }
+        // 切换Flutter容器和页面及原生容器栈的顺序
+        if (activity is FusionFragmentActivity) {
+            FusionStackManager.add(activity as FusionContainer)
+        } else {
+            FusionStackManager.add(this)
+        }
+        engineBinding?.switchTop(uniqueId)
+        engineBinding?.notifyPageVisible(uniqueId)
+        attachToContainer()
+        ++FusionStackManager.visibleContainerCount
+    }
+
+    private fun updateSystemOverlayStyle() {
+        engineBinding?.checkStyle { systemChromeStyle ->
+            try {
+                val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
+                field?.isAccessible = true
+                field?.set(platformPlugin, systemChromeStyle)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            platformPlugin?.updateSystemUiOverlays()
+        }
+    }
+
+    private fun onContainerInvisible() {
+        engineBinding?.notifyPageInvisible(uniqueId)
+        --FusionStackManager.visibleContainerCount
+    }
+
+    private fun onContainerDestroy() {
+        detachFromContainer()
+        history.clear()
+        if (activity is FusionFragmentActivity) {
+            FusionStackManager.remove(activity as FusionContainer)
+        } else {
+            FusionStackManager.remove(this)
+        }
+        engineBinding?.destroy(uniqueId)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Detach
+        val top = FusionStackManager.getTopContainer()
+        if (activity is FusionFragmentActivity) {
+            if (top != activity) {
+                top?.detachFromContainer()
+            }
+        } else {
+            if (top != this) {
+                top?.detachFromContainer()
             }
         }
         super.onCreate(savedInstanceState)
@@ -67,6 +194,18 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(
+            FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY,
+            uniqueId
+        )
+        outState.putSerializable(
+            FusionConstant.FUSION_RESTORATION_HISTORY_KEY,
+            history as? Serializable
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -83,12 +222,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
         onContainerCreate()
         return view
-    }
-
-    override fun removeMaskView() {
-        maskView?.let {
-            (it.parent as? FrameLayout)?.removeView(it)
-        }
     }
 
     /**
@@ -125,9 +258,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (!isHidden && userVisibleHint) {
             onContainerVisible()
         }
-        engineBinding?.latestStyle { systemChromeStyle ->
-            updateSystemUiOverlays(systemChromeStyle)
-        }
+        updateSystemOverlayStyle()
     }
 
     override fun onPause() {
@@ -162,117 +293,15 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding = null
     }
 
-    private fun onContainerCreate() {
-        val frameLayout = flutterView?.parent as? FrameLayout
-        if (frameLayout != null && !isTransparent()) {
-            val backgroundColor =
-                arguments?.getInt(FusionConstant.EXTRA_BACKGROUND_COLOR) ?: Color.WHITE
-            maskView = View(context)
-            maskView?.setBackgroundColor(backgroundColor)
-            frameLayout.addView(maskView)
-        }
-        if (FusionStackManager.isEmpty()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        }
-        if (activity is FusionFragmentActivity) {
-            FusionStackManager.add(activity as FusionContainer)
-        } else {
-            FusionStackManager.add(this)
-        }
-    }
-
-    private fun onContainerVisible() {
-        val top = FusionStackManager.getTopContainer()
-        if (activity is FusionFragmentActivity) {
-            if (top != activity) {
-                top?.detachFromEngine()
-            }
-        } else {
-            if (top != this) {
-                top?.detachFromEngine()
-            }
-        }
-        //切换Flutter容器和页面及原生容器栈的顺序
-        if (activity is FusionFragmentActivity) {
-            FusionStackManager.add(activity as FusionContainer)
-        } else {
-            FusionStackManager.add(this)
-        }
-        engineBinding?.switchTop(uniqueId)
-        engineBinding?.notifyPageVisible(uniqueId)
-        performAttach()
-        ++FusionStackManager.visibleContainerCount
-    }
-
-    private fun onContainerInvisible() {
-        engineBinding?.notifyPageInvisible(uniqueId)
-        --FusionStackManager.visibleContainerCount
-    }
-
-    private fun onContainerDestroy() {
-        performDetach()
-        history.clear()
-        if (activity is FusionFragmentActivity) {
-            FusionStackManager.remove(activity as FusionContainer)
-        } else {
-            FusionStackManager.remove(this)
-        }
-        engineBinding?.destroy(uniqueId)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(
-            FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY,
-            uniqueId
-        )
-        outState.putSerializable(
-            FusionConstant.FUSION_RESTORATION_HISTORY_KEY,
-            history as? Serializable
-        )
+    override fun onBackPressed() {
+        engineBinding?.maybePop(null)
     }
 
     override fun shouldAttachEngineToActivity() = false
 
-    @Suppress("UNCHECKED_CAST")
-    private fun performAttach() {
-        if (isAttached) return
-        isAttached = true
-        val engine = engineBinding?.engine ?: return
-        // Attach plugins to the activity.
-        try {
-            val delegateField = findFlutterFragmentClass().getDeclaredField("delegate")
-            delegateField.isAccessible = true
-            (delegateField.get(this) as? ExclusiveAppComponent<Activity>)?.let {
-                engine.activityControlSurface.attachToActivity(
-                    it,
-                    lifecycle
-                )
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        configureChannel()
-        // Attach rendering pipeline.
-        flutterView?.attachToFlutterEngine(engine)
-    }
+    override fun attachToEngineAutomatically() = false
 
-    private fun performDetach() {
-        if (!isAttached) return
-        isAttached = false
-        val engine = engineBinding?.engine ?: return
-        // Plugins are no longer attached to the activity.
-        engine.activityControlSurface.detachFromActivity()
-        releaseChannel()
-        // Detach rendering pipeline.
-        flutterView?.detachFromFlutterEngine()
-        // Fixed since 3.0 stable
-        flutterView?.forEach {
-            if (it is FlutterImageView) {
-                flutterView?.removeView(it)
-            }
-        }
-    }
+    override fun detachFromFlutterEngine() {}
 
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
@@ -281,54 +310,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         flutterEngine: FlutterEngine
     ): PlatformPlugin? = null
 
-    override fun detachFromEngine() {
-        performDetach()
-    }
-
-    override fun detachFromFlutterEngine() {}
-
-    private fun configureChannel() {
-        // 配置PlatformChannel和CustomChannel是因为其和Activity相关联
-        // 而三方插件和Activity无关，一个Engine配置一次即可
-        val engine = engineBinding?.engine ?: return
-        configurePlatformChannel()
-        (activity as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
-    }
-
-    private fun releaseChannel() {
-        releasePlatformChannel()
-        (activity as? FusionMessengerHandler)?.releaseFlutterChannel()
-    }
-
-    private fun configurePlatformChannel() {
-        if (platformPlugin != null) return
-        val platformChannel = engineBinding?.engine?.platformChannel ?: return
-        platformPlugin = activity?.let { PlatformPlugin(it, platformChannel, this) } ?: return
-    }
-
-    private fun releasePlatformChannel() {
-        platformPlugin?.destroy()
-        platformPlugin = null
-    }
-
-    private fun updateSystemUiOverlays(systemChromeStyle: PlatformChannel.SystemChromeStyle) {
-        try {
-            val field = platformPlugin?.javaClass?.getDeclaredField("currentTheme")
-            field?.isAccessible = true
-            field?.set(platformPlugin, systemChromeStyle)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        platformPlugin?.updateSystemUiOverlays()
-    }
-
-    override fun onBackPressed() {
-        engineBinding?.maybePop(null)
-    }
-
     internal class FusionFlutterFragmentBuilder(fragmentClass: Class<out FusionFragment>) :
         NewEngineFragmentBuilder(fragmentClass) {
-
         private var routeName: String = FusionConstant.INITIAL_ROUTE
         private var routeArguments: Map<String, Any>? = null
         @ColorInt

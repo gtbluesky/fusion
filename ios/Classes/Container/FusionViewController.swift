@@ -9,12 +9,84 @@ import Flutter
 import Foundation
 
 open class FusionViewController: FlutterViewController {
-
     internal var history: [Dictionary<String, Any?>] = []
     internal var uniqueId = "container_\(UUID().uuidString)"
     private let engineBinding = Fusion.instance.engineBinding
     private var maskView: UIView? = nil
     private var backgroundColor: UIColor = .white
+    
+    private var isAttached: Bool {
+        get {
+            engineBinding?.engine?.viewController == self
+        }
+    }
+    
+    func removeMask() {
+        maskView?.removeFromSuperview()
+        maskView = nil
+    }
+    
+    private func attachToContainer() {
+        if isAttached {
+            return
+        }
+        // Attach
+        engineBinding?.engine?.viewController = self
+        // Configure custom channel
+        if let engine = engineBinding?.engine {
+            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
+        }
+    }
+
+    private func detachFromContainer() {
+        if !isAttached {
+            return
+        }
+        // Detach
+        engineBinding?.engine?.viewController = nil
+        // Release custom channel
+        (self as? FusionMessengerHandler)?.releaseFlutterChannel()
+    }
+    
+    private func onContainerCreate() {
+        if isViewOpaque {
+            modalPresentationStyle = .fullScreen
+            view.backgroundColor = backgroundColor
+            maskView = UIView()
+            if let maskView = maskView {
+                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                maskView.backgroundColor = backgroundColor
+                view.addSubview(maskView)
+            }
+        } else {
+            modalPresentationStyle = .overFullScreen
+        }
+        FusionStackManager.instance.add(self)
+    }
+
+    private func onContainerVisible() {
+        FusionStackManager.instance.add(self)
+        engineBinding?.switchTop(uniqueId)
+        engineBinding?.notifyPageVisible(uniqueId)
+        attachToContainer()
+    }
+    
+    private func updateSystemOverlayStyle() {
+        engineBinding?.checkStyle { statusBarStyle in
+            NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
+        }
+    }
+
+    private func onContainerInvisible() {
+        engineBinding?.notifyPageInvisible(uniqueId)
+        detachFromContainer()
+    }
+
+    private func onContainerDestroy() {
+        history.removeAll()
+        FusionStackManager.instance.remove(self)
+        engineBinding?.destroy(uniqueId)
+    }
 
     public init(routeName: String, routeArguments: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: UIColor? = nil) {
         if let backgroundColor = backgroundColor {
@@ -65,28 +137,16 @@ open class FusionViewController: FlutterViewController {
         super.encodeRestorableState(with: coder)
     }
 
-    open override func viewDidLoad() {
-        attachToFlutterEngine()
-        super.viewDidLoad()
-    }
-
-    func removeMaskView() {
-        maskView?.removeFromSuperview()
-        maskView = nil
-    }
-
     open override func viewWillAppear(_ animated: Bool) {
         onContainerVisible()
-        engineBinding?.checkStyle { statusBarStyle in
-            NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
-        }
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         viewDidLayoutSubviews()
     }
 
     open override func viewDidAppear(_ animated: Bool) {
-        attachToFlutterEngine()
+        viewDidLayoutSubviews()
+        updateSystemOverlayStyle()
         super.viewDidAppear(animated)
     }
 
@@ -98,58 +158,6 @@ open class FusionViewController: FlutterViewController {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         onContainerInvisible()
-    }
-
-    private func attachToFlutterEngine() {
-        if engineBinding?.engine?.viewController == self {
-            return
-        }
-        engineBinding?.engine?.viewController = self
-    }
-
-    private func detachFromFlutterEngine() {
-        if engineBinding?.engine?.viewController != self {
-            return
-        }
-        engineBinding?.engine?.viewController = nil
-    }
-
-    func onContainerCreate() {
-        if isViewOpaque {
-            modalPresentationStyle = .fullScreen
-            view.backgroundColor = backgroundColor
-            maskView = UIView()
-            if let maskView = maskView {
-                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                maskView.backgroundColor = backgroundColor
-                view.addSubview(maskView)
-            }
-        } else {
-            modalPresentationStyle = .overFullScreen
-        }
-        FusionStackManager.instance.add(self)
-    }
-
-    func onContainerVisible() {
-        FusionStackManager.instance.add(self)
-        engineBinding?.switchTop(uniqueId)
-        engineBinding?.notifyPageVisible(uniqueId)
-        attachToFlutterEngine()
-        if let engine = engineBinding?.engine {
-            (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
-        }
-    }
-
-    func onContainerInvisible() {
-        engineBinding?.notifyPageInvisible(uniqueId)
-        detachFromFlutterEngine()
-        (self as? FusionMessengerHandler)?.releaseFlutterChannel()
-    }
-
-    func onContainerDestroy() {
-        history.removeAll()
-        FusionStackManager.instance.remove(self)
-        engineBinding?.destroy(uniqueId)
     }
 
     deinit {

@@ -13,7 +13,6 @@ import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
 
 open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
-
     private var flutterFragment: FusionFragment? = null
 
     override fun uniqueId() = flutterFragment?.uniqueId()
@@ -23,6 +22,14 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
     override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
 
     override fun isAttached() = flutterFragment?.isAttached() ?: false
+
+    override fun removeMask() {
+        flutterFragment?.removeMask()
+    }
+
+    override fun detachFromContainer() {
+        flutterFragment?.detachFromContainer()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +41,6 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
         }
-    }
-
-    override fun removeMaskView() {
-        flutterFragment?.removeMaskView()
     }
 
     // Fragment首次创建
@@ -73,9 +76,5 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
             }
         }
         super.setTaskDescription(taskDescription)
-    }
-
-    override fun detachFromEngine() {
-        flutterFragment?.detachFromEngine()
     }
 }

@@ -4,7 +4,6 @@ import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.container.FusionStackManager
 
 object FusionNavigator {
-
     /**
      * 打开新Flutter容器并将对应路由入栈
      * Native页面跳转Flutter页面使用该API
@@ -60,6 +59,9 @@ object FusionNavigator {
         Fusion.engineBinding?.remove(name)
     }
 
+    /**
+     * 发送全局消息
+     */
     @JvmStatic
     @JvmOverloads
     fun sendMessage(name: String, body: Map<String, Any>? = null) {

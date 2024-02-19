@@ -8,10 +8,8 @@ import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.embedding.engine.systemchannels.PlatformViewsChannel
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.StandardMessageCodec
-import java.util.*
 
-internal class FusionEngineBinding(var engine: FlutterEngine?) {
-
+internal class FusionEngineBinding(engine: FlutterEngine?) {
     private var hostOpen: BasicMessageChannel<Any>? = null
     private var hostPush: BasicMessageChannel<Any>? = null
     private var hostDestroy: BasicMessageChannel<Any>? = null
@@ -34,6 +32,10 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
     private var flutterNotifyEnterBackground: BasicMessageChannel<Any>? = null
     private var flutterDispatchMessage: BasicMessageChannel<Any>? = null
     private var flutterCheckStyle: BasicMessageChannel<Any>? = null
+
+    var engine: FlutterEngine? = null
+        private set
+
     private val historyList: List<Map<String, Any?>>
         get() {
             return FusionStackManager.containerStack.map {
@@ -45,116 +47,119 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
         }
 
     init {
+        this.engine = engine
         engine?.let {
+            val binaryMessenger = it.dartExecutor.binaryMessenger
+            val messageCodec = StandardMessageCodec.INSTANCE
             hostOpen = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/open",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostPush = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/push",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostDestroy = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/destroy",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostRestore = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/restore",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostSync = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/sync",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostSendMessage = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/sendMessage",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             hostRemoveMaskView = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/removeMaskView",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterOpen = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/open",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterSwitchTop = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/switchTop",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterRestore = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/restore",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterDestroy = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/destroy",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterPush = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/push",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterReplace = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/replace",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterPop = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/pop",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterMaybePop = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/maybePop",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterRemove = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/remove",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterNotifyPageVisible = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/notifyPageVisible",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterNotifyPageInvisible = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/notifyPageInvisible",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterNotifyEnterForeground = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/notifyEnterForeground",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterNotifyEnterBackground = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/notifyEnterBackground",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterDispatchMessage = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/dispatchMessage",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
             flutterCheckStyle = BasicMessageChannel(
-                it.dartExecutor.binaryMessenger,
+                binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/flutter/checkStyle",
-                StandardMessageCodec.INSTANCE
+                messageCodec
             )
         }
     }
@@ -251,7 +256,8 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
                 reply.reply(null)
                 return@setMessageHandler
             }
-            FusionStackManager.findContainer(uniqueId)?.removeMaskView()
+            FusionStackManager.findContainer(uniqueId)?.removeMask()
+            reply.reply(null)
         }
     }
 
@@ -388,7 +394,7 @@ internal class FusionEngineBinding(var engine: FlutterEngine?) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun latestStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
+    fun checkStyle(callback: (systemChromeStyle: PlatformChannel.SystemChromeStyle) -> Unit) {
         flutterCheckStyle?.send(null) {
             val systemChromeStyle = decodeSystemChromeStyle(it as? Map<String, Any>)
                 ?: return@send
