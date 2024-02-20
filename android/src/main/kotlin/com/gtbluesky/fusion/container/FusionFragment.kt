@@ -266,16 +266,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (!isHidden && userVisibleHint) {
             onContainerInvisible()
         }
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        }
     }
 
     override fun onDestroyView() {
@@ -285,9 +275,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onDetach() {
         super.onDetach()
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        } else {
+        if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }
         engineBinding = null
@@ -298,6 +286,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     override fun shouldAttachEngineToActivity() = false
+
+    override fun shouldDispatchAppLifecycleState() = false
 
     override fun attachToEngineAutomatically() = false
 
