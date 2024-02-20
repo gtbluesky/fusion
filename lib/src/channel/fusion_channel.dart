@@ -5,7 +5,8 @@ import 'package:fusion/src/container/fusion_page.dart';
 import 'package:fusion/src/data/fusion_state.dart';
 import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
 import 'package:fusion/src/fusion.dart';
-import 'package:fusion/src/lifecycle/page_lifecycle.dart';
+import 'package:fusion/src/lifecycle/fusion_app_lifecycle.dart';
+import 'package:fusion/src/lifecycle/fusion_page_lifecycle.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/notification/fusion_notification.dart';
 
@@ -163,10 +164,12 @@ class FusionChannel {
       return;
     });
     _flutterNotifyEnterForeground.setMessageHandler((message) async {
+      FusionAppLifecycleBinding.instance.dispatchAppForegroundEvent();
       PageLifecycleBinding.instance.dispatchPageForegroundEvent();
       return;
     });
     _flutterNotifyEnterBackground.setMessageHandler((message) async {
+      FusionAppLifecycleBinding.instance.dispatchAppBackgroundEvent();
       PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
       return;
     });

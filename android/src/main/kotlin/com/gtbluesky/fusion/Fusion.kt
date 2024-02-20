@@ -72,12 +72,19 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
 
     private var visibleActivityCount = 0
     private var isActivityChangingConfigurations = false
+    private var isLaunching = true
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }
 
     override fun onActivityStarted(activity: Activity) {
-        if (++visibleActivityCount == 1 && !isActivityChangingConfigurations) {
+        // 首次启动不触发进入前台回调，与iOS保持一致
+        ++visibleActivityCount
+        if (isLaunching) {
+            isLaunching = false
+            return
+        }
+        if (visibleActivityCount == 1 && !isActivityChangingConfigurations) {
             FusionStackManager.notifyEnterForeground()
         }
     }
