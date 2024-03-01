@@ -1,3 +1,7 @@
+## 3.1.1
+
+* Fixes some known bugs.
+
 ## 3.1.0
 
 * Adds global lifecycle observer.

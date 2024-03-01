@@ -27,11 +27,10 @@ open class FusionViewController: FlutterViewController {
     }
     
     private func attachToContainer() {
-        if isAttached {
-            return
+        if !isAttached {
+            // Attach
+            engineBinding?.engine?.viewController = self
         }
-        // Attach
-        engineBinding?.engine?.viewController = self
         // Configure custom channel
         if let engine = engineBinding?.engine {
             (self as? FusionMessengerHandler)?.configureFlutterChannel(binaryMessenger: engine.binaryMessenger)
@@ -39,11 +38,10 @@ open class FusionViewController: FlutterViewController {
     }
 
     private func detachFromContainer() {
-        if !isAttached {
-            return
+        if isAttached {
+            // Detach
+            engineBinding?.engine?.viewController = nil
         }
-        // Detach
-        engineBinding?.engine?.viewController = nil
         // Release custom channel
         (self as? FusionMessengerHandler)?.releaseFlutterChannel()
     }
