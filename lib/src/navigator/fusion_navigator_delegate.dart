@@ -4,7 +4,7 @@ import 'package:fusion/src/channel/fusion_channel.dart';
 import 'package:fusion/src/container/fusion_container.dart';
 import 'package:fusion/src/container/fusion_overlay.dart';
 import 'package:fusion/src/container/fusion_page.dart';
-import 'package:fusion/src/lifecycle/page_lifecycle.dart';
+import 'package:fusion/src/lifecycle/fusion_page_lifecycle.dart';
 
 class FusionNavigatorDelegate {
   FusionNavigatorDelegate._();

@@ -338,6 +338,33 @@ class CustomViewController : FusionViewController, FusionMessengerHandler {
 P.S.: 与容器相关的方法是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
 
 ### 6、生命周期
+应用生命周期监听：
+- ①、在 Flutter 侧任意处注册监听皆可，并`implements` FusionAppLifecycleListener
+- ②、根据实际情况决定是否需要注销监听
+```dart
+void main() {
+  ...
+  FusionAppLifecycleBinding.instance.register(MyAppLifecycleListener());
+  runApp(const MyApp());
+}
+
+class MyAppLifecycleListener implements FusionAppLifecycleListener {
+  @override
+  void onBackground() {
+    print('onBackground');
+  }
+
+  @override
+  void onForeground() {
+    print('onForeground');
+  }
+}
+```
+FusionAppLifecycleListener 生命周期回调函数：
+- onForeground: 应用进入前台会被调用（首次启动不会被调用，Android 与 iOS 保持一致）
+- onBackground: 应用退到后台会被调用
+
+页面生命周期监听：
 - ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听

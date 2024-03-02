@@ -12,7 +12,7 @@ internal object FusionStackManager {
 
     fun isEmpty() = containerStack.isEmpty()
 
-    fun isContainerVisible() = visibleContainerCount > 0
+    fun isNotEmpty() = containerStack.isNotEmpty()
 
     fun add(container: FusionContainer) {
         remove(container)
@@ -60,14 +60,16 @@ internal object FusionStackManager {
     }
 
     fun notifyEnterForeground() {
-        if (isContainerVisible()) {
+        if (isNotEmpty()) {
             Fusion.engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }
         Fusion.engineBinding?.notifyEnterForeground()
     }
 
     fun notifyEnterBackground() {
-        Fusion.engineBinding?.engine?.lifecycleChannel?.appIsPaused()
+        if (isNotEmpty()) {
+            Fusion.engineBinding?.engine?.lifecycleChannel?.appIsPaused()
+        }
         Fusion.engineBinding?.notifyEnterBackground()
     }
 

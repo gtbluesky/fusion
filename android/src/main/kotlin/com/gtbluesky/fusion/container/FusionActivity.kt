@@ -193,24 +193,12 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun onPause() {
         super.onPause()
         onContainerInvisible()
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        }
     }
 
     override fun onDestroy() {
         onContainerDestroy()
         super.onDestroy()
-        if (FusionStackManager.isContainerVisible()) {
-            engineBinding?.engine?.lifecycleChannel?.appIsResumed()
-        } else {
+        if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }
         engineBinding = null
@@ -232,6 +220,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun getRenderMode() = RenderMode.texture
 
     override fun shouldAttachEngineToActivity() = false
+
+    override fun shouldDispatchAppLifecycleState() = false
 
     override fun attachToEngineAutomatically() = false
 

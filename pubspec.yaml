@@ -1,6 +1,6 @@
 name: fusion
 description: A Flutter plugin that manages hybrid stack on Android and iOS.
-version: 3.1.0
+version: 3.1.1
 homepage: https://github.com/gtbluesky/fusion
 
 environment:

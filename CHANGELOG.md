@@ -1,3 +1,13 @@
+## 3.1.1
+
+* Fixes some known bugs.
+
+## 3.1.0
+
+* Adds global lifecycle observer.
+* Fixes some known bugs.
+* Updates minimum supported SDK version to Flutter 3.0.0/Dart 2.17.0.
+
 ## 3.0.7
 
 * Adjust the strategy of Flutter's frame scheduling.
