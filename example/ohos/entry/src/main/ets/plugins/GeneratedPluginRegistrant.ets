@@ -1,6 +1,7 @@
 import { FlutterPlugin } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/FlutterPlugin';
 import List from '@ohos.util.List';
 import FusionPlugin from '@ohos/fusion'
+import WebViewFlutterPlugin from '@ohos/webview_flutter_ohos'
 
 /**
  * Generated file. Do not edit.
@@ -11,6 +12,7 @@ export class GeneratedPluginRegistrant {
   static getPlugins(): List<FlutterPlugin> {
     let pluginList : List<FlutterPlugin> = new List();
     pluginList.add(new FusionPlugin());
+    pluginList.add(new WebViewFlutterPlugin());
     return pluginList;
   }
 }

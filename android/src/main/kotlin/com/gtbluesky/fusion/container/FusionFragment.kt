@@ -132,7 +132,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding?.switchTop(uniqueId)
         engineBinding?.notifyPageVisible(uniqueId)
         attachToContainer()
-        ++FusionStackManager.visibleContainerCount
     }
 
     private fun updateSystemOverlayStyle() {
@@ -150,7 +149,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     private fun onContainerInvisible() {
         engineBinding?.notifyPageInvisible(uniqueId)
-        --FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerDestroy() {
@@ -269,8 +267,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     override fun onDestroyView() {
-        onContainerDestroy()
         super.onDestroyView()
+        onContainerDestroy()
     }
 
     override fun onDetach() {

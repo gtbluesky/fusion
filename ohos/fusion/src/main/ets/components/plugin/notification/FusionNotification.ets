@@ -2,10 +2,10 @@ import FlutterEntry from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/Flutter
 import ArrayList from '@ohos.util.ArrayList'
 
 export interface FusionNotificationListener {
-  onReceive(name: string, body?: Map<string, Object>): void
+  onReceive(name: string, body: Map<string, Object>| null): void
 }
 
-export class FusionNotificationBinding {
+export default class FusionNotificationBinding {
   private listeners = new ArrayList<FusionNotificationListener>()
   private static _instance = new FusionNotificationBinding()
 
@@ -35,7 +35,7 @@ export class FusionNotificationBinding {
     }
   }
 
-  dispatchMessage(name: string, body?: Map<string, Object>): void {
+  dispatchMessage(name: string, body: Map<string, Object> | null): void {
     for (let element of this.listeners) {
       element.onReceive(name, body)
     }

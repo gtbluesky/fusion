@@ -82,7 +82,7 @@ class _TestPageState extends State<TestPage>
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(widget.arguments?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
+            style: const TextStyle(color: Colors.black, fontSize: 20)),
       ),
       body: ListView(
         children: [

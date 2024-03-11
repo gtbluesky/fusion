@@ -90,7 +90,8 @@ final Map<String, FusionPageCustomFactory> customRouteMap = {
 const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =
     <TargetPlatform, PageTransitionsBuilder>{
   TargetPlatform.android: SlidePageTransitionsBuilder(),
-  TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+  TargetPlatform.ohos: SlidePageTransitionsBuilder(),
 };
 
 class SlidePageTransitionsBuilder extends PageTransitionsBuilder {

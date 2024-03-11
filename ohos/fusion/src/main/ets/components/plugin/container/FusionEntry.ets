@@ -8,8 +8,13 @@ import PlatformPlugin from '@ohos/flutter_ohos/src/main/ets/plugin/PlatformPlugi
 import FusionMessengerHandler from '../handler/FusionMessengerHandler';
 import ToolUtils from '@ohos/flutter_ohos/src/main/ets/util/ToolUtils';
 import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
+import { Context } from '@kit.AbilityKit';
+import FusionConstant from '../constant/FusionConstant';
+import { window } from '@kit.ArkUI';
 
 export default class FusionEntry extends FlutterEntry implements FusionContainer {
+  private _context: Context
+  private _params: Record<string, Object>
   private _history = new List<Map<string, Object | null>>()
   private _isAttached = false
   private _uniqueId = `container_${util.generateRandomUUID(false)}`
@@ -25,7 +30,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   /* override */ isTransparent(): boolean {
-    throw new Error('Method not implemented.');
+    return this._params[FusionConstant.EXTRA_BACKGROUND_MODE] as boolean
   }
 
   /* override */ isAttached(): boolean {
@@ -33,7 +38,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   /* override */ removeMask(): void {
-    throw new Error('Method not implemented.');
+    //todo
   }
 
   private attachToContainer(): void {
@@ -53,11 +58,11 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     // Configure platform channel
     if (this.platformPlugin == null) {
       let platformChannel = this.engineBinding?.engine?.getPlatformChannel()
-      this.platformPlugin = new PlatformPlugin(platformChannel!, this.uiAbility!.context)
+      this.platformPlugin = new PlatformPlugin(platformChannel!, this._context)
     }
     // Configure custom channel
     if (ToolUtils.implementsInterface(this, 'configureFlutterChannel')) {
-      (this as object as FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.getBinaryMessenger())
+      (this as Object as FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.getBinaryMessenger())
     }
   }
 
@@ -77,12 +82,12 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     this.platformPlugin = null
     // Release custom channel
     if (ToolUtils.implementsInterface(this, 'releaseFlutterChannel')) {
-      (this as object as FusionMessengerHandler)?.releaseFlutterChannel()
+      (this as Object as FusionMessengerHandler)?.releaseFlutterChannel()
     }
   }
 
   private onContainerCreate(): void {
-    if (!this.isTransparent) {
+    if (!this.isTransparent()) {
       // todo
     }
     if (FusionStackManager.instance.isEmpty()) {
@@ -100,19 +105,20 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     this.engineBinding?.switchTop(this._uniqueId)
     this.engineBinding?.notifyPageVisible(this._uniqueId)
     this.attachToContainer()
-    ++FusionStackManager.instance.visibleContainerCount
   }
 
   private updateSystemOverlayStyle() {
     this.engineBinding?.checkStyle((systemChromeStyle) => {
-      //todo
-      this.platformPlugin?.updateSystemUiOverlays()
+      if (this.platformPlugin == null) {
+        return
+      }
+      this.platformPlugin.callback.currentTheme = systemChromeStyle
+      this.platformPlugin.updateSystemUiOverlays()
     })
   }
 
   private onContainerInvisible(): void {
     this.engineBinding?.notifyPageInvisible(this._uniqueId)
-    --FusionStackManager.instance.visibleContainerCount
   }
 
   private onContainerDestroy(): void {
@@ -122,14 +128,32 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     this.engineBinding?.destroy(this._uniqueId)
   }
 
-  constructor(context: Context, params: ESObject = {}) {
+  constructor(context: Context, params: Record<string, Object> = {}) {
     super(context, params)
+    this._context = context
+    this._params = params
+  }
+
+  override async aboutToAppear() {
+    const top = FusionStackManager.instance.getTopContainer()
+    if (top != this) {
+      top?.detachFromContainer()
+    }
+    await super.aboutToAppear()
+    const routeName = this._params[FusionConstant.ROUTE_NAME] as string
+    const routeArguments = this._params[FusionConstant.ROUTE_ARGUMENTS] as Map<string, Object>
+    if (this.isTransparent()) {
+      window.findWindow(FusionConstant.TRANSPARENT_WINDOW).setWindowBackgroundColor('#00000000')
+    }
+    this.engineBinding?.open(this._uniqueId, routeName, routeArguments)
+    this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
   }
 
   override onPageShow(): void {
     super.onPageShow()
     this.onContainerVisible()
+    this.updateSystemOverlayStyle()
   }
 
   override onPageHide(): void {
@@ -140,16 +164,36 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   override aboutToDisappear(): void {
     super.aboutToDisappear()
     this.onContainerDestroy()
+    if (FusionStackManager.instance.isEmpty()) {
+      this.engineBinding?.engine?.getLifecycleChannel()?.appIsPaused()
+    }
+    this.engineBinding = null
+  }
+
+  override onBackPress(): void {
+    this.engineBinding?.maybePop()
+  }
+
+  override shouldDestroyEngineWithHost(): boolean {
+    return false
   }
 
   override shouldAttachEngineToAbility(): boolean {
     return false
   }
 
-  detachFromFlutterEngine(): void {
+  override shouldDispatchAppLifecycleState(): boolean {
+    return false
   }
 
-  provideFlutterEngine(context: Context): FlutterEngine {
+  override detachFromFlutterEngine(): void {
+  }
+
+  override provideFlutterEngine(context: Context): FlutterEngine {
     return this.engineBinding?.engine!
+  }
+
+  providePlatformPlugin(flutterEngine: FlutterEngine): PlatformPlugin | undefined {
+    return undefined
   }
 }

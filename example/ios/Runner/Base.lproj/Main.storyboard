@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="XGT-GX-mBx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="XGT-GX-mBx">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,36 +20,36 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="LC4-xr-4pj">
-                                <rect key="frame" x="76" y="324" width="238" height="196"/>
+                                <rect key="frame" x="16" y="317.33333333333331" width="358" height="209.33333333333331"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SRh-hL-fLP" userLabel="Button0">
-                                        <rect key="frame" x="0.0" y="0.0" width="238" height="31"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="358" height="34.333333333333336"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 普通页面模式"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter普通页面场景"/>
                                         <connections>
                                             <action selector="click0:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hYp-ph-hRF"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vFE-NF-0ac">
-                                        <rect key="frame" x="0.0" y="55" width="238" height="31"/>
+                                        <rect key="frame" x="0.0" y="58.333333333333371" width="358" height="34.333333333333343"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 透明页面模式"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter透明页面场景"/>
                                         <connections>
                                             <action selector="click1:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N8G-DD-DHy"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wYC-6C-J6o">
-                                        <rect key="frame" x="0.0" y="110" width="238" height="31"/>
+                                        <rect key="frame" x="0.0" y="116.66666666666667" width="358" height="34.333333333333329"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 子页面模式"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Flutter子页面场景"/>
                                         <connections>
                                             <action selector="click2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Xkj-Xt-HQq"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fPp-XI-LgV" userLabel="Button3">
-                                        <rect key="frame" x="0.0" y="165" width="238" height="31"/>
+                                        <rect key="frame" x="0.0" y="175" width="358" height="34.333333333333343"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Flutter 左侧抽屉"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Native侧边栏嵌入Flutter场景"/>
                                         <connections>
                                             <action selector="click3:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UaB-jT-myc"/>
                                         </connections>
@@ -59,9 +59,9 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="LC4-xr-4pj" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="60" id="C0V-DT-RiQ"/>
+                            <constraint firstItem="LC4-xr-4pj" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="C0V-DT-RiQ"/>
                             <constraint firstItem="LC4-xr-4pj" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jtl-EB-Dgs"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="LC4-xr-4pj" secondAttribute="trailing" constant="60" id="lNb-NC-Daf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="LC4-xr-4pj" secondAttribute="trailing" id="lNb-NC-Daf"/>
                             <constraint firstItem="LC4-xr-4pj" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="pju-6U-0cd"/>
                         </constraints>
                     </view>
@@ -83,7 +83,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="XGT-GX-mBx" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="NR6-q6-SLL">
-                        <rect key="frame" x="0.0" y="44" width="390" height="44"/>
+                        <rect key="frame" x="0.0" y="47" width="390" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

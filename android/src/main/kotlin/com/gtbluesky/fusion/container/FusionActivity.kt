@@ -114,7 +114,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding?.switchTop(uniqueId)
         engineBinding?.notifyPageVisible(uniqueId)
         attachToContainer()
-        ++FusionStackManager.visibleContainerCount
     }
 
     private fun updateSystemOverlayStyle() {
@@ -132,7 +131,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private fun onContainerInvisible() {
         engineBinding?.notifyPageInvisible(uniqueId)
-        --FusionStackManager.visibleContainerCount
     }
 
     private fun onContainerDestroy() {
@@ -196,8 +194,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     }
 
     override fun onDestroy() {
-        onContainerDestroy()
         super.onDestroy()
+        onContainerDestroy()
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }

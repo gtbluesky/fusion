@@ -42,8 +42,8 @@ export default class FusionEngineBinding {
     const list = new List<Map<string, Object | null>>()
     for (let value of FusionStackManager.instance.containerStack) {
       let map = new Map<string, Object | null>()
-      map['uniqueId'] = value.uniqueId()
-      map['history'] = value.history()
+      map.set('uniqueId', value.uniqueId())
+      map.set('history', value.history())
       list.add(map)
     }
     return list
@@ -175,12 +175,12 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const name = message['name'] as string | null
+        const name = message.get('name') as string | null
         if (name == null) {
           reply.reply(null)
           return
         }
-        const args = message['arguments'] as Map<string, Object> | null
+        const args = message.get('arguments') as Map<string, Object> | null
         Fusion.instance.delegate?.pushFlutterRoute(name, args)
         reply.reply(null)
       }
@@ -191,12 +191,12 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const name = message['name'] as string | null
+        const name = message.get('name') as string | null
         if (name == null) {
           reply.reply(null)
           return
         }
-        const args = message['arguments'] as Map<string, Object> | null
+        const args = message.get('arguments') as Map<string, Object> | null
         Fusion.instance.delegate?.pushNativeRoute(name, args)
         reply.reply(null)
       }
@@ -207,7 +207,7 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const uniqueId = message['uniqueId'] as string | null
+        const uniqueId = message.get('uniqueId') as string | null
         if (uniqueId == null) {
           reply.reply(false)
           return
@@ -232,8 +232,8 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const uniqueId = message['uniqueId'] as string | null
-        const history = message['history'] as List<Map<string, Object | null>> | null
+        const uniqueId = message.get('uniqueId') as string | null
+        const history = message.get('history') as List<Map<string, Object | null>> | null
         if (uniqueId == null || history == null) {
           reply.reply(false)
           return
@@ -252,12 +252,12 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const name = message['name'] as string | null
+        const name = message.get('name') as string | null
         if (name == null) {
           reply.reply(null)
           return
         }
-        const body = message['body'] as Map<string, Object> | null
+        const body = message.get('body') as Map<string, Object> | null
         FusionStackManager.instance.sendMessage(name, body)
         reply.reply(null)
       }
@@ -268,7 +268,7 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const uniqueId = message['uniqueId'] as string | null
+        const uniqueId = message.get('uniqueId') as string | null
         if (uniqueId == null) {
           reply.reply(null)
           return
@@ -280,78 +280,79 @@ export default class FusionEngineBinding {
   }
 
   // external function
-  push(name: string, args?: Map<string, Object>): void {
+  push(name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
-    map['name'] = name
-    map['arguments'] = args
+    map.set('name', name)
+    map.set('arguments', args)
     this.flutterPush?.send(map)
   }
 
-  replace(name: string, args?: Map<string, Object>): void {
+  replace(name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
-    map['name'] = name
-    map['arguments'] = args
+    map.set('name', name)
+    map.set('arguments', args)
     this.flutterReplace?.send(map)
   }
 
-  pop(result?: Object): void {
+  pop(result: Object | null): void {
     const map = new Map<string, Object | null>()
-    map['result'] = result
+    map.set('result', result)
     this.flutterPop?.send(map)
   }
 
-  maybePop(result?: Object): void {
+  maybePop(result: Object | null = null): void {
     const map = new Map<string, Object | null>()
-    map['result'] = result
+    map.set('result', result)
     this.flutterMaybePop?.send(map)
   }
 
   remove(name: string): void {
     const map = new Map<string, Object>()
-    map['name'] = name
+    map.set('name', name)
     this.flutterRemove?.send(map)
   }
 
   // internal function
-  open(uniqueId: string, name: string, args?: Map<string, Object>): void {
+  open(uniqueId: string, name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
-    map['uniqueId'] = uniqueId
-    map['name'] = name
-    map['arguments'] = args
+    map.set('uniqueId', uniqueId)
+    map.set('name', name)
+    map.set('arguments', args)
     this.flutterOpen?.send(map)
   }
 
   switchTop(uniqueId: string): void {
     const map = new Map<string, Object>()
-    map['uniqueId'] = uniqueId
+    map.set('uniqueId', uniqueId)
     this.flutterSwitchTop?.send(map)
   }
 
   restore(uniqueId: string, history: List<Map<string, Object | null>>): void {
     const map = new Map<string, Object>()
-    map['uniqueId'] = uniqueId
-    map['history'] = history
+    map.set('uniqueId', uniqueId)
+    map.set('history', history)
     this.flutterRestore?.send(map)
   }
 
   destroy(uniqueId: string): void {
     if (!FusionStackManager.instance.isAttached()) {
       //todo PlatformView 相关
+      this._engine?.getPlatformViewsController()?.attach(null, null, this._engine?.dartExecutor)
     }
     const map = new Map<string, Object>()
-    map['uniqueId'] = uniqueId
+    map.set('uniqueId', uniqueId)
     this.flutterDestroy?.send(map)
   }
 
   notifyPageVisible(uniqueId: string): void {
     const map = new Map<string, Object>()
-    map['uniqueId'] = uniqueId
+    map.set('uniqueId', uniqueId)
     this.flutterNotifyPageVisible?.send(map)
   }
 
   notifyPageInvisible(uniqueId: string): void {
     const map = new Map<string, Object>()
-    map['uniqueId'] = uniqueId
+    map.set('uniqueId', uniqueId)
     this.flutterNotifyPageInvisible?.send(map)
   }
 
@@ -377,7 +378,7 @@ export default class FusionEngineBinding {
     })
   }
 
-  private decodeSystemChromeStyle(styleMap: Map<string, object> | null): SystemChromeStyle | null {
+  private decodeSystemChromeStyle(styleMap: Map<string, Object> | null): SystemChromeStyle | null {
     if (styleMap == null) {
       return null
     }
@@ -388,22 +389,22 @@ export default class FusionEngineBinding {
     let systemNavigationBarIconBrightness: Brightness | null = null
     let systemNavigationBarDividerColor: number | null = null
     let systemNavigationBarContrastEnforced: boolean | null = null
-    if(styleMap['statusBarColor'] != null) {
-      statusBarColor = styleMap['statusBarColor'] as number
+    if (styleMap.get('statusBarColor') != null) {
+      statusBarColor = styleMap.get('statusBarColor') as number
     }
-    statusBarIconBrightness = styleMap['statusBarIconBrightness'] == 'Brightness.light' ? Brightness.LIGHT : Brightness.DARK
-    if(styleMap['systemStatusBarContrastEnforced'] != null) {
-      systemStatusBarContrastEnforced = styleMap['systemStatusBarContrastEnforced'] as boolean
+    statusBarIconBrightness = styleMap.get('statusBarIconBrightness') == 'Brightness.light' ? Brightness.LIGHT : Brightness.DARK
+    if (styleMap.get('systemStatusBarContrastEnforced') != null) {
+      systemStatusBarContrastEnforced = styleMap.get('systemStatusBarContrastEnforced') as boolean
     }
-    if(styleMap['systemNavigationBarColor'] != null) {
-      systemNavigationBarColor = styleMap['systemNavigationBarColor'] as number
+    if (styleMap.get('systemNavigationBarColor') != null) {
+      systemNavigationBarColor = styleMap.get('systemNavigationBarColor') as number
     }
-    systemNavigationBarIconBrightness = styleMap['systemNavigationBarIconBrightness'] == 'Brightness.light' ? Brightness.LIGHT : Brightness.DARK
-    if(styleMap['systemNavigationBarDividerColor'] != null) {
-      systemNavigationBarDividerColor = styleMap['systemNavigationBarDividerColor'] as number
+    systemNavigationBarIconBrightness = styleMap.get('systemNavigationBarIconBrightness') == 'Brightness.light' ? Brightness.LIGHT : Brightness.DARK
+    if (styleMap.get('systemNavigationBarDividerColor') != null) {
+      systemNavigationBarDividerColor = styleMap.get('systemNavigationBarDividerColor') as number
     }
-    if(styleMap['systemNavigationBarContrastEnforced'] != null) {
-      systemNavigationBarContrastEnforced = styleMap['systemNavigationBarContrastEnforced'] as boolean
+    if (styleMap.get('systemNavigationBarContrastEnforced') != null) {
+      systemNavigationBarContrastEnforced = styleMap.get('systemNavigationBarContrastEnforced') as boolean
     }
     return new SystemChromeStyle(
       statusBarColor,

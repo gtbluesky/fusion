@@ -21,9 +21,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "/Users/gantao/.ohos/config/default_ohos_uy8kfAbgVVKhPoNHC774lRXUMjWjeNgoI5i3QH6HN5E=.cer",
-          "storePassword": "0000001B5461ECB97157A9B5A01B7C826786DDD2FE37147C5C271C8781A1EF061DD2FD2B87C902E4DDE4BB",
+          "storePassword": "0000001B60192FEFB4D7E7F53EC0563923E0B4E9E83346A0534DF6055BE78804BF3E65D35D4370D0071BB4",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B2C7A9348E459562CF8C94F6CE9F9E49B156E6356F0ADD5B3521777E36E533355EF8EE3D0FA0288",
+          "keyPassword": "0000001B5873DB75C89D568593496FCEEE091420B5ECB9812A3A74ACF934EFA134864D2F22EECFE84AA48D",
           "profile": "/Users/gantao/.ohos/config/default_ohos_uy8kfAbgVVKhPoNHC774lRXUMjWjeNgoI5i3QH6HN5E=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/gantao/.ohos/config/default_ohos_uy8kfAbgVVKhPoNHC774lRXUMjWjeNgoI5i3QH6HN5E=.p12"

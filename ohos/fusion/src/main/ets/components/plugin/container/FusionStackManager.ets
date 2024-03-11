@@ -1,8 +1,9 @@
 import FusionContainer from './FusionContainer'
-import { FusionNotificationBinding } from '../notification/FusionNotification'
+import FusionNotificationBinding from '../notification/FusionNotification'
 import Fusion from '../Fusion'
 import List from '@ohos.util.List'
-import { router } from '@kit.ArkUI'
+import { router, window } from '@kit.ArkUI'
+import FusionConstant from '../constant/FusionConstant'
 
 export default class FusionStackManager {
   private static _instance = new FusionStackManager()
@@ -17,14 +18,8 @@ export default class FusionStackManager {
   // todo 弱引用
   public containerStack = new List<FusionContainer>()
 
-  public visibleContainerCount = 0
-
   public isEmpty(): boolean {
     return this.containerStack.isEmpty()
-  }
-
-  public isContainerVisible(): boolean {
-    return this.visibleContainerCount > 0
   }
 
   public add(container: FusionContainer): void {
@@ -56,8 +51,11 @@ export default class FusionStackManager {
   }
 
   public closeContainer(container: FusionContainer): void {
-    // todo
-    router.back()
+    if (container.isTransparent()) {
+      window.findWindow(FusionConstant.TRANSPARENT_WINDOW).destroyWindow()
+    } else {
+      router.back()
+    }
   }
 
   public isAttached(): boolean {
@@ -70,26 +68,26 @@ export default class FusionStackManager {
   }
 
   public notifyEnterForeground(): void {
-    // todo 待验证
-    // if (this.isContainerVisible()) {
-    //   Fusion.instance.engineBinding?.engine?.getLifecycleChannel()?.appIsResumed()
-    // }
+    if (!this.isEmpty()) {
+      Fusion.instance.engineBinding?.engine?.getLifecycleChannel()?.appIsResumed()
+    }
     Fusion.instance.engineBinding?.notifyEnterForeground()
   }
 
   public notifyEnterBackground(): void {
-    // todo 待验证
-    // Fusion.instance.engineBinding?.engine?.getLifecycleChannel()?.appIsPaused()
+    if (!this.isEmpty()) {
+      Fusion.instance.engineBinding?.engine?.getLifecycleChannel()?.appIsPaused()
+    }
     Fusion.instance.engineBinding?.notifyEnterBackground()
   }
 
-  public sendMessage(name: string, body?: Map<string, Object>): void {
+  public sendMessage(name: string, body: Map<string, Object> | null): void {
     // Native
     FusionNotificationBinding.instance.dispatchMessage(name, body)
     // Flutter
     const msg = new Map<string, Object | null>()
-    msg['name'] = name
-    msg['body'] = body
+    msg.set('name', name)
+    msg.set('body', body)
     Fusion.instance.engineBinding?.dispatchMessage(msg)
   }
 }
