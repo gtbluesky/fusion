@@ -15,11 +15,15 @@ Fusion 彻底解决了混合栈框架普遍存在的黑屏、白屏、闪屏等�
 
 此外，Fusion 也是目前仅有的支持混合开发时应用在后台被系统回收后，所有Flutter页面均可正常恢复的混合栈框架。
 
+
+| **系统平台**      | Android       | iOS | HarmonyOS |
+|---------------|---------------|-----|-------------|
+| **兼容版本** | 5.0(API 21) | 11  | 4.1(API 11) |
 ## 开始使用
 
 ### 0、准备
 
-在开始前需要按照 [Flutter 官方文档](https://docs.flutter.dev/development/add-to-app)，将 Flutter Module 项目接入到 Android 和 iOS 工程中。
+在开始前需要按照 [Flutter 官方文档](https://docs.flutter.dev/development/add-to-app)，将 Flutter Module 项目接入到 Android、iOS、HarmonyOS 工程中。
 
 ### 1、初始化
 

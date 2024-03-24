@@ -9,7 +9,7 @@ import CustomFusionEntry from './CustomFusionEntry';
 struct CustomFusionPage {
   private static TAG = 'CustomFusionPage'
   private flutterEntry: FusionEntry | null = null
-  private flutterView?: FlutterView
+  private flutterView: FlutterView | null = null
 
   override aboutToAppear() {
     this.flutterEntry = new CustomFusionEntry(getContext(this), router.getParams() as Record<string, Object>)
@@ -35,7 +35,10 @@ struct CustomFusionPage {
 
   override build() {
     Stack() {
-      FlutterPage({ viewId: this.flutterView?.getId() })
+      FlutterPage({
+        viewId: this.flutterView?.getId(),
+        // xComponentType: XComponentType.TEXTURE
+      })
     }
   }
 

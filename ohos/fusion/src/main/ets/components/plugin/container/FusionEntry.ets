@@ -30,7 +30,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   /* override */ isTransparent(): boolean {
-    return this._params[FusionConstant.EXTRA_BACKGROUND_MODE] as boolean
+    return (this._params[FusionConstant.EXTRA_BACKGROUND_MODE] ?? false) as boolean
   }
 
   /* override */ isAttached(): boolean {
@@ -140,8 +140,9 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
       top?.detachFromContainer()
     }
     await super.aboutToAppear()
-    const routeName = this._params[FusionConstant.ROUTE_NAME] as string
-    const routeArguments = this._params[FusionConstant.ROUTE_ARGUMENTS] as Map<string, Object>
+    const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
+    const routeArgsRecord = (this._params[FusionConstant.ROUTE_ARGUMENTS] ?? {}) as Record<string, Object>
+    const routeArguments = new Map<string, Object>(Object.entries(routeArgsRecord));
     if (this.isTransparent()) {
       window.findWindow(FusionConstant.TRANSPARENT_WINDOW).setWindowBackgroundColor('#00000000')
     }
@@ -193,7 +194,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     return this.engineBinding?.engine!
   }
 
-  providePlatformPlugin(flutterEngine: FlutterEngine): PlatformPlugin | undefined {
+  override providePlatformPlugin(flutterEngine: FlutterEngine): PlatformPlugin | undefined {
     return undefined
   }
 }

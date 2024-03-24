@@ -1,6 +1,5 @@
 import { FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import hilog from '@ohos.hilog';
-import { router, window } from '@kit.ArkUI';
 import { FusionEntry } from '@ohos/fusion';
 
 @Entry
@@ -8,7 +7,7 @@ import { FusionEntry } from '@ohos/fusion';
 struct TransparentFusionPage {
   private static TAG = 'TransparentFusionPage'
   private flutterEntry: FusionEntry | null = null
-  private flutterView?: FlutterView
+  private flutterView: FlutterView | null = null
 
   override aboutToAppear() {
     const storage = LocalStorage.getShared()
@@ -35,7 +34,10 @@ struct TransparentFusionPage {
 
   override build() {
     Stack() {
-      FlutterPage({ viewId: this.flutterView?.getId() })
+      FlutterPage({
+        viewId: this.flutterView?.getId(),
+        // xComponentType: XComponentType.TEXTURE
+      })
     }
   }
 

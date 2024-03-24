@@ -36,11 +36,11 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
                 )
             )
         }
-        activityMainBinding.tvFlutterViewpager.setOnClickListener {
-            startActivity(Intent(this, ViewPagerSceneActivity::class.java))
-        }
+//        activityMainBinding.tvFlutterViewpager.setOnClickListener {
+//            startActivity(Intent(this, ViewPagerSceneActivity::class.java))
+//        }
         activityMainBinding.tvFlutterTab.setOnClickListener {
-            startActivity(Intent(this, TabSceneActivity::class.java))
+            FusionNavigator.push("/native_tab_scene")
         }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
             if (!hasOpened) {

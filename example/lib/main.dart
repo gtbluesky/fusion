@@ -56,7 +56,6 @@ class MyApp extends StatelessWidget {
         routeMap: routeMap,
         customRouteMap: customRouteMap,
         // builder: EasyLoading.init(),
-        debugShowCheckedModeBanner: false,
         transitionDuration: const Duration(milliseconds: 400),
         reverseTransitionDuration: const Duration(milliseconds: 400),
         theme: ThemeData(

@@ -1,14 +1,14 @@
 package com.gtbluesky.fusion_example
 
+import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.FusionRouteDelegate
 import com.gtbluesky.fusion.container.buildFusionIntent
-import io.flutter.app.FlutterApplication
 
-class MyApplication : FlutterApplication(), FusionRouteDelegate {
+class MyApplication : Application(), FusionRouteDelegate {
     companion object {
         private const val TAG = "MyApplication"
     }
@@ -19,6 +19,7 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
     }
 
     override fun pushNativeRoute(name: String, arguments: Map<String, Any>?) {
+        Log.e(TAG, "pushNativeRoute: name=$name, arguments=${arguments}")
         when (name) {
             "/normal" -> {
                 val intent = Intent(applicationContext, NormalActivity::class.java)
@@ -28,8 +29,13 @@ class MyApplication : FlutterApplication(), FusionRouteDelegate {
                 }
                 startActivity(intent)
             }
-            else -> {
-                Log.e(TAG, "pushNativeRoute error, name=$name")
+
+            "/native_tab_scene" -> {
+                val intent = Intent(
+                    this,
+                    TabSceneActivity::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
         }
     }

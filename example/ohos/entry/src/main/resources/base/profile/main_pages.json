@@ -1,8 +1,8 @@
 {
   "src": [
-    "pages/Index",
-    "pages/NativePage",
+    "pages/IndexPage",
     "pages/CustomFusionPage",
-    "pages/TransparentFusionPage"
+    "pages/TransparentFusionPage",
+    "pages/TabScenePage"
   ]
 }

@@ -80,6 +80,7 @@ class _TestPageState extends State<TestPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         title: Text(widget.arguments?['title'] ?? '未知页面',
             style: const TextStyle(color: Colors.black, fontSize: 20)),
