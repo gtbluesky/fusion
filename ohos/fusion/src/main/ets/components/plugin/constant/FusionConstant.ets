@@ -1,6 +1,6 @@
 export default class FusionConstant {
   static ROUTE_NAME = 'ROUTE_NAME'
-  static ROUTE_ARGUMENTS = 'ROUTE_ARGUMENTS'
+  static ROUTE_ARGS = 'ROUTE_ARGS'
   static INITIAL_ROUTE = '/'
   static FUSION_CHANNEL = 'fusion_channel'
   static EXTRA_BACKGROUND_MODE = 'background_mode'

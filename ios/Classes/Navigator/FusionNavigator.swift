@@ -17,22 +17,22 @@ import Foundation
      * 打开新Flutter容器并将对应路由入栈
      * Native页面跳转Flutter页面使用该API
      */
-    public func open(_ name: String, arguments: Dictionary<String, Any>? = nil) {
-        Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+    public func open(_ name: String, args: Dictionary<String, Any>? = nil) {
+        Fusion.instance.delegate?.pushFlutterRoute(name: name, args: args)
     }
 
     /**
      * 在当前Flutter容器中将对应路由入栈
      */
-    public func push(_ name: String, arguments: Dictionary<String, Any>? = nil) {
-        Fusion.instance.engineBinding?.push(name, arguments: arguments)
+    public func push(_ name: String, args: Dictionary<String, Any>? = nil) {
+        Fusion.instance.engineBinding?.push(name, args: args)
     }
 
     /**
      * 在当前Flutter容器中将栈顶路由替换为对应路由
      */
-    public func replace(_ name: String, arguments: Dictionary<String, Any>? = nil) {
-        Fusion.instance.engineBinding?.replace(name, arguments: arguments)
+    public func replace(_ name: String, args: Dictionary<String, Any>? = nil) {
+        Fusion.instance.engineBinding?.replace(name, args: args)
     }
 
     /**

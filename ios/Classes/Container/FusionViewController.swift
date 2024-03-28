@@ -86,7 +86,7 @@ open class FusionViewController: FlutterViewController {
         engineBinding?.destroy(uniqueId)
     }
 
-    public init(routeName: String, routeArguments: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: UIColor? = nil) {
+    public init(routeName: String, routeArgs: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: UIColor? = nil) {
         if let backgroundColor = backgroundColor {
             self.backgroundColor = backgroundColor
         }
@@ -97,17 +97,17 @@ open class FusionViewController: FlutterViewController {
         engineBinding?.engine?.viewController = nil
         super.init(engine: engine, nibName: nil, bundle: nil)
         isViewOpaque = !transparent
-        engineBinding?.open(uniqueId, name: routeName, arguments: routeArguments)
+        engineBinding?.open(uniqueId, name: routeName, args: routeArgs)
         onContainerCreate()
     }
 
-    public convenience init(routeName: String, routeArguments: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: Int) {
+    public convenience init(routeName: String, routeArgs: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: Int) {
         let alpha = CGFloat((backgroundColor & 0xFF000000) >> 24) / 255.0
         let red = CGFloat((backgroundColor & 0xFF0000) >> 16) / 255.0
         let green = CGFloat((backgroundColor & 0xFF00) >> 8) / 255.0
         let blue = CGFloat(backgroundColor & 0xFF) / 255.0
         let bgColor = UIColor(red: red, green: green, blue: blue, alpha: alpha)
-        self.init(routeName: routeName, routeArguments: routeArguments, transparent: transparent, backgroundColor: bgColor)
+        self.init(routeName: routeName, routeArgs: routeArgs, transparent: transparent, backgroundColor: bgColor)
     }
 
     public required init(coder: NSCoder) {

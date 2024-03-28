@@ -18,13 +18,13 @@ class MyApplication : Application(), FusionRouteDelegate {
         Fusion.install(this, this)
     }
 
-    override fun pushNativeRoute(name: String, arguments: Map<String, Any>?) {
-        Log.e(TAG, "pushNativeRoute: name=$name, arguments=${arguments}")
+    override fun pushNativeRoute(name: String, args: Map<String, Any>?) {
+        Log.e(TAG, "pushNativeRoute: name=$name, args=${args}")
         when (name) {
             "/native_normal_scene" -> {
                 val intent = Intent(applicationContext, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                (arguments?.get("title") as? String).let {
+                (args?.get("title") as? String).let {
                     intent.putExtra("title", it)
                 }
                 startActivity(intent)
@@ -39,10 +39,10 @@ class MyApplication : Application(), FusionRouteDelegate {
         }
     }
 
-    override fun pushFlutterRoute(name: String, arguments: Map<String, Any>?) {
-        Log.d(TAG, "pushFlutterRoute: name=${name}, arguments=${arguments}")
-        val transparent = (arguments?.get("transparent") as? Boolean) ?: false
-        val backgroundColor = (arguments?.get("backgroundColor") as? Long) ?: Color.WHITE
+    override fun pushFlutterRoute(name: String, args: Map<String, Any>?) {
+        Log.d(TAG, "pushFlutterRoute: name=${name}, args=${args}")
+        val transparent = (args?.get("transparent") as? Boolean) ?: false
+        val backgroundColor = (args?.get("backgroundColor") as? Long) ?: Color.WHITE
         val clazz = if (transparent) {
             TransparentFusionActivity::class.java
         } else {
@@ -53,7 +53,7 @@ class MyApplication : Application(), FusionRouteDelegate {
                 applicationContext,
                 clazz,
                 name,
-                arguments,
+                args,
                 transparent,
                 backgroundColor.toInt()
             ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

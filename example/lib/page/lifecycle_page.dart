@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 
 class LifecyclePage extends StatefulWidget {
-  const LifecyclePage({Key? key, this.arguments}) : super(key: key);
+  const LifecyclePage({Key? key, this.args}) : super(key: key);
 
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
   @override
   State<LifecyclePage> createState() => _LifecyclePageState();
@@ -20,7 +20,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.arguments?['title'] ?? '未知页面',
+        title: Text(widget.args?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
             backgroundColor: Colors.blueGrey,
       ),

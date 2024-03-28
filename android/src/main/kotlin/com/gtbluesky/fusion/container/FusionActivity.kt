@@ -150,15 +150,15 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         super.onCreate(savedInstanceState)
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
-        val routeArguments =
-            intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
+        val routeArgs =
+            intent.getSerializableExtra(FusionConstant.ROUTE_ARGS) as? Map<String, Any>
         savedInstanceState?.getString(FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)?.let {
             uniqueId = it
         }
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? List<Map<String, Any?>>
         if (restoredHistory == null) {
-            engineBinding?.open(uniqueId, routeName, routeArguments)
+            engineBinding?.open(uniqueId, routeName, routeArgs)
         } else {
             engineBinding?.restore(uniqueId, restoredHistory)
         }

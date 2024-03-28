@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebPage extends StatefulWidget {
-  const WebPage({super.key});
+  const WebPage({super.key, this.args});
+
+  final Map<String, dynamic>? args;
 
   @override
   State<WebPage> createState() => _WebPageState();
@@ -43,7 +45,7 @@ class _WebPageState extends State<WebPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Simple Example')),
+      appBar: AppBar(title: Text(widget.args?['title'] ?? 'Flutter WebView')),
       body: WebViewWidget(controller: controller),
     );
   }

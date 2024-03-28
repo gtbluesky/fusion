@@ -176,8 +176,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 reply.reply(null)
                 return@setMessageHandler
             }
-            val arguments = message["arguments"] as? Map<String, Any>
-            Fusion.delegate.pushFlutterRoute(name, arguments)
+            val args = message["args"] as? Map<String, Any>
+            Fusion.delegate.pushFlutterRoute(name, args)
             reply.reply(null)
         }
         hostPush?.setMessageHandler { message, reply ->
@@ -190,8 +190,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 reply.reply(null)
                 return@setMessageHandler
             }
-            val arguments = message["arguments"] as? Map<String, Any>
-            Fusion.delegate.pushNativeRoute(name, arguments)
+            val args = message["args"] as? Map<String, Any>
+            Fusion.delegate.pushNativeRoute(name, args)
             reply.reply(null)
         }
         hostDestroy?.setMessageHandler { message, reply ->
@@ -262,20 +262,20 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     }
 
     // external function
-    fun push(name: String, arguments: Map<String, Any>?) {
+    fun push(name: String, args: Map<String, Any>?) {
         flutterPush?.send(
             mapOf(
                 "name" to name,
-                "arguments" to arguments
+                "args" to args
             )
         )
     }
 
-    fun replace(name: String, arguments: Map<String, Any>?) {
+    fun replace(name: String, args: Map<String, Any>?) {
         flutterReplace?.send(
             mapOf(
                 "name" to name,
-                "arguments" to arguments
+                "args" to args
             )
         )
     }
@@ -305,12 +305,12 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     }
 
     // internal function
-    fun open(uniqueId: String, name: String, arguments: Map<String, Any>? = null) {
+    fun open(uniqueId: String, name: String, args: Map<String, Any>? = null) {
         flutterOpen?.send(
             mapOf(
                 "uniqueId" to uniqueId,
                 "name" to name,
-                "arguments" to arguments
+                "args" to args
             )
         )
     }

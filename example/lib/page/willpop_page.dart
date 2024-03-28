@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 
 class WillPopPage extends StatefulWidget {
-  const WillPopPage({Key? key}) : super(key: key);
+  const WillPopPage({Key? key, this.args}) : super(key: key);
+
+  final Map<String, dynamic>? args;
 
   @override
   State<WillPopPage> createState() => _WillPopPageState();
@@ -44,7 +46,7 @@ class _WillPopPageState extends State<WillPopPage> {
       child: Scaffold(
         appBar: AppBar(
           title:
-              Text('返回拦截测试页面', style: AppBarTheme.of(context).titleTextStyle),
+              Text(widget.args?['title'] ?? '返回拦截测试页面', style: AppBarTheme.of(context).titleTextStyle),
         ),
         body: Center(
           child: Column(

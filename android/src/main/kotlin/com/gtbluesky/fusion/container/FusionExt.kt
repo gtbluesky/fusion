@@ -19,7 +19,7 @@ fun <T : FusionContainer> buildFusionIntent(
     context: Context,
     clazz: Class<T>,
     routeName: String,
-    routeArguments: Map<String, Any>? = null,
+    routeArgs: Map<String, Any>? = null,
     transparent: Boolean = false,
     @ColorInt backgroundColor: Int = Color.WHITE
 ): Intent {
@@ -32,7 +32,7 @@ fun <T : FusionContainer> buildFusionIntent(
         it.putExtra(FusionConstant.EXTRA_BACKGROUND_MODE, backgroundMode.name)
         it.putExtra(FusionConstant.EXTRA_DESTROY_ENGINE_WITH_ACTIVITY, false)
         it.putExtra(FusionConstant.ROUTE_NAME, routeName)
-        it.putExtra(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
+        it.putExtra(FusionConstant.ROUTE_ARGS, routeArgs as? Serializable)
         it.putExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, backgroundColor)
     }
 }
@@ -41,7 +41,7 @@ fun <T : FusionContainer> buildFusionIntent(
 fun <T : FusionFragment> buildFusionFragment(
     clazz: Class<T>,
     routeName: String,
-    routeArguments: Map<String, Any>? = null,
+    routeArgs: Map<String, Any>? = null,
     transparent: Boolean = false,
     @ColorInt backgroundColor: Int = Color.WHITE
 ): T {
@@ -51,7 +51,7 @@ fun <T : FusionFragment> buildFusionFragment(
         TransparencyMode.opaque
     }
     return FusionFragment.FusionFlutterFragmentBuilder(clazz)
-        .initialRoute(routeName, routeArguments)
+        .initialRoute(routeName, routeArgs)
         .backgroundColor(backgroundColor)
         .renderMode(RenderMode.texture)
         .transparencyMode(transparencyMode)

@@ -70,11 +70,11 @@ class FusionChannel {
         if (message is! Map) return null;
         String uniqueId = message['uniqueId'];
         String name = message['name'];
-        Map<String, dynamic>? arguments;
-        if (message['arguments'] != null) {
-          arguments = Map<String, dynamic>.from(message['arguments']);
+        Map<String, dynamic>? args;
+        if (message['args'] != null) {
+          args = Map<String, dynamic>.from(message['args']);
         }
-        FusionNavigatorDelegate.instance.open(uniqueId, name, arguments);
+        FusionNavigatorDelegate.instance.open(uniqueId, name, args);
         removeMaskView(uniqueId);
       });
       return null;
@@ -82,20 +82,20 @@ class FusionChannel {
     _flutterPush.setMessageHandler((message) async {
       if (message is! Map) return null;
       String name = message['name'];
-      Map<String, dynamic>? arguments;
-      if (message['arguments'] != null) {
-        arguments = Map<String, dynamic>.from(message['arguments']);
+      Map<String, dynamic>? args;
+      if (message['args'] != null) {
+        args = Map<String, dynamic>.from(message['args']);
       }
-      return FusionNavigatorDelegate.instance.push(name, arguments);
+      return FusionNavigatorDelegate.instance.push(name, args);
     });
     _flutterReplace.setMessageHandler((message) async {
       if (message is! Map) return null;
       String name = message['name'];
-      Map<String, dynamic>? arguments;
-      if (message['arguments'] != null) {
-        arguments = Map<String, dynamic>.from(message['arguments']);
+      Map<String, dynamic>? args;
+      if (message['args'] != null) {
+        args = Map<String, dynamic>.from(message['args']);
       }
-      return FusionNavigatorDelegate.instance.replace(name, arguments);
+      return FusionNavigatorDelegate.instance.replace(name, args);
     });
     _flutterPop.setMessageHandler((message) async {
       if (message is! Map) return;
@@ -218,7 +218,7 @@ class FusionChannel {
         .map((e) => {
               'uniqueId': e.uniqueId,
               'name': e.name,
-              'arguments': e.arguments,
+              'args': e.args,
             })
         .toList();
     if (history.length == 1) {
@@ -243,17 +243,17 @@ class FusionChannel {
     }
   }
 
-  Future open(String name, dynamic arguments) {
+  Future open(String name, dynamic args) {
     return _hostOpen.send({
       'name': name,
-      'arguments': arguments,
+      'args': args,
     });
   }
 
-  Future push(String name, dynamic arguments) async {
+  Future push(String name, dynamic args) async {
     return _hostPush.send({
       'name': name,
-      'arguments': arguments,
+      'args': args,
     });
   }
 

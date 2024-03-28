@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 
 class RefreshPage extends StatefulWidget {
-  const RefreshPage({Key? key}) : super(key: key);
+  const RefreshPage({Key? key, this.args}) : super(key: key);
+
+  final Map<String, dynamic>? args;
 
   @override
   State<RefreshPage> createState() => _RefreshPageState();
@@ -32,7 +34,7 @@ class _RefreshPageState extends State<RefreshPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EasyRefresh'),
+        title: Text(widget.args?['title'] ?? 'EasyRefresh'),
       ),
       body: EasyRefresh(
         controller: _controller,

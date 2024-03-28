@@ -13,27 +13,27 @@ class FusionNavigator {
   /// Open a new container and push a new flutter page on the route stack.
   Future open(
     String routeName, [
-    Map<String, dynamic>? routeArguments,
+    Map<String, dynamic>? routeArgs,
   ]) {
-    return FusionChannel.instance.open(routeName, routeArguments);
+    return FusionChannel.instance.open(routeName, routeArgs);
   }
 
   /// Push a new flutter page in the current container.
   Future<T?> push<T extends Object?>(
     String routeName, [
-    Map<String, dynamic>? routeArguments,
+    Map<String, dynamic>? routeArgs,
   ]) async {
-    return FusionNavigatorDelegate.instance.push(routeName, routeArguments);
+    return FusionNavigatorDelegate.instance.push(routeName, routeArgs);
   }
 
   /// Replace a designated flutter page with a new flutter page in the current container.
   Future<T?> replace<T extends Object?>(
     String routeName, [
-    Map<String, dynamic>? routeArguments,
+    Map<String, dynamic>? routeArgs,
     bool animated = false,
   ]) async {
     return FusionNavigatorDelegate.instance
-        .replace(routeName, routeArguments, animated);
+        .replace(routeName, routeArgs, animated);
   }
 
   /// Pop in the current container.

@@ -57,10 +57,10 @@ class NormalViewController: UIViewController {
     }
 
     @objc func btnClick3(btn: UIButton) {
-        FusionNavigator.instance.open("/test", arguments: ["title": "New Flutter Page"])
+        FusionNavigator.instance.open("/test", args: ["title": "New Flutter Page"])
     }
 
     @objc func btnClick4(btn: UIButton) {
-        FusionNavigator.instance.open("/transparent", arguments: ["title": "Transparent Flutter Page", "transparent": true])
+        FusionNavigator.instance.open("/transparent", args: ["title": "Transparent Flutter Page", "transparent": true])
     }
 }

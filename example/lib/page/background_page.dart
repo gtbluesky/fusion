@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 
 class BackgroundPage extends StatefulWidget {
-  const BackgroundPage({Key? key, this.arguments}) : super(key: key);
+  const BackgroundPage({Key? key, this.args}) : super(key: key);
 
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
   @override
   State<BackgroundPage> createState() => _BackgroundPageState();
@@ -13,7 +13,7 @@ class BackgroundPage extends StatefulWidget {
 
 class _BackgroundPageState extends State<BackgroundPage> {
   int get backgroundColor =>
-      widget.arguments?['backgroundColor'] ?? Colors.white.value;
+      widget.args?['backgroundColor'] ?? Colors.white.value;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class _BackgroundPageState extends State<BackgroundPage> {
       backgroundColor: Color(backgroundColor),
       appBar: AppBar(
         backgroundColor: Color(backgroundColor),
-        title: Text('自定义背景色', style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(widget.args?['title'] ??'自定义背景色', style: AppBarTheme.of(context).titleTextStyle),
       ),
       body: Center(
         child: Column(

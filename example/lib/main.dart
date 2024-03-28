@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/background_page.dart';
@@ -58,6 +59,15 @@ class MyApp extends StatelessWidget {
         // builder: EasyLoading.init(),
         transitionDuration: const Duration(milliseconds: 400),
         reverseTransitionDuration: const Duration(milliseconds: 400),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        supportedLocales: const [
+          Locale('en', 'US'),
+          Locale('zh', 'CN'),
+        ],
         theme: ThemeData(
             pageTransitionsTheme:
                 const PageTransitionsTheme(builders: _defaultBuilders)),
@@ -67,23 +77,23 @@ class MyApp extends StatelessWidget {
 }
 
 final Map<String, FusionPageFactory> routeMap = {
-  '/test': (arguments) => TestPage(arguments: arguments),
-  '/list': (arguments) => ListPage(arguments: arguments),
-  '/lifecycle': (arguments) => LifecyclePage(arguments: arguments),
-  '/willpop': ((_) => const WillPopPage()),
-  '/web': (_) => const WebPage(),
-  '/transparent': (arguments) => TransparentPage(arguments: arguments),
-  '/background': (arguments) => BackgroundPage(arguments: arguments),
-  '/refresh': (_) => const RefreshPage(),
-  kUnknownRoute: (arguments) => UnknownPage(arguments: arguments),
+  '/test': (args) => TestPage(args: args),
+  '/list': (args) => ListPage(args: args),
+  '/lifecycle': (args) => LifecyclePage(args: args),
+  '/willpop': ((args) => WillPopPage(args: args)),
+  '/web': (args) => WebPage(args: args),
+  '/transparent': (args) => TransparentPage(args: args),
+  '/background': (args) => BackgroundPage(args: args),
+  '/refresh': (args) => RefreshPage(args: args),
+  kUnknownRoute: (args) => UnknownPage(args: args),
 };
 
 final Map<String, FusionPageCustomFactory> customRouteMap = {
   '/navigator': (settings) => PageRouteBuilder(
       opaque: false,
       settings: settings,
-      pageBuilder: (_, __, ___) => NavigatorPage(
-          arguments: settings.arguments as Map<String, dynamic>?)),
+      pageBuilder: (_, __, ___) =>
+          NavigatorPage(args: settings.arguments as Map<String, dynamic>?)),
 };
 
 const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =

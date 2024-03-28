@@ -48,8 +48,8 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
     override fun createFlutterFragment(): FlutterFragment {
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
-        val routeArguments =
-            intent.getSerializableExtra(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
+        val routeArgs =
+            intent.getSerializableExtra(FusionConstant.ROUTE_ARGS) as? Map<String, Any>
         val transparencyMode = if (backgroundMode == BackgroundMode.opaque) {
             TransparencyMode.opaque
         } else {
@@ -60,7 +60,7 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
             window.setBackgroundDrawable(ColorDrawable(backgroundColor))
         }
         return FusionFragment.FusionFlutterFragmentBuilder(FusionFragment::class.java)
-            .initialRoute(routeName, routeArguments)
+            .initialRoute(routeName, routeArgs)
             .backgroundColor(backgroundColor)
             .renderMode(RenderMode.texture)
             .transparencyMode(transparencyMode)

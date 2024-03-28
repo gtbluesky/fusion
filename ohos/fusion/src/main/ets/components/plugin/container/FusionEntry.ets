@@ -141,12 +141,12 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     }
     await super.aboutToAppear()
     const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
-    const routeArgsRecord = (this._params[FusionConstant.ROUTE_ARGUMENTS] ?? {}) as Record<string, Object>
-    const routeArguments = new Map<string, Object>(Object.entries(routeArgsRecord));
+    const routeArgsRecord = (this._params[FusionConstant.ROUTE_ARGS] ?? {}) as Record<string, Object>
+    const routeArgs = new Map<string, Object>(Object.entries(routeArgsRecord));
     if (this.isTransparent()) {
       window.findWindow(FusionConstant.TRANSPARENT_WINDOW).setWindowBackgroundColor('#00000000')
     }
-    this.engineBinding?.open(this._uniqueId, routeName, routeArguments)
+    this.engineBinding?.open(this._uniqueId, routeName, routeArgs)
     this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
   }

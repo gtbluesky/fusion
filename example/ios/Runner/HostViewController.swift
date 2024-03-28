@@ -58,11 +58,11 @@ class HostViewController: UIViewController {
 //    }
 
     @IBAction func click0(_ sender: UIButton) {
-        FusionNavigator.instance.open("/test", arguments: ["title": "iOS Flutter Page"])
+        FusionNavigator.instance.open("/test", args: ["title": "iOS Flutter Page"])
     }
 
     @IBAction func click1(_ sender: Any) {
-        FusionNavigator.instance.open("/transparent", arguments: ["title": "iOS Flutter Page", "transparent": true])
+        FusionNavigator.instance.open("/transparent", args: ["title": "iOS Flutter Page", "transparent": true])
     }
 
     @IBAction func click2(_ sender: Any) {
@@ -70,7 +70,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click3(_ sender: Any) {
-        let fusionVc = CustomViewController(routeName: "/lifecycle", routeArguments: nil)
+        let fusionVc = CustomViewController(routeName: "/lifecycle", routeArgs: nil)
         presentLeftDrawer(fusionVc, animated: true)
     }
 }

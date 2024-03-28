@@ -180,7 +180,7 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const args = message.get('arguments') as Map<string, Object> | null
+        const args = message.get('args') as Map<string, Object> | null
         Fusion.instance.delegate?.pushFlutterRoute(name, args)
         reply.reply(null)
       }
@@ -196,7 +196,7 @@ export default class FusionEngineBinding {
           reply.reply(null)
           return
         }
-        const args = message.get('arguments') as Map<string, Object> | null
+        const args = message.get('args') as Map<string, Object> | null
         Fusion.instance.delegate?.pushNativeRoute(name, args)
         reply.reply(null)
       }
@@ -283,14 +283,14 @@ export default class FusionEngineBinding {
   push(name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
     map.set('name', name)
-    map.set('arguments', args)
+    map.set('args', args)
     this.flutterPush?.send(map)
   }
 
   replace(name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
     map.set('name', name)
-    map.set('arguments', args)
+    map.set('args', args)
     this.flutterReplace?.send(map)
   }
 
@@ -317,7 +317,7 @@ export default class FusionEngineBinding {
     const map = new Map<string, Object | null>()
     map.set('uniqueId', uniqueId)
     map.set('name', name)
-    map.set('arguments', args)
+    map.set('args', args)
     this.flutterOpen?.send(map)
   }
 

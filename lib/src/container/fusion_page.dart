@@ -23,21 +23,21 @@ class FusionPage<T> extends Page<T> {
 
   bool get isVisible => container.isVisible && container.topPage == this;
 
-  FusionPage({LocalKey? key, name, arguments})
-      : pageEntity = FusionPageEntity(name, arguments),
-        super(key: key, name: name, arguments: arguments);
+  FusionPage({LocalKey? key, String? name, dynamic args})
+      : pageEntity = FusionPageEntity(name ?? '', args),
+        super(key: key, name: name, arguments: args);
 
   static FusionPage<dynamic> createPage(
     String name, [
-    Map<String, dynamic>? arguments,
+    Map<String, dynamic>? args,
     bool animated = true,
   ]) {
-    final page = FusionPage(key: UniqueKey(), name: name, arguments: arguments);
+    final page = FusionPage(key: UniqueKey(), name: name, args: args);
     page._animated = animated;
     final routeMap = FusionNavigatorDelegate.instance.routeMap;
     var pageFactory = routeMap?[name];
     if (pageFactory != null) {
-      final pageWidget = pageFactory(arguments);
+      final pageWidget = pageFactory(args);
       page._route = FusionPageRoute(page: page, child: pageWidget);
       return page;
     }
@@ -50,7 +50,7 @@ class FusionPage<T> extends Page<T> {
     }
     pageFactory = routeMap?[kUnknownRoute];
     if (pageFactory != null) {
-      final pageWidget = pageFactory(arguments);
+      final pageWidget = pageFactory(args);
       page._route = FusionPageRoute(page: page, child: pageWidget);
       return page;
     }
@@ -83,9 +83,9 @@ class FusionPage<T> extends Page<T> {
 class FusionPageEntity {
   final uniqueId = 'page_${DateTime.now().millisecondsSinceEpoch}';
   final String name;
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
-  FusionPageEntity(this.name, this.arguments);
+  FusionPageEntity(this.name, this.args);
 }
 
 class FusionPageRoute<T> extends PageRoute<T>

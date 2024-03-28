@@ -9,7 +9,7 @@ import Foundation
 
 internal struct FusionConstant {
     static let ROUTE_NAME = "ROUTE_NAME"
-    static let ROUTE_ARGUMENTS = "ROUTE_ARGUMENTS"
+    static let ROUTE_ARGS = "ROUTE_ARGS"
     static let INITIAL_ROUTE = "/"
     static let FUSION_CHANNEL = "fusion_channel"
     static let OverlayStyleUpdateNotificationKey = "io.flutter.plugin.platform.SystemChromeOverlayNotificationKey"

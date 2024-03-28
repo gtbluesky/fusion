@@ -178,15 +178,15 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         super.onCreate(savedInstanceState)
         val routeName =
             arguments?.getString(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
-        val routeArguments =
-            arguments?.getSerializable(FusionConstant.ROUTE_ARGUMENTS) as? Map<String, Any>
+        val routeArgs =
+            arguments?.getSerializable(FusionConstant.ROUTE_ARGS) as? Map<String, Any>
         savedInstanceState?.getString(FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)?.let {
             uniqueId = it
         }
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? List<Map<String, Any>>
         if (restoredHistory == null) {
-            engineBinding?.open(uniqueId, routeName, routeArguments)
+            engineBinding?.open(uniqueId, routeName, routeArgs)
         } else {
             engineBinding?.restore(uniqueId, restoredHistory)
         }
@@ -301,16 +301,16 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     internal class FusionFlutterFragmentBuilder(fragmentClass: Class<out FusionFragment>) :
         NewEngineFragmentBuilder(fragmentClass) {
         private var routeName: String = FusionConstant.INITIAL_ROUTE
-        private var routeArguments: Map<String, Any>? = null
+        private var routeArgs: Map<String, Any>? = null
         @ColorInt
         private var backgroundColor = Color.WHITE
 
         fun initialRoute(
             name: String,
-            arguments: Map<String, Any>?
+            args: Map<String, Any>?
         ): FusionFlutterFragmentBuilder {
             routeName = name
-            routeArguments = arguments
+            routeArgs = args
             return this
         }
 
@@ -322,7 +322,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         override fun createArgs(): Bundle {
             return super.createArgs().also {
                 it.putString(FusionConstant.ROUTE_NAME, routeName)
-                it.putSerializable(FusionConstant.ROUTE_ARGUMENTS, routeArguments as? Serializable)
+                it.putSerializable(FusionConstant.ROUTE_ARGS, routeArgs as? Serializable)
                 it.putBoolean(FusionConstant.ARG_DESTROY_ENGINE_WITH_FRAGMENT, false)
                 it.putInt(FusionConstant.EXTRA_BACKGROUND_COLOR, backgroundColor)
             }

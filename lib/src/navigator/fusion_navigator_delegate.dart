@@ -25,10 +25,10 @@ class FusionNavigatorDelegate {
   void open(
     String uniqueId,
     String routeName, [
-    Map<String, dynamic>? arguments,
+    Map<String, dynamic>? args,
   ]) {
     /// Create a container and a page
-    FusionPage page = FusionPage.createPage(routeName, arguments);
+    FusionPage page = FusionPage.createPage(routeName, args);
     FusionContainer container = FusionContainer(uniqueId, page);
 
     /// Insert an overlay into the container
@@ -40,7 +40,7 @@ class FusionNavigatorDelegate {
 
   Future<T?> push<T extends Object?>(
     String routeName, [
-    Map<String, dynamic>? arguments,
+    Map<String, dynamic>? args,
   ]) async {
     if (isFlutterPage(routeName)) {
       FusionContainer? container = FusionOverlayManager.instance.topContainer();
@@ -51,7 +51,7 @@ class FusionNavigatorDelegate {
         /// Sync
         FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
       });
-      final page = FusionPage.createPage(routeName, arguments);
+      final page = FusionPage.createPage(routeName, args);
 
       /// Page's Visibility Change
       final previousRoute = FusionOverlayManager.instance.topRoute;
@@ -60,14 +60,14 @@ class FusionNavigatorDelegate {
       return await container.push<dynamic>(page);
     } else {
       /// Notify native's pushNativeRoute
-      FusionChannel.instance.push(routeName, arguments);
+      FusionChannel.instance.push(routeName, args);
       return null;
     }
   }
 
   Future<T?> replace<T extends Object?>(
     String routeName, [
-    Map<String, dynamic>? arguments,
+    Map<String, dynamic>? args,
     bool animated = false,
   ]) async {
     final topRoute = FusionOverlayManager.instance.topRoute;
@@ -81,7 +81,7 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     });
-    final page = FusionPage.createPage(routeName, arguments, animated);
+    final page = FusionPage.createPage(routeName, args, animated);
 
     /// Page's Visibility Change
     final oldRoute = topRoute;
@@ -165,8 +165,8 @@ class FusionNavigatorDelegate {
     final pages = <FusionPage>[];
     for (final map in history) {
       String routeName = map['name'];
-      final arguments = (map['arguments'] as Map?)?.cast<String, dynamic>();
-      final page = FusionPage.createPage(routeName, arguments);
+      final args = (map['args'] as Map?)?.cast<String, dynamic>();
+      final page = FusionPage.createPage(routeName, args);
       pages.add(page);
     }
     final container = FusionContainer.restore(uniqueId, pages);
@@ -195,8 +195,8 @@ class FusionNavigatorDelegate {
       final pages = <FusionPage>[];
       for (final map in history) {
         String routeName = map['name'];
-        final arguments = (map['arguments'] as Map?)?.cast<String, dynamic>();
-        final page = FusionPage.createPage(routeName, arguments);
+        final args = (map['args'] as Map?)?.cast<String, dynamic>();
+        final page = FusionPage.createPage(routeName, args);
         pages.add(page);
       }
       if (pages.isEmpty) {

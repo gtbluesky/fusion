@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 
 class NavigatorPage extends StatefulWidget {
-  const NavigatorPage({Key? key, this.arguments}) : super(key: key);
+  const NavigatorPage({Key? key, this.args}) : super(key: key);
 
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
   @override
   State<NavigatorPage> createState() => _NavigatorPageState();
@@ -17,7 +17,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.arguments?['title'] ?? '未知页面',
+        title: Text(widget.args?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
       ),
       body: Center(

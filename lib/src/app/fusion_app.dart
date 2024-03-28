@@ -7,7 +7,7 @@ import 'package:fusion/src/fusion.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
-typedef FusionPageFactory = Widget Function(Map<String, dynamic>? arguments);
+typedef FusionPageFactory = Widget Function(Map<String, dynamic>? args);
 typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);
 
 /// Default App Widget instead of MaterialApp.

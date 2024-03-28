@@ -10,8 +10,8 @@ object FusionNavigator {
      */
     @JvmStatic
     @JvmOverloads
-    fun open(name: String, arguments: Map<String, Any>? = null) {
-        Fusion.delegate.pushFlutterRoute(name, arguments)
+    fun open(name: String, args: Map<String, Any>? = null) {
+        Fusion.delegate.pushFlutterRoute(name, args)
     }
 
     /**
@@ -19,8 +19,8 @@ object FusionNavigator {
      */
     @JvmStatic
     @JvmOverloads
-    fun push(name: String, arguments: Map<String, Any>? = null) {
-        Fusion.engineBinding?.push(name, arguments)
+    fun push(name: String, args: Map<String, Any>? = null) {
+        Fusion.engineBinding?.push(name, args)
     }
 
     /**
@@ -28,8 +28,8 @@ object FusionNavigator {
      */
     @JvmStatic
     @JvmOverloads
-    fun replace(name: String, arguments: Map<String, Any>? = null) {
-        Fusion.engineBinding?.replace(name, arguments)
+    fun replace(name: String, args: Map<String, Any>? = null) {
+        Fusion.engineBinding?.replace(name, args)
     }
 
     /**

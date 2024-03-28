@@ -8,6 +8,6 @@
 import Foundation
 
 @objc public protocol FusionRouteDelegate {
-    func pushNativeRoute(name: String, arguments: Dictionary<String, Any>?)
-    func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?)
+    func pushNativeRoute(name: String, args: Dictionary<String, Any>?)
+    func pushFlutterRoute(name: String, args: Dictionary<String, Any>?)
 }

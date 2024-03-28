@@ -7,11 +7,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fusion/fusion.dart';
 
 class TestPage extends StatefulWidget {
-  TestPage({Key? key, this.arguments}) : super(key: key) {
+  TestPage({Key? key, this.args}) : super(key: key) {
     _channel = const MethodChannel('fusion');
   }
 
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
   late final MethodChannel _channel;
 
@@ -82,7 +82,7 @@ class _TestPageState extends State<TestPage>
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
-        title: Text(widget.arguments?['title'] ?? '未知页面',
+        title: Text(widget.args?['title'] ?? '未知页面',
             style: const TextStyle(color: Colors.black, fontSize: 20)),
       ),
       body: ListView(

@@ -6,11 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:fusion/fusion.dart';
 
 class TransparentPage extends StatefulWidget {
-  TransparentPage({Key? key, this.arguments}) : super(key: key) {
+  TransparentPage({Key? key, this.args}) : super(key: key) {
     _channel = const MethodChannel('fusion');
   }
 
-  final Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? args;
 
   late final MethodChannel _channel;
 
@@ -80,7 +80,7 @@ class _TransparentPageState extends State<TransparentPage>
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(widget.arguments?['title'] ?? '未知页面',
+        title: Text(widget.args?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
       ),
       body: Center(

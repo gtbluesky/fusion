@@ -41,8 +41,8 @@ import fusion
 //        return nav
 //    }
 
-    func pushNativeRoute(name: String, arguments: Dictionary<String, Any>?) {
-        NSLog("pushNativeRoute: name=\(name), arguments=\(arguments)")
+    func pushNativeRoute(name: String, args: Dictionary<String, Any>?) {
+        NSLog("pushNativeRoute: name=\(name), args=\(args)")
         let navController = self.window?.rootViewController as? UINavigationController
         if name == "/native_normal_scene" {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -54,12 +54,12 @@ import fusion
         }
     }
 
-    func pushFlutterRoute(name: String, arguments: Dictionary<String, Any>?) {
-        NSLog("pushFlutterRoute: name=\(name), arguments=\(arguments)")
-        let transparent = arguments?["transparent"] as? Bool ?? false
-        let backgroundColor = arguments?["backgroundColor"] as? Int ?? 0xFFFFFFFF
+    func pushFlutterRoute(name: String, args: Dictionary<String, Any>?) {
+        NSLog("pushFlutterRoute: name=\(name), args=\(args)")
+        let transparent = args?["transparent"] as? Bool ?? false
+        let backgroundColor = args?["backgroundColor"] as? Int ?? 0xFFFFFFFF
         let navController = self.window?.rootViewController as? UINavigationController
-        let fusionVc = CustomViewController(routeName: name, routeArguments: arguments, transparent: transparent, backgroundColor: backgroundColor)
+        let fusionVc = CustomViewController(routeName: name, routeArgs: args, transparent: transparent, backgroundColor: backgroundColor)
         if transparent {
             navController?.present(fusionVc, animated: false)
         } else {

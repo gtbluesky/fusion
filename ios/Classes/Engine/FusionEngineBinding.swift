@@ -82,8 +82,8 @@ internal class FusionEngineBinding: NSObject {
                 reply(nil)
                 return
             }
-            let arguments = dict["arguments"] as? Dictionary<String, Any>
-            Fusion.instance.delegate?.pushFlutterRoute(name: name, arguments: arguments)
+            let args = dict["args"] as? Dictionary<String, Any>
+            Fusion.instance.delegate?.pushFlutterRoute(name: name, args: args)
             reply(nil)
         }
         hostPush?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
@@ -91,8 +91,8 @@ internal class FusionEngineBinding: NSObject {
                 reply(nil)
                 return
             }
-            let arguments = dict["arguments"] as? Dictionary<String, Any>
-            Fusion.instance.delegate?.pushNativeRoute(name: name, arguments: arguments)
+            let args = dict["args"] as? Dictionary<String, Any>
+            Fusion.instance.delegate?.pushNativeRoute(name: name, args: args)
             reply(nil)
         }
         hostDestroy?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
@@ -145,17 +145,17 @@ internal class FusionEngineBinding: NSObject {
     }
 
     // external function
-    func push(_ name: String, arguments: Dictionary<String, Any>?) {
+    func push(_ name: String, args: Dictionary<String, Any>?) {
         flutterPush?.sendMessage([
             "name": name,
-            "arguments": arguments as Any
+            "args": args as Any
         ])
     }
 
-    func replace(_ name: String, arguments: Dictionary<String, Any>?) {
+    func replace(_ name: String, args: Dictionary<String, Any>?) {
         flutterReplace?.sendMessage([
             "name": name,
-            "arguments": arguments as Any
+            "args": args as Any
         ])
     }
 
@@ -186,11 +186,11 @@ internal class FusionEngineBinding: NSObject {
         (UIApplication.roofViewController as? FusionPopGestureHandler)?.disablePopGesture()
     }
 
-    func open(_ uniqueId: String, name: String, arguments: Dictionary<String, Any>?) {
+    func open(_ uniqueId: String, name: String, args: Dictionary<String, Any>?) {
         flutterOpen?.sendMessage([
             "uniqueId": uniqueId,
             "name": name,
-            "arguments": arguments as Any
+            "args": args as Any
         ])
     }
 
