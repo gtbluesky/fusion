@@ -22,30 +22,39 @@ class TabSceneActivity : FragmentActivity() {
         val fragment0 = buildFusionFragment(
             CustomFusionFragment::class.java,
             "/background",
-            mapOf("backgroundColor" to 0xFF546E7A),
+            mapOf(
+                "title" to "Flutter Tab0",
+                "backgroundColor" to 0xFF546E7A
+            ),
             backgroundColor = 0xFF546E7A.toInt()
         )
         val fragment1 = buildFusionFragment(
             FusionFragment::class.java,
             "/lifecycle",
-            mapOf("title" to "flutter1")
+            mapOf("title" to "Flutter Tab1")
         )
         val fragment2 =
-            buildFusionFragment(FusionFragment::class.java, "/web", mapOf("title" to "flutter2"))
+            buildFusionFragment(
+                FusionFragment::class.java,
+                "/web",
+                mapOf("title" to "Flutter Tab2")
+            )
         binding.rgVp.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                binding.rbHome.id -> {
+                binding.rbTab0.id -> {
                     showFragment(fragment0)
                 }
-                binding.rbMsg.id -> {
+
+                binding.rbTab1.id -> {
                     showFragment(fragment1)
                 }
-                binding.rbMy.id -> {
+
+                binding.rbTab2.id -> {
                     showFragment(fragment2)
                 }
             }
         }
-        binding.rbHome.isChecked = true
+        binding.rbTab0.isChecked = true
         showFragment(fragment0)
     }
 

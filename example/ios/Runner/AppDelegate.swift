@@ -49,7 +49,7 @@ import fusion
             let vc = storyboard.instantiateViewController(withIdentifier: "HostVC")
             navController?.pushViewController(vc, animated: true)
         } else if name == "/native_tab_scene" {
-            let vc = TabSceneController()
+            let vc = TabSceneViewController()
             navController?.pushViewController(vc, animated: true)
         }
     }
@@ -59,7 +59,7 @@ import fusion
         let transparent = args?["transparent"] as? Bool ?? false
         let backgroundColor = args?["backgroundColor"] as? Int ?? 0xFFFFFFFF
         let navController = self.window?.rootViewController as? UINavigationController
-        let fusionVc = CustomViewController(routeName: name, routeArgs: args, transparent: transparent, backgroundColor: backgroundColor)
+        let fusionVc = CustomFusionViewController(routeName: name, routeArgs: args, transparent: transparent, backgroundColor: backgroundColor)
         if transparent {
             navController?.present(fusionVc, animated: false)
         } else {

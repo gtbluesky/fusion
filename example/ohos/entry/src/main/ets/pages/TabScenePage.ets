@@ -11,9 +11,33 @@ struct TabScenePage {
 
   aboutToAppear(): void {
     const context = getContext(this)
-    const flutterEntry0 = new CustomFusionEntry(context, buildFusionParams('/lifecycle'))
-    const flutterEntry1 = new FusionEntry(context, buildFusionParams('/lifecycle'))
-    const flutterEntry2 = new FusionEntry(context, buildFusionParams('/web'))
+    const flutterEntry0 = new CustomFusionEntry(
+      context,
+      buildFusionParams(
+        '/background',
+        new Map<string, Object>([
+          ['title', 'Flutter Tab0'],
+          ['backgroundColor', 0xFF546E7A]]),
+      )
+    )
+    const flutterEntry1 = new FusionEntry(
+      context,
+      buildFusionParams(
+        '/lifecycle',
+        new Map<string, Object>([
+          ['title', 'Flutter Tab1']
+        ])
+      )
+    )
+    const flutterEntry2 = new FusionEntry(
+      context,
+      buildFusionParams(
+        '/web',
+        new Map<string, Object>([
+          ['title', 'Flutter Tab2']
+        ])
+      )
+    )
     this.flutterEntryList.add(flutterEntry0)
     this.flutterEntryList.add(flutterEntry1)
     this.flutterEntryList.add(flutterEntry2)
@@ -30,15 +54,17 @@ struct TabScenePage {
       TabContent() {
         FlutterPage({ viewId: this.flutterEntryList.get(0).getFlutterView()?.getId() })
       }
-      .tabBar('首页')
+      .tabBar('Tab0')
+
       TabContent() {
         FlutterPage({ viewId: this.flutterEntryList.get(1).getFlutterView()?.getId() })
       }
-      .tabBar('推荐')
+      .tabBar('Tab1')
+
       TabContent() {
         FlutterPage({ viewId: this.flutterEntryList.get(2).getFlutterView()?.getId() })
       }
-      .tabBar('发现')
+      .tabBar('Tab2')
     }
     .scrollable(false)
     .animationDuration(0)

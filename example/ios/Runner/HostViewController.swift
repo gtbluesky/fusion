@@ -70,7 +70,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click3(_ sender: Any) {
-        let fusionVc = CustomViewController(routeName: "/lifecycle", routeArgs: nil)
+        let fusionVc = CustomFusionViewController(routeName: "/lifecycle", routeArgs: nil)
         presentLeftDrawer(fusionVc, animated: true)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  MultiViewController.swift
+//  TabSceneViewController.swift
 //  Runner
 //
 //  Created by gtbluesky on 2022/3/17.
@@ -8,14 +8,36 @@
 import Foundation
 import fusion
 
-class TabSceneController: UITabBarController, FusionPopGestureHandler {
-
+class TabSceneViewController: UITabBarController, FusionPopGestureHandler {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tabBar.isTranslucent = false
-        addChildVC(childVC: CustomViewController(routeName: "/background", routeArgs: ["backgroundColor": 0xFF546E7A], backgroundColor: 0xFF546E7A), title: "主页")
-        addChildVC(childVC: CustomViewController(routeName: "/lifecycle", routeArgs: ["title": "flutter1"]), title: "消息")
-        addChildVC(childVC: CustomViewController(routeName: "/web", routeArgs: ["title": "flutter2"]), title: "我的")
+        addChildVC(
+            childVC: CustomFusionViewController(
+                routeName: "/background",
+                routeArgs: [
+                    "title": "Flutter Tab0",
+                    "backgroundColor": 0xFF546E7A
+                ],
+                backgroundColor: 0xFF546E7A
+            ),
+            title: "Tab0"
+        )
+        addChildVC(
+            childVC: FusionViewController(
+                routeName: "/lifecycle",
+                routeArgs: ["title": "Flutter Tab1"]
+            ),
+            title: "Tab1"
+        )
+        addChildVC(
+            childVC: FusionViewController(
+                routeName: "/web",
+                routeArgs: ["title": "Flutter Tab2"]
+            ),
+            title: "Tab2"
+        )
     }
 
     private func addChildVC(childVC: FusionViewController, title: String) {

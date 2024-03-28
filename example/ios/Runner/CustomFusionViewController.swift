@@ -1,5 +1,5 @@
 //
-//  CustomViewController.swift
+//  CustomFusionViewController.swift
 //  Runner
 //
 //  Created by gtbluesky on 2022/3/14.
@@ -8,7 +8,7 @@
 import Foundation
 import fusion
 
-class CustomViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler {
+class CustomFusionViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler {
 //class CustomViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler, UIViewControllerRestoration {
 
     private var channel: FlutterMethodChannel? = nil

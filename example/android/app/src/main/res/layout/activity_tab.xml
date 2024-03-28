@@ -19,7 +19,7 @@
         android:gravity="center_vertical">
 
         <RadioButton
-            android:id="@+id/rb_home"
+            android:id="@+id/rb_tab0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -28,12 +28,12 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="主页"
+            android:text="Tab0"
             android:textColor="@color/selector_rg"
             android:textSize="16sp" />
 
         <RadioButton
-            android:id="@+id/rb_msg"
+            android:id="@+id/rb_tab1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -41,12 +41,12 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="消息"
+            android:text="Tab1"
             android:textColor="@color/selector_rg"
             android:textSize="16sp" />
 
         <RadioButton
-            android:id="@+id/rb_my"
+            android:id="@+id/rb_tab2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -54,7 +54,7 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="我的"
+            android:text="Tab2"
             android:textColor="@color/selector_rg"
             android:textSize="16sp" />
     </RadioGroup>
