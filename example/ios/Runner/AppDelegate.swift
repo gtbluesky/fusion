@@ -44,8 +44,12 @@ import fusion
     func pushNativeRoute(name: String, arguments: Dictionary<String, Any>?) {
         NSLog("pushNativeRoute: name=\(name), arguments=\(arguments)")
         let navController = self.window?.rootViewController as? UINavigationController
-        if name == "/normal" {
-            let vc = NormalViewController()
+        if name == "/native_normal_scene" {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "HostVC")
+            navController?.pushViewController(vc, animated: true)
+        } else if name == "/native_tab_scene" {
+            let vc = TabSceneController()
             navController?.pushViewController(vc, animated: true)
         }
     }

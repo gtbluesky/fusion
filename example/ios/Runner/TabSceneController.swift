@@ -8,7 +8,7 @@
 import Foundation
 import fusion
 
-class MultiViewController: UITabBarController, FusionPopGestureHandler {
+class TabSceneController: UITabBarController, FusionPopGestureHandler {
 
     override func viewDidLoad() {
         super.viewDidLoad()

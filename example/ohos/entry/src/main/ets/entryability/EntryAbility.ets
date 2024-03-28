@@ -25,7 +25,7 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   /* override */ pushNativeRoute(name: string, args: Map<string, Object> | null): void {
     hilog.debug(0xFF00, EntryAbility.TAG, `pushNativeRoute: name=${name}, args=${args}`)
     switch (name) {
-      case '/normal':
+      case '/native_normal_scene':
         router.pushUrl({
           url: 'pages/IndexPage',
           params: args,

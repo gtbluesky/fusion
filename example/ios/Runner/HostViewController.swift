@@ -66,7 +66,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click2(_ sender: Any) {
-        navigationController?.pushViewController(MultiViewController(), animated: true)
+        FusionNavigator.instance.push("/native_tab_scene")
     }
 
     @IBAction func click3(_ sender: Any) {

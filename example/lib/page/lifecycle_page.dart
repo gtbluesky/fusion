@@ -29,9 +29,9 @@ class _LifecyclePageState extends State<LifecyclePage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push /normal'),
+              child: const Text('push /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance.push('/normal', {'title': '12121'});
+                FusionNavigator.instance.push('/native_normal_scene', {'title': '12121'});
               },
             ),
             const SizedBox(

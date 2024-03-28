@@ -32,7 +32,7 @@ class TabSceneActivity : FragmentActivity() {
         )
         val fragment2 =
             buildFusionFragment(FusionFragment::class.java, "/web", mapOf("title" to "flutter2"))
-        binding.rgVp.setOnCheckedChangeListener { group, checkedId ->
+        binding.rgVp.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 binding.rbHome.id -> {
                     showFragment(fragment0)

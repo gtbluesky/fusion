@@ -21,15 +21,14 @@ class MyApplication : Application(), FusionRouteDelegate {
     override fun pushNativeRoute(name: String, arguments: Map<String, Any>?) {
         Log.e(TAG, "pushNativeRoute: name=$name, arguments=${arguments}")
         when (name) {
-            "/normal" -> {
-                val intent = Intent(applicationContext, NormalActivity::class.java)
+            "/native_normal_scene" -> {
+                val intent = Intent(applicationContext, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 (arguments?.get("title") as? String).let {
                     intent.putExtra("title", it)
                 }
                 startActivity(intent)
             }
-
             "/native_tab_scene" -> {
                 val intent = Intent(
                     this,
