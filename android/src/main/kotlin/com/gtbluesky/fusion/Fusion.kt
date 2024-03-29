@@ -72,16 +72,16 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
 
     private var visibleActivityCount = 0
     private var isActivityChangingConfigurations = false
-    private var isLaunching = true
+    private var finishLaunching = false
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }
 
     override fun onActivityStarted(activity: Activity) {
-        // 首次启动不触发进入前台回调，与iOS保持一致
+        // 启动时不触发进入前台回调
         ++visibleActivityCount
-        if (isLaunching) {
-            isLaunching = false
+        if (!finishLaunching) {
+            finishLaunching = true
             return
         }
         if (visibleActivityCount == 1 && !isActivityChangingConfigurations) {

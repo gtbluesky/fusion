@@ -54,9 +54,6 @@ public class Fusion: NSObject {
         return engine
     }
 
-    /**
-     应用首次启动不会收到该通知
-     */
     @objc func willEnterForeground() {
         FusionStackManager.instance.notifyEnterForeground()
         guard let topVc = UIApplication.roofViewController as? FusionViewController else {

@@ -85,7 +85,6 @@ export default class Fusion {
 }
 
 class FusionLifecycleCallback extends AbilityLifecycleCallback {
-  private isLaunching = true
 
   onAbilityCreate(ability: UIAbility): void {
     FlutterManager.getInstance().pushUIAbility(ability)
@@ -104,11 +103,6 @@ class FusionLifecycleCallback extends AbilityLifecycleCallback {
   }
 
   onAbilityForeground(ability: UIAbility): void {
-    // 首次启动不触发进入前台回调，与iOS保持一致
-    if (this.isLaunching) {
-      this.isLaunching = false
-      return
-    }
     FusionStackManager.instance.notifyEnterForeground()
   }
 
