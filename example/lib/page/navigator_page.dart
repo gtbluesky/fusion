@@ -12,7 +12,7 @@ class NavigatorPage extends StatefulWidget {
 }
 
 class _NavigatorPageState extends State<NavigatorPage>
-    implements PageLifecycleListener {
+    implements FusionPageLifecycleListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +103,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    PageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleBinding.instance.register(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:didChangeDependencies');
     }
@@ -112,7 +112,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   @override
   void dispose() {
     super.dispose();
-    PageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }

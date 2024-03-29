@@ -15,14 +15,14 @@ class LifecyclePage extends StatefulWidget {
 }
 
 class _LifecyclePageState extends State<LifecyclePage>
-    implements PageLifecycleListener {
+    implements FusionPageLifecycleListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.args?['title'] ?? '未知页面',
             style: AppBarTheme.of(context).titleTextStyle),
-            backgroundColor: Colors.blueGrey,
+        backgroundColor: Colors.blueGrey,
       ),
       body: Center(
         child: Column(
@@ -31,7 +31,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
               child: const Text('push /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance.push('/native_normal_scene', {'title': '12121'});
+                FusionNavigator.instance
+                    .push('/native_normal_scene', {'title': '12121'});
               },
             ),
             const SizedBox(
@@ -223,7 +224,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    PageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleBinding.instance.register(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:didChangeDependencies');
     }
@@ -232,7 +233,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
-    PageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }

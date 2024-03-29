@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusion/src/log/fusion_log.dart';
 
-class PageLifecycleListener {
+class FusionPageLifecycleListener {
   /// Called when the flutter page is visible.
   void onPageVisible() {}
 
@@ -15,17 +15,18 @@ class PageLifecycleListener {
   void onBackground() {}
 }
 
-class PageLifecycleBinding {
-  PageLifecycleBinding._();
+class FusionPageLifecycleBinding {
+  FusionPageLifecycleBinding._();
 
-  static final PageLifecycleBinding _instance = PageLifecycleBinding._();
+  static final FusionPageLifecycleBinding _instance =
+      FusionPageLifecycleBinding._();
 
-  static PageLifecycleBinding get instance => _instance;
+  static FusionPageLifecycleBinding get instance => _instance;
 
-  final _listeners = <Route<dynamic>, PageLifecycleListener>{};
+  final _listeners = <Route<dynamic>, FusionPageLifecycleListener>{};
 
   /// Register the page's lifecycle listener.
-  void register(PageLifecycleListener listener) {
+  void register(FusionPageLifecycleListener listener) {
     if (listener is! State) {
       return;
     }
@@ -38,7 +39,7 @@ class PageLifecycleBinding {
   }
 
   /// Unregister the page's lifecycle listener.
-  void unregister(PageLifecycleListener listener) {
+  void unregister(FusionPageLifecycleListener listener) {
     if (listener is! State) {
       return;
     }

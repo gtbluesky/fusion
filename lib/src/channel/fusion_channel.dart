@@ -165,12 +165,12 @@ class FusionChannel {
     });
     _flutterNotifyEnterForeground.setMessageHandler((message) async {
       FusionAppLifecycleBinding.instance.dispatchAppForegroundEvent();
-      PageLifecycleBinding.instance.dispatchPageForegroundEvent();
+      FusionPageLifecycleBinding.instance.dispatchPageForegroundEvent();
       return;
     });
     _flutterNotifyEnterBackground.setMessageHandler((message) async {
       FusionAppLifecycleBinding.instance.dispatchAppBackgroundEvent();
-      PageLifecycleBinding.instance.dispatchPageBackgroundEvent();
+      FusionPageLifecycleBinding.instance.dispatchPageBackgroundEvent();
       return;
     });
     _flutterDispatchMessage.setMessageHandler((message) async {
@@ -198,7 +198,7 @@ class FusionChannel {
     if (!page.isVisible) {
       page.containerVisible = true;
       if (page.isVisible) {
-        PageLifecycleBinding.instance
+        FusionPageLifecycleBinding.instance
             .dispatchPageVisibleEvent(page.route, isFirstTime: isFirstTime);
       }
     }
@@ -208,7 +208,8 @@ class FusionChannel {
     final page = FusionOverlayManager.instance.findContainer(uniqueId)?.topPage;
     if (page == null) return;
     if (page.isVisible) {
-      PageLifecycleBinding.instance.dispatchPageInvisibleEvent(page.route);
+      FusionPageLifecycleBinding.instance
+          .dispatchPageInvisibleEvent(page.route);
     }
     page.containerVisible = false;
   }

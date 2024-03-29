@@ -20,7 +20,7 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage>
-    implements FusionNotificationListener, PageLifecycleListener {
+    implements FusionNotificationListener, FusionPageLifecycleListener {
   String? msg;
 
   @override
@@ -34,7 +34,7 @@ class _TestPageState extends State<TestPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     FusionNotificationBinding.instance.register(this);
-    PageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleBinding.instance.register(this);
   }
 
   @override
@@ -42,7 +42,7 @@ class _TestPageState extends State<TestPage>
     super.dispose();
     FusionNavigator.instance.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
-    PageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }
@@ -90,7 +90,8 @@ class _TestPageState extends State<TestPage>
           InkWell(
             child: const Text('push /native_normal_scene'),
             onTap: () {
-              FusionNavigator.instance.push('/native_normal_scene', {'title': '12121'});
+              FusionNavigator.instance
+                  .push('/native_normal_scene', {'title': '12121'});
             },
           ),
           const SizedBox(

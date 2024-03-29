@@ -234,7 +234,7 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionPage? page = FusionOverlayManager.instance.findPage(route);
       if (page == null) return;
-      PageLifecycleBinding.instance
+      FusionPageLifecycleBinding.instance
           .dispatchPageVisibleEvent(route, isFirstTime: isFirstTime);
     });
   }
@@ -245,6 +245,6 @@ class FusionNavigatorDelegate {
     }
     FusionPage? page = FusionOverlayManager.instance.findPage(route);
     if (page == null) return;
-    PageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+    FusionPageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
   }
 }

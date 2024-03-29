@@ -19,7 +19,7 @@ class TransparentPage extends StatefulWidget {
 }
 
 class _TransparentPageState extends State<TransparentPage>
-    implements FusionNotificationListener, PageLifecycleListener {
+    implements FusionNotificationListener, FusionPageLifecycleListener {
   String? msg;
 
   @override
@@ -33,7 +33,7 @@ class _TransparentPageState extends State<TransparentPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     FusionNotificationBinding.instance.register(this);
-    PageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleBinding.instance.register(this);
   }
 
   @override
@@ -41,7 +41,7 @@ class _TransparentPageState extends State<TransparentPage>
     super.dispose();
     FusionNavigator.instance.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
-    PageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }
@@ -90,7 +90,8 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
               child: const Text('push /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance.push('/native_normal_scene', {'title': '12121'});
+                FusionNavigator.instance
+                    .push('/native_normal_scene', {'title': '12121'});
               },
             ),
             const SizedBox(
