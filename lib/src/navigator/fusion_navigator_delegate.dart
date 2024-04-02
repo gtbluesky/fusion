@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/app/fusion_app.dart';
-import 'package:fusion/src/channel/fusion_channel.dart';
-import 'package:fusion/src/container/fusion_container.dart';
-import 'package:fusion/src/container/fusion_overlay.dart';
-import 'package:fusion/src/container/fusion_page.dart';
-import 'package:fusion/src/lifecycle/fusion_page_lifecycle.dart';
+import '../app/fusion_app.dart';
+import '../channel/fusion_channel.dart';
+import '../container/fusion_container.dart';
+import '../container/fusion_overlay.dart';
+import '../container/fusion_page.dart';
+import '../lifecycle/fusion_page_lifecycle.dart';
+import 'fusion_navigator.dart';
 
 class FusionNavigatorDelegate {
   FusionNavigatorDelegate._();
@@ -17,52 +18,61 @@ class FusionNavigatorDelegate {
 
   Map<String, FusionPageCustomFactory>? customRouteMap;
 
-  bool isFlutterPage(String routeName) {
+  bool _isFlutterPage(String routeName) {
+    if (routeMap == null && customRouteMap == null) {
+      return true;
+    }
     return routeMap?.containsKey(routeName) == true ||
         customRouteMap?.containsKey(routeName) == true;
-  }
-
-  void open(
-    String uniqueId,
-    String routeName, [
-    Map<String, dynamic>? args,
-  ]) {
-    /// Create a container and a page
-    FusionPage page = FusionPage.createPage(routeName, args);
-    FusionContainer container = FusionContainer(uniqueId, page);
-
-    /// Insert an overlay into the container
-    FusionOverlayManager.instance.add(container);
-
-    /// Sync
-    FusionChannel.instance.sync(uniqueId, container.pageEntities);
   }
 
   Future<T?> push<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? args,
+    FusionRouteType type = FusionRouteType.adaption,
   ]) async {
-    if (isFlutterPage(routeName)) {
-      FusionContainer? container = FusionOverlayManager.instance.topContainer();
-      if (container == null) {
+    switch (type) {
+      case FusionRouteType.flutter:
+        return _push(routeName, args);
+      case FusionRouteType.flutterWithContainer:
+      case FusionRouteType.native:
+        FusionChannel.instance.push(routeName, args, type);
         return null;
-      }
-      Future.microtask(() {
-        /// Sync
-        FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
-      });
-      final page = FusionPage.createPage(routeName, args);
+      case FusionRouteType.adaption:
+        if (_isFlutterPage(routeName)) {
+          if (FusionPageLifecycleBinding.instance.isVisible) {
+            return _push(routeName, args);
+          } else {
+            FusionChannel.instance
+                .push(routeName, args, FusionRouteType.flutterWithContainer);
+            return null;
+          }
+        } else {
+          FusionChannel.instance.push(routeName, args, FusionRouteType.native);
+          return null;
+        }
+    }
+  }
 
-      /// Page's Visibility Change
-      final previousRoute = FusionOverlayManager.instance.topRoute;
-      _handlePageInvisible(previousRoute);
-      _handlePageVisible(page.route, isFirstTime: true);
-      return await container.push<dynamic>(page);
-    } else {
-      /// Notify native's pushNativeRoute
-      FusionChannel.instance.push(routeName, args);
+  Future<T?> _push<T extends Object?>(
+    String routeName, [
+    Map<String, dynamic>? args,
+  ]) async {
+    FusionContainer? container = FusionOverlayManager.instance.topContainer();
+    if (container == null) {
       return null;
     }
+    Future.microtask(() {
+      /// Sync
+      FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
+    });
+    final page = FusionPage.createPage(routeName, args);
+
+    /// Page's Visibility Change
+    final previousRoute = FusionOverlayManager.instance.topRoute;
+    _handlePageInvisible(previousRoute);
+    _handlePageVisible(page.route, isFirstTime: true);
+    return await container.push<dynamic>(page);
   }
 
   Future<T?> replace<T extends Object?>(
@@ -155,6 +165,22 @@ class FusionNavigatorDelegate {
     } else {
       FusionChannel.instance.destroy(container.uniqueId);
     }
+  }
+
+  void create(
+    String uniqueId,
+    String routeName, [
+    Map<String, dynamic>? args,
+  ]) {
+    /// Create a container and a page
+    FusionPage page = FusionPage.createPage(routeName, args);
+    FusionContainer container = FusionContainer(uniqueId, page);
+
+    /// Insert an overlay into the container
+    FusionOverlayManager.instance.add(container);
+
+    /// Sync
+    FusionChannel.instance.sync(uniqueId, container.pageEntities);
   }
 
   /// APP Restore

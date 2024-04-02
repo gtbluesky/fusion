@@ -5,19 +5,18 @@ import FusionStackManager from '../container/FusionStackManager';
 import StandardMessageCodec from '@ohos/flutter_ohos/src/main/ets/plugin/common/StandardMessageCodec';
 import FusionConstant from '../constant/FusionConstant';
 import Fusion from '../Fusion';
-import PlatformChannel from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
 import { SystemChromeStyle } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
 import { Brightness } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
+import { FusionRouteType } from '../navigator/FusionNavigator';
 
 export default class FusionEngineBinding {
-  private hostOpen: BasicMessageChannel<Object> | null = null
   private hostPush: BasicMessageChannel<Object> | null = null
   private hostDestroy: BasicMessageChannel<Object> | null = null
   private hostRestore: BasicMessageChannel<Object> | null = null
   private hostSync: BasicMessageChannel<Object> | null = null
   private hostSendMessage: BasicMessageChannel<Object> | null = null
   private hostRemoveMaskView: BasicMessageChannel<Object> | null = null
-  private flutterOpen: BasicMessageChannel<Object> | null = null
+  private flutterCreate: BasicMessageChannel<Object> | null = null
   private flutterSwitchTop: BasicMessageChannel<Object> | null = null
   private flutterRestore: BasicMessageChannel<Object> | null = null
   private flutterDestroy: BasicMessageChannel<Object> | null = null
@@ -56,11 +55,6 @@ export default class FusionEngineBinding {
     }
     const binaryMessenger = engine.dartExecutor.getBinaryMessenger()
     const messageCodec = StandardMessageCodec.INSTANCE
-    this.hostOpen = new BasicMessageChannel(
-      binaryMessenger,
-      `${FusionConstant.FUSION_CHANNEL}/host/open`,
-      messageCodec
-    )
     this.hostPush = new BasicMessageChannel(
       binaryMessenger,
       `${FusionConstant.FUSION_CHANNEL}/host/push`,
@@ -91,9 +85,9 @@ export default class FusionEngineBinding {
       `${FusionConstant.FUSION_CHANNEL}/host/removeMaskView`,
       messageCodec
     )
-    this.flutterOpen = new BasicMessageChannel(
+    this.flutterCreate = new BasicMessageChannel(
       binaryMessenger,
-      `${FusionConstant.FUSION_CHANNEL}/flutter/open`,
+      `${FusionConstant.FUSION_CHANNEL}/flutter/create`,
       messageCodec
     )
     this.flutterSwitchTop = new BasicMessageChannel(
@@ -169,22 +163,6 @@ export default class FusionEngineBinding {
   }
 
   attach(): void {
-    this.hostOpen?.setMessageHandler({
-      onMessage: (message, reply) => {
-        if (!(message instanceof Map)) {
-          reply.reply(null)
-          return
-        }
-        const name = message.get('name') as string | null
-        if (name == null) {
-          reply.reply(null)
-          return
-        }
-        const args = message.get('args') as Map<string, Object> | null
-        Fusion.instance.delegate?.pushFlutterRoute(name, args)
-        reply.reply(null)
-      }
-    })
     this.hostPush?.setMessageHandler({
       onMessage: (message, reply) => {
         if (!(message instanceof Map)) {
@@ -197,7 +175,12 @@ export default class FusionEngineBinding {
           return
         }
         const args = message.get('args') as Map<string, Object> | null
-        Fusion.instance.delegate?.pushNativeRoute(name, args)
+        const type = message.get('type') as number
+        if (type == FusionRouteType.flutterWithContainer.valueOf()) {
+          Fusion.instance.delegate?.pushFlutterRoute(name, args)
+        } else if (type == FusionRouteType.native.valueOf()) {
+          Fusion.instance.delegate?.pushNativeRoute(name, args)
+        }
         reply.reply(null)
       }
     })
@@ -280,10 +263,11 @@ export default class FusionEngineBinding {
   }
 
   // external function
-  push(name: string, args: Map<string, Object> | null): void {
+  push(name: string, args: Map<string, Object> | null, type: FusionRouteType): void {
     const map = new Map<string, Object | null>()
     map.set('name', name)
     map.set('args', args)
+    map.set('type', type.valueOf())
     this.flutterPush?.send(map)
   }
 
@@ -313,12 +297,12 @@ export default class FusionEngineBinding {
   }
 
   // internal function
-  open(uniqueId: string, name: string, args: Map<string, Object> | null): void {
+  create(uniqueId: string, name: string, args: Map<string, Object> | null): void {
     const map = new Map<string, Object | null>()
     map.set('uniqueId', uniqueId)
     map.set('name', name)
     map.set('args', args)
-    this.flutterOpen?.send(map)
+    this.flutterCreate?.send(map)
   }
 
   switchTop(uniqueId: string): void {
@@ -418,8 +402,6 @@ export default class FusionEngineBinding {
   }
 
   detach(): void {
-    this.hostOpen?.setMessageHandler(null)
-    this.hostOpen = null
     this.hostPush?.setMessageHandler(null)
     this.hostPush = null
     this.hostDestroy?.setMessageHandler(null)
@@ -432,7 +414,7 @@ export default class FusionEngineBinding {
     this.hostSendMessage = null
     this.hostRemoveMaskView?.setMessageHandler(null)
     this.hostRemoveMaskView = null
-    this.flutterOpen = null
+    this.flutterCreate = null
     this.flutterSwitchTop = null
     this.flutterRestore = null
     this.flutterDestroy = null

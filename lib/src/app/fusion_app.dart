@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fusion/src/app/fusion_home.dart';
-import 'package:fusion/src/data/fusion_data.dart';
-import 'package:fusion/src/data/fusion_state.dart';
-import 'package:fusion/src/fusion.dart';
-import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
+import '../app/fusion_home.dart';
+import '../data/fusion_data.dart';
+import '../data/fusion_state.dart';
+import '../fusion.dart';
+import '../navigator/fusion_navigator_delegate.dart';
+import '../navigator/fusion_navigator_observer.dart';
 
 typedef FusionPageFactory = Widget Function(Map<String, dynamic>? args);
 typedef FusionPageCustomFactory = PageRoute Function(RouteSettings settings);

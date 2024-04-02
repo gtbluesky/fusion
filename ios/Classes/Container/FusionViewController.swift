@@ -97,7 +97,7 @@ open class FusionViewController: FlutterViewController {
         engineBinding?.engine?.viewController = nil
         super.init(engine: engine, nibName: nil, bundle: nil)
         isViewOpaque = !transparent
-        engineBinding?.open(uniqueId, name: routeName, args: routeArgs)
+        engineBinding?.create(uniqueId, name: routeName, args: routeArgs)
         onContainerCreate()
     }
 

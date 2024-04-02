@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fusion/fusion.dart';
 
-class TestPage extends StatefulWidget {
-  TestPage({Key? key, this.args}) : super(key: key) {
+class IndexPage extends StatefulWidget {
+  IndexPage({Key? key, this.args}) : super(key: key) {
     _channel = const MethodChannel('fusion');
   }
 
@@ -16,10 +16,10 @@ class TestPage extends StatefulWidget {
   late final MethodChannel _channel;
 
   @override
-  State<TestPage> createState() => _TestPageState();
+  State<IndexPage> createState() => _IndexPageState();
 }
 
-class _TestPageState extends State<TestPage>
+class _IndexPageState extends State<IndexPage>
     implements FusionNotificationListener, FusionPageLifecycleListener {
   String? msg;
 
@@ -88,20 +88,26 @@ class _TestPageState extends State<TestPage>
       body: ListView(
         children: [
           InkWell(
-            child: const Text('push /native_normal_scene'),
+            child: const Text('push(adaption) /native_normal_scene'),
             onTap: () {
-              FusionNavigator.instance
-                  .push('/native_normal_scene', {'title': '12121'});
+              FusionNavigator.instance.push(
+                '/native_normal_scene',
+                routeArgs: {'title': 'Native Normal Scene'},
+                routeType: FusionRouteType.adaption,
+              );
             },
           ),
           const SizedBox(
             height: 20,
           ),
           InkWell(
-              child: const Text('push /test'),
+              child: const Text('push(flutter) /index'),
               onTap: () async {
-                final result = await FusionNavigator.instance
-                    .push<String?>('/test', {'title': '2'});
+                final result = await FusionNavigator.instance.push<String?>(
+                  '/index',
+                  routeArgs: {'title': 'Index Page'},
+                  routeType: FusionRouteType.flutter,
+                );
                 if (kDebugMode) {
                   print('result=$result');
                 }
@@ -110,11 +116,14 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('push /lifecycle'),
+              child: const Text('push(flutter) /lifecycle'),
               onTap: () async {
                 // await FusionNavigator.instance.pop();
-                final result = await FusionNavigator.instance
-                    .push<String?>('/lifecycle', {'title': 'Lifecycle Test'});
+                final result = await FusionNavigator.instance.push<String?>(
+                  '/lifecycle',
+                  routeArgs: {'title': 'Lifecycle Page'},
+                  routeType: FusionRouteType.flutter,
+                );
                 if (kDebugMode) {
                   print('result=$result');
                 }
@@ -123,35 +132,48 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('push /refresh'),
+              child: const Text('push(flutter) /refresh'),
               onTap: () async {
-                FusionNavigator.instance.push('/refresh');
+                FusionNavigator.instance.push(
+                  '/refresh',
+                  routeType: FusionRouteType.flutter,
+                );
               }),
           const SizedBox(
             height: 20,
           ),
           InkWell(
-              child: const Text('open /lifecycle'),
+              child: const Text('push(flutterWithContainer) /lifecycle'),
               onTap: () async {
-                FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
+                FusionNavigator.instance.push(
+                  '/lifecycle',
+                  routeArgs: {'title': 'Lifecycle Page'},
+                  routeType: FusionRouteType.flutterWithContainer,
+                );
               }),
           const SizedBox(
             height: 20,
           ),
           InkWell(
-              child: const Text('open /background'),
+              child: const Text('push(flutterWithContainer) /background'),
               onTap: () async {
-                FusionNavigator.instance
-                    .open('/background', {'backgroundColor': 0xFF546E7A});
+                FusionNavigator.instance.push(
+                  '/background',
+                  routeArgs: {'backgroundColor': 0xFF546E7A},
+                  routeType: FusionRouteType.flutterWithContainer,
+                );
               }),
           const SizedBox(
             height: 20,
           ),
           InkWell(
-              child: const Text('push /navigator'),
+              child: const Text('push(flutter) /navigator'),
               onTap: () async {
-                final result = await FusionNavigator.instance
-                    .push<String?>('/navigator', {'title': '系统导航'});
+                final result = await FusionNavigator.instance.push<String?>(
+                  '/navigator',
+                  routeArgs: {'title': 'System Navigator'},
+                  routeType: FusionRouteType.flutter,
+                );
                 if (kDebugMode) {
                   print('result=$result');
                 }
@@ -160,9 +182,12 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('push /willpop'),
+              child: const Text('push(flutter) /willpop'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push('/willpop');
+                final result = await FusionNavigator.instance.push(
+                  '/willpop',
+                  routeType: FusionRouteType.flutter,
+                );
                 if (kDebugMode) {
                   print('result=$result');
                 }
@@ -171,10 +196,12 @@ class _TestPageState extends State<TestPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('push /web'),
+              child: const Text('push(flutter) /web'),
               onTap: () async {
-                final result =
-                    await FusionNavigator.instance.push<String?>('/web');
+                final result = await FusionNavigator.instance.push<String?>(
+                  '/web',
+                  routeType: FusionRouteType.flutter,
+                );
                 if (kDebugMode) {
                   print('result=$result');
                 }

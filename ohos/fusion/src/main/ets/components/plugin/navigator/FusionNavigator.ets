@@ -6,25 +6,27 @@ export default class FusionNavigator {
   }
 
   /**
-   * 打开新Flutter容器并将对应路由入栈
-   * Native页面跳转Flutter页面使用该API
+   * 将对应路由入栈
    */
-  static open(name: string, args: Map<string, Object> | null = null): void {
-    Fusion.instance.delegate?.pushFlutterRoute(name, args)
-  }
-
-  /**
-   * 在当前Flutter容器中将对应路由入栈
-   */
-  static push(name: string, args: Map<string, Object> | null = null): void {
-    Fusion.instance.engineBinding?.push(name, args)
+  static push(routeName: string, routeArgs: Map<string, Object> | null = null, routeType: FusionRouteType = FusionRouteType.adaption): void {
+    switch (routeType) {
+      case FusionRouteType.flutterWithContainer:
+        Fusion.instance.delegate?.pushFlutterRoute(routeName, routeArgs)
+        break
+      case FusionRouteType.native:
+        Fusion.instance.delegate?.pushNativeRoute(routeName, routeArgs)
+        break
+      default:
+        Fusion.instance.engineBinding?.push(routeName, routeArgs, routeType)
+        break
+    }
   }
 
   /**
    * 在当前Flutter容器中将栈顶路由替换为对应路由
    */
-  static replace(name: string, args: Map<string, Object> | null = null): void {
-    Fusion.instance.engineBinding?.replace(name, args)
+  static replace(routeName: string, routeArgs: Map<string, Object> | null = null): void {
+    Fusion.instance.engineBinding?.replace(routeName, routeArgs)
   }
 
   /**
@@ -43,10 +45,10 @@ export default class FusionNavigator {
 
   /**
    * 在当前Flutter容器中移除对应路由
-   * @param name: 路由名
+   * @param routeName: 路由名
    */
-  static remove(name: string): void {
-    Fusion.instance.engineBinding?.remove(name)
+  static remove(routeName: string): void {
+    Fusion.instance.engineBinding?.remove(routeName)
   }
 
   /**
@@ -55,4 +57,17 @@ export default class FusionNavigator {
   static sendMessage(name: string, body: Map<string, Object> | null = null): void {
     FusionStackManager.instance.sendMessage(name, body)
   }
+}
+
+export interface FusionRouteDelegate {
+  pushNativeRoute(name: string, args: Map<string, Object> | null): void
+
+  pushFlutterRoute(name: string, args: Map<string, Object> | null): void
+}
+
+export enum FusionRouteType {
+  flutter,
+  flutterWithContainer,
+  native,
+  adaption
 }

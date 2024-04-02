@@ -3,6 +3,7 @@ package com.gtbluesky.fusion.engine
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.navigator.FusionRouteType
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.embedding.engine.systemchannels.PlatformViewsChannel
@@ -10,14 +11,13 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.StandardMessageCodec
 
 internal class FusionEngineBinding(engine: FlutterEngine?) {
-    private var hostOpen: BasicMessageChannel<Any>? = null
     private var hostPush: BasicMessageChannel<Any>? = null
     private var hostDestroy: BasicMessageChannel<Any>? = null
     private var hostRestore: BasicMessageChannel<Any>? = null
     private var hostSync: BasicMessageChannel<Any>? = null
     private var hostSendMessage: BasicMessageChannel<Any>? = null
     private var hostRemoveMaskView: BasicMessageChannel<Any>? = null
-    private var flutterOpen: BasicMessageChannel<Any>? = null
+    private var flutterCreate: BasicMessageChannel<Any>? = null
     private var flutterSwitchTop: BasicMessageChannel<Any>? = null
     private var flutterRestore: BasicMessageChannel<Any>? = null
     private var flutterDestroy: BasicMessageChannel<Any>? = null
@@ -51,11 +51,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         engine?.let {
             val binaryMessenger = it.dartExecutor.binaryMessenger
             val messageCodec = StandardMessageCodec.INSTANCE
-            hostOpen = BasicMessageChannel(
-                binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/host/open",
-                messageCodec
-            )
             hostPush = BasicMessageChannel(
                 binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/push",
@@ -86,9 +81,9 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 "${FusionConstant.FUSION_CHANNEL}/host/removeMaskView",
                 messageCodec
             )
-            flutterOpen = BasicMessageChannel(
+            flutterCreate = BasicMessageChannel(
                 binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/flutter/open",
+                "${FusionConstant.FUSION_CHANNEL}/flutter/create",
                 messageCodec
             )
             flutterSwitchTop = BasicMessageChannel(
@@ -166,20 +161,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
 
     @Suppress("UNCHECKED_CAST")
     fun attach() {
-        hostOpen?.setMessageHandler { message, reply ->
-            if (message !is Map<*, *>) {
-                reply.reply(null)
-                return@setMessageHandler
-            }
-            val name = message["name"] as? String
-            if (name == null) {
-                reply.reply(null)
-                return@setMessageHandler
-            }
-            val args = message["args"] as? Map<String, Any>
-            Fusion.delegate.pushFlutterRoute(name, args)
-            reply.reply(null)
-        }
         hostPush?.setMessageHandler { message, reply ->
             if (message !is Map<*, *>) {
                 reply.reply(null)
@@ -191,7 +172,12 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 return@setMessageHandler
             }
             val args = message["args"] as? Map<String, Any>
-            Fusion.delegate.pushNativeRoute(name, args)
+            val type = message["type"] as? Int
+            if (type == FusionRouteType.FLUTTER_WITH_CONTAINER.ordinal) {
+                Fusion.delegate.pushFlutterRoute(name, args)
+            } else if (type == FusionRouteType.NATIVE.ordinal) {
+                Fusion.delegate.pushNativeRoute(name, args)
+            }
             reply.reply(null)
         }
         hostDestroy?.setMessageHandler { message, reply ->
@@ -262,11 +248,12 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     }
 
     // external function
-    fun push(name: String, args: Map<String, Any>?) {
+    fun push(name: String, args: Map<String, Any>?, type: FusionRouteType) {
         flutterPush?.send(
             mapOf(
                 "name" to name,
-                "args" to args
+                "args" to args,
+                "type" to type.ordinal
             )
         )
     }
@@ -305,8 +292,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     }
 
     // internal function
-    fun open(uniqueId: String, name: String, args: Map<String, Any>? = null) {
-        flutterOpen?.send(
+    fun create(uniqueId: String, name: String, args: Map<String, Any>? = null) {
+        flutterCreate?.send(
             mapOf(
                 "uniqueId" to uniqueId,
                 "name" to name,
@@ -345,13 +332,16 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         if (!FusionStackManager.isAttached()) {
             engine?.let {
                 try {
-                    val platformViewsChannelField = it.platformViewsController.javaClass.getDeclaredField("platformViewsChannel")
+                    val platformViewsChannelField =
+                        it.platformViewsController.javaClass.getDeclaredField("platformViewsChannel")
                     platformViewsChannelField.isAccessible = true
                     val platformViewsChannel = PlatformViewsChannel(it.dartExecutor)
                     platformViewsChannelField.set(it.platformViewsController, platformViewsChannel)
-                    val channelHandlerField = it.platformViewsController.javaClass.getDeclaredField("channelHandler")
+                    val channelHandlerField =
+                        it.platformViewsController.javaClass.getDeclaredField("channelHandler")
                     channelHandlerField.isAccessible = true
-                    val channelHandler = channelHandlerField.get(it.platformViewsController) as? PlatformViewsChannel.PlatformViewsHandler
+                    val channelHandler =
+                        channelHandlerField.get(it.platformViewsController) as? PlatformViewsChannel.PlatformViewsHandler
                     platformViewsChannel.setPlatformViewsHandler(channelHandler)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -437,8 +427,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     }
 
     fun detach() {
-        hostOpen?.setMessageHandler(null)
-        hostOpen = null
         hostPush?.setMessageHandler(null)
         hostPush = null
         hostDestroy?.setMessageHandler(null)
@@ -451,7 +439,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         hostSendMessage = null
         hostRemoveMaskView?.setMessageHandler(null)
         hostRemoveMaskView = null
-        flutterOpen = null
+        flutterCreate = null
         flutterSwitchTop = null
         flutterRestore = null
         flutterDestroy = null

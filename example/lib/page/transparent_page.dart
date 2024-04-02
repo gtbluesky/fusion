@@ -88,20 +88,26 @@ class _TransparentPageState extends State<TransparentPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push /native_normal_scene'),
+              child: const Text('push(native) /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance
-                    .push('/native_normal_scene', {'title': '12121'});
+                FusionNavigator.instance.push(
+                  '/native_normal_scene',
+                  routeArgs: {'title': 'Native Normal Scene'},
+                  routeType: FusionRouteType.native,
+                );
               },
             ),
             const SizedBox(
               height: 20,
             ),
             InkWell(
-                child: const Text('push /test'),
+                child: const Text('push(flutter) /index'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance
-                      .push<String?>('/test', {'title': '2'});
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/index',
+                    routeArgs: {'title': 'Index Page'},
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -110,10 +116,13 @@ class _TransparentPageState extends State<TransparentPage>
               height: 20,
             ),
             InkWell(
-                child: const Text('push /lifecycle'),
+                child: const Text('push(flutter) /lifecycle'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance
-                      .push<String?>('/lifecycle', {'title': 'Lifecycle Test'});
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/lifecycle',
+                    routeArgs: {'title': 'Lifecycle Page'},
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -122,10 +131,12 @@ class _TransparentPageState extends State<TransparentPage>
               height: 20,
             ),
             InkWell(
-                child: const Text('push /willpop'),
+                child: const Text('push(flutter) /willpop'),
                 onTap: () async {
-                  final result =
-                      await FusionNavigator.instance.push<String?>('/willpop');
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/willpop',
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -134,10 +145,12 @@ class _TransparentPageState extends State<TransparentPage>
               height: 20,
             ),
             InkWell(
-                child: const Text('push /web'),
+                child: const Text('push(flutter) /web'),
                 onTap: () async {
-                  final result =
-                      await FusionNavigator.instance.push<String?>('/web');
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/web',
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }

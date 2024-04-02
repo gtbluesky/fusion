@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/log/fusion_log.dart';
+import '../log/fusion_log.dart';
 
 class FusionNotificationListener {
   /// Called when messages are received.

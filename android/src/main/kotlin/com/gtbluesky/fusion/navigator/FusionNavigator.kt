@@ -5,22 +5,16 @@ import com.gtbluesky.fusion.container.FusionStackManager
 
 object FusionNavigator {
     /**
-     * 打开新Flutter容器并将对应路由入栈
-     * Native页面跳转Flutter页面使用该API
+     * 将对应路由入栈
      */
     @JvmStatic
     @JvmOverloads
-    fun open(name: String, args: Map<String, Any>? = null) {
-        Fusion.delegate.pushFlutterRoute(name, args)
-    }
-
-    /**
-     * 在当前Flutter容器中将对应路由入栈
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun push(name: String, args: Map<String, Any>? = null) {
-        Fusion.engineBinding?.push(name, args)
+    fun push(routeName: String, routeArgs: Map<String, Any>? = null, routeType: FusionRouteType = FusionRouteType.ADAPTION) {
+        when (routeType) {
+            FusionRouteType.FLUTTER_WITH_CONTAINER -> Fusion.delegate.pushFlutterRoute(routeName, routeArgs)
+            FusionRouteType.NATIVE -> Fusion.delegate.pushNativeRoute(routeName, routeArgs)
+            else -> Fusion.engineBinding?.push(routeName, routeArgs, routeType)
+        }
     }
 
     /**
@@ -28,8 +22,8 @@ object FusionNavigator {
      */
     @JvmStatic
     @JvmOverloads
-    fun replace(name: String, args: Map<String, Any>? = null) {
-        Fusion.engineBinding?.replace(name, args)
+    fun replace(routeName: String, routeArgs: Map<String, Any>? = null) {
+        Fusion.engineBinding?.replace(routeName, routeArgs)
     }
 
     /**
@@ -52,11 +46,11 @@ object FusionNavigator {
 
     /**
      * 在当前Flutter容器中移除对应路由
-     * @param name: 路由名
+     * @param routeName: 路由名
      */
     @JvmStatic
-    fun remove(name: String) {
-        Fusion.engineBinding?.remove(name)
+    fun remove(routeName: String) {
+        Fusion.engineBinding?.remove(routeName)
     }
 
     /**
@@ -67,4 +61,16 @@ object FusionNavigator {
     fun sendMessage(name: String, body: Map<String, Any>? = null) {
         FusionStackManager.sendMessage(name, body)
     }
+}
+
+interface FusionRouteDelegate {
+    fun pushNativeRoute(name: String, args: Map<String, Any>?)
+    fun pushFlutterRoute(name: String, args: Map<String, Any>?)
+}
+
+enum class FusionRouteType {
+    FLUTTER,
+    FLUTTER_WITH_CONTAINER,
+    NATIVE,
+    ADAPTION
 }

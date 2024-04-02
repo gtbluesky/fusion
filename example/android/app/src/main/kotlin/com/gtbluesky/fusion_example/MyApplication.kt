@@ -5,7 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.FusionRouteDelegate
+import com.gtbluesky.fusion.navigator.FusionRouteDelegate
 import com.gtbluesky.fusion.container.buildFusionIntent
 
 class MyApplication : Application(), FusionRouteDelegate {

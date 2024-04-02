@@ -146,7 +146,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     if (this.isTransparent()) {
       window.findWindow(FusionConstant.TRANSPARENT_WINDOW).setWindowBackgroundColor('#00000000')
     }
-    this.engineBinding?.open(this._uniqueId, routeName, routeArgs)
+    this.engineBinding?.create(this._uniqueId, routeName, routeArgs)
     this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
   }

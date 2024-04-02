@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fusion/src/constant/fusion_constant.dart';
-import 'package:fusion/src/container/fusion_container.dart';
-import 'package:fusion/src/data/fusion_data.dart';
-import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/page/unknown_page.dart';
+import '../constant/fusion_constant.dart';
+import '../container/fusion_container.dart';
+import '../data/fusion_data.dart';
+import '../navigator/fusion_navigator_delegate.dart';
+import '../page/unknown_page.dart';
 
 // ignore: must_be_immutable
 class FusionPage<T> extends Page<T> {

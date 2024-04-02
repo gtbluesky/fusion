@@ -8,6 +8,7 @@ import androidx.annotation.UiThread
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.navigator.FusionRouteDelegate
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor

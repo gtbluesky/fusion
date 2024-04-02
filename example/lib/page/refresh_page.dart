@@ -66,9 +66,13 @@ class _RefreshPageState extends State<RefreshPage> {
           itemBuilder: (context, index) {
             if (index == 0) {
               return InkWell(
-                child: const Text('push /native_normal_scene'),
+                child: const Text('push(adaption) /native_normal_scene'),
                 onTap: () {
-                  FusionNavigator.instance.push('/native_normal_scene', {'title': '12121'});
+                  FusionNavigator.instance.push(
+                    '/native_normal_scene',
+                    routeArgs: {'title': 'Native Normal Scene'},
+                    routeType: FusionRouteType.adaption,
+                  );
                 },
               );
             } else {

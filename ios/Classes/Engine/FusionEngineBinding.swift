@@ -9,14 +9,13 @@ import Flutter
 import Foundation
 
 internal class FusionEngineBinding: NSObject {
-    private var hostOpen: FlutterBasicMessageChannel? = nil
     private var hostPush: FlutterBasicMessageChannel? = nil
     private var hostDestroy: FlutterBasicMessageChannel? = nil
     private var hostRestore: FlutterBasicMessageChannel? = nil
     private var hostSync: FlutterBasicMessageChannel? = nil
     private var hostSendMessage: FlutterBasicMessageChannel? = nil
     private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
-    private var flutterOpen: FlutterBasicMessageChannel? = nil
+    private var flutterCreate: FlutterBasicMessageChannel? = nil
     private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
     private var flutterRestore: FlutterBasicMessageChannel? = nil
     private var flutterDestroy: FlutterBasicMessageChannel? = nil
@@ -52,14 +51,13 @@ internal class FusionEngineBinding: NSObject {
             return
         }
         let binaryMessenger = engine.binaryMessenger
-        hostOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/open", binaryMessenger: binaryMessenger)
         hostPush = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/push", binaryMessenger: binaryMessenger)
         hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: binaryMessenger)
         hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: binaryMessenger)
         hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: binaryMessenger)
         hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: binaryMessenger)
         hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: binaryMessenger)
-        flutterOpen = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/open", binaryMessenger: binaryMessenger)
+        flutterCreate = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/create", binaryMessenger: binaryMessenger)
         flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: binaryMessenger)
         flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: binaryMessenger)
         flutterDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/destroy", binaryMessenger: binaryMessenger)
@@ -77,22 +75,18 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func attach() {
-        hostOpen?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
-            guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
-                reply(nil)
-                return
-            }
-            let args = dict["args"] as? Dictionary<String, Any>
-            Fusion.instance.delegate?.pushFlutterRoute(name: name, args: args)
-            reply(nil)
-        }
         hostPush?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
             guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
                 reply(nil)
                 return
             }
             let args = dict["args"] as? Dictionary<String, Any>
-            Fusion.instance.delegate?.pushNativeRoute(name: name, args: args)
+            let type = dict["type"] as? Int
+            if type == FusionRouteType.flutterWithContainer.rawValue {
+                Fusion.instance.delegate?.pushFlutterRoute(name: name, args: args)
+            } else if type == FusionRouteType.native.rawValue {
+                Fusion.instance.delegate?.pushNativeRoute(name: name, args: args)
+            }
             reply(nil)
         }
         hostDestroy?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
@@ -145,10 +139,11 @@ internal class FusionEngineBinding: NSObject {
     }
 
     // external function
-    func push(_ name: String, args: Dictionary<String, Any>?) {
+    func push(_ name: String, args: Dictionary<String, Any>?, type: FusionRouteType) {
         flutterPush?.sendMessage([
             "name": name,
-            "args": args as Any
+            "args": args as Any,
+            "type": type.rawValue
         ])
     }
 
@@ -186,8 +181,8 @@ internal class FusionEngineBinding: NSObject {
         (UIApplication.roofViewController as? FusionPopGestureHandler)?.disablePopGesture()
     }
 
-    func open(_ uniqueId: String, name: String, args: Dictionary<String, Any>?) {
-        flutterOpen?.sendMessage([
+    func create(_ uniqueId: String, name: String, args: Dictionary<String, Any>?) {
+        flutterCreate?.sendMessage([
             "uniqueId": uniqueId,
             "name": name,
             "args": args as Any
@@ -288,8 +283,6 @@ internal class FusionEngineBinding: NSObject {
     }
 
     func detach() {
-        hostOpen?.setMessageHandler(nil)
-        hostOpen = nil
         hostPush?.setMessageHandler(nil)
         hostPush = nil
         hostDestroy?.setMessageHandler(nil)
@@ -302,7 +295,7 @@ internal class FusionEngineBinding: NSObject {
         hostSendMessage = nil
         hostRemoveMaskView?.setMessageHandler(nil)
         hostRemoveMaskView = nil
-        flutterOpen = nil
+        flutterCreate = nil
         flutterSwitchTop = nil
         flutterRestore = nil
         flutterDestroy = nil

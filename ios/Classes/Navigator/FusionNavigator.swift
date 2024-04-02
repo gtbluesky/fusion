@@ -14,25 +14,24 @@ import Foundation
     }
 
     /**
-     * 打开新Flutter容器并将对应路由入栈
-     * Native页面跳转Flutter页面使用该API
+     * 将对应路由入栈
      */
-    public func open(_ name: String, args: Dictionary<String, Any>? = nil) {
-        Fusion.instance.delegate?.pushFlutterRoute(name: name, args: args)
-    }
-
-    /**
-     * 在当前Flutter容器中将对应路由入栈
-     */
-    public func push(_ name: String, args: Dictionary<String, Any>? = nil) {
-        Fusion.instance.engineBinding?.push(name, args: args)
+    public func push(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil, routeType: FusionRouteType = FusionRouteType.adaption) {
+        switch routeType {
+        case .flutterWithContainer:
+            Fusion.instance.delegate?.pushFlutterRoute(name: routeName, args: routeArgs)
+        case .native:
+            Fusion.instance.delegate?.pushNativeRoute(name: routeName, args: routeArgs)
+        default:
+            Fusion.instance.engineBinding?.push(routeName, args: routeArgs, type: routeType)
+        }
     }
 
     /**
      * 在当前Flutter容器中将栈顶路由替换为对应路由
      */
-    public func replace(_ name: String, args: Dictionary<String, Any>? = nil) {
-        Fusion.instance.engineBinding?.replace(name, args: args)
+    public func replace(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil) {
+        Fusion.instance.engineBinding?.replace(routeName, args: routeArgs)
     }
 
     /**
@@ -51,13 +50,25 @@ import Foundation
 
     /**
      * 在当前Flutter容器中移除对应路由
-     * @param name: 路由名
+     * @param routeName: 路由名
      */
-    public func remove(_ name: String) {
-        Fusion.instance.engineBinding?.remove(name)
+    public func remove(_ routeName: String) {
+        Fusion.instance.engineBinding?.remove(routeName)
     }
 
     public func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil) {
         FusionStackManager.instance.sendMessage(name, body: body)
     }
+}
+
+@objc public protocol FusionRouteDelegate {
+    func pushNativeRoute(name: String, args: Dictionary<String, Any>?)
+    func pushFlutterRoute(name: String, args: Dictionary<String, Any>?)
+}
+
+@objc public enum FusionRouteType: Int {
+    case flutter
+    case flutterWithContainer
+    case native
+    case adaption
 }

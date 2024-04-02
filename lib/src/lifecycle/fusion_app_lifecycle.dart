@@ -1,4 +1,4 @@
-import 'package:fusion/src/log/fusion_log.dart';
+import '../log/fusion_log.dart';
 
 class FusionAppLifecycleListener {
   /// Called when the app switches from the background to the foreground.

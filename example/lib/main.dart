@@ -10,7 +10,7 @@ import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
 import 'package:fusion_example/page/navigator_page.dart';
 import 'package:fusion_example/page/refresh_page.dart';
-import 'package:fusion_example/page/test_page.dart';
+import 'package:fusion_example/page/index_page.dart';
 import 'package:fusion_example/page/transparent_page.dart';
 import 'package:fusion_example/page/unknown_page.dart';
 import 'package:fusion_example/page/web_page.dart';
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
 }
 
 final Map<String, FusionPageFactory> routeMap = {
-  '/test': (args) => TestPage(args: args),
+  '/index': (args) => IndexPage(args: args),
   '/list': (args) => ListPage(args: args),
   '/lifecycle': (args) => LifecyclePage(args: args),
   '/willpop': ((args) => WillPopPage(args: args)),

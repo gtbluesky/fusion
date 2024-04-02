@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/log/fusion_log.dart';
+import '../log/fusion_log.dart';
 
 class FusionPageLifecycleListener {
   /// Called when the flutter page is visible.
@@ -24,6 +24,8 @@ class FusionPageLifecycleBinding {
   static FusionPageLifecycleBinding get instance => _instance;
 
   final _listeners = <Route<dynamic>, FusionPageLifecycleListener>{};
+
+  bool isVisible = false;
 
   /// Register the page's lifecycle listener.
   void register(FusionPageLifecycleListener listener) {
@@ -50,6 +52,8 @@ class FusionPageLifecycleBinding {
     Route<dynamic> route, {
     bool isFirstTime = false,
   }) {
+    isVisible = true;
+
     /// 确保didChangeDependencies后调用生命周期方法
     if (isFirstTime) {
       // ignore: invalid_null_aware_operator
@@ -70,6 +74,7 @@ class FusionPageLifecycleBinding {
   }
 
   void dispatchPageInvisibleEvent(Route<dynamic> route) {
+    isVisible = false;
     try {
       _listeners[route]?.onPageInvisible();
     } on Exception catch (e) {

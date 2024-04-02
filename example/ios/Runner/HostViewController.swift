@@ -58,15 +58,26 @@ class HostViewController: UIViewController {
 //    }
 
     @IBAction func click0(_ sender: UIButton) {
-        FusionNavigator.instance.open("/test", args: ["title": "iOS Flutter Page"])
+        FusionNavigator.instance.push(
+            "/index",
+            routeArgs: ["title": "iOS Flutter Page"],
+            routeType: .adaption
+        )
     }
 
     @IBAction func click1(_ sender: Any) {
-        FusionNavigator.instance.open("/transparent", args: ["title": "iOS Flutter Page", "transparent": true])
+        FusionNavigator.instance.push(
+            "/transparent",
+            routeArgs: ["title": "iOS Flutter Page", "transparent": true],
+            routeType: .flutterWithContainer
+        )
     }
 
     @IBAction func click2(_ sender: Any) {
-        FusionNavigator.instance.push("/native_tab_scene")
+        FusionNavigator.instance.push(
+            "/native_tab_scene",
+            routeType: .native
+        )
     }
 
     @IBAction func click3(_ sender: Any) {

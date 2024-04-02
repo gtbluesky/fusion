@@ -29,20 +29,26 @@ class _LifecyclePageState extends State<LifecyclePage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push /native_normal_scene'),
+              child: const Text('push(native) /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance
-                    .push('/native_normal_scene', {'title': '12121'});
+                FusionNavigator.instance.push(
+                  '/native_normal_scene',
+                  routeArgs: {'title': 'Native Normal Scene'},
+                  routeType: FusionRouteType.native,
+                );
               },
             ),
             const SizedBox(
               height: 20,
             ),
             InkWell(
-                child: const Text('push /test'),
+                child: const Text('push(flutter) /index'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance
-                      .push<String?>('/test', {'title': '2'});
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/index',
+                    routeArgs: {'title': 'Index Page'},
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -51,11 +57,14 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
-                child: const Text('push /lifecycle'),
+                child: const Text('push(flutter) /lifecycle'),
                 onTap: () async {
                   // await FusionNavigator.instance.pop();
-                  final result = await FusionNavigator.instance
-                      .push<String?>('/lifecycle', {'title': 'Lifecycle Test'});
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/lifecycle',
+                    routeArgs: {'title': 'Lifecycle Page'},
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -64,19 +73,24 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
-                child: const Text('open /lifecycle'),
+                child: const Text('push(flutterWithContainer) /lifecycle'),
                 onTap: () async {
-                  FusionNavigator.instance
-                      .open('/lifecycle', {'title': 'Open'});
+                  FusionNavigator.instance.push(
+                    '/lifecycle',
+                    routeArgs: {'title': 'Lifecycle Page'},
+                    routeType: FusionRouteType.flutterWithContainer,
+                  );
                 }),
             const SizedBox(
               height: 20,
             ),
             InkWell(
-                child: const Text('push /willpop'),
+                child: const Text('push(flutter) /willpop'),
                 onTap: () async {
-                  final result =
-                      await FusionNavigator.instance.push<String?>('/willpop');
+                  final result = await FusionNavigator.instance.push<String?>(
+                    '/willpop',
+                    routeType: FusionRouteType.flutter,
+                  );
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -85,10 +99,10 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
-                child: const Text('push /web'),
+                child: const Text('push(flutter) /web'),
                 onTap: () async {
                   final result =
-                      await FusionNavigator.instance.push<String?>('/web');
+                      await FusionNavigator.instance.push<String?>('/web', routeType: FusionRouteType.flutter);
                   if (kDebugMode) {
                     print('result=$result');
                   }

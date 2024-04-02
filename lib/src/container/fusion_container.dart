@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/container/fusion_overlay.dart';
-import 'package:fusion/src/container/fusion_page.dart';
-import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
+import '../container/fusion_overlay.dart';
+import '../container/fusion_page.dart';
+import '../navigator/fusion_navigator_delegate.dart';
+import '../navigator/fusion_navigator_observer.dart';
 
 class FusionContainer extends ChangeNotifier {
   FusionContainer(this.uniqueId, FusionPage page)

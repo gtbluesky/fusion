@@ -158,7 +158,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? List<Map<String, Any?>>
         if (restoredHistory == null) {
-            engineBinding?.open(uniqueId, routeName, routeArgs)
+            engineBinding?.create(uniqueId, routeName, routeArgs)
         } else {
             engineBinding?.restore(uniqueId, restoredHistory)
         }

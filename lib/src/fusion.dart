@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:fusion/src/channel/fusion_channel.dart';
+import 'channel/fusion_channel.dart';
 
 class Fusion {
   Fusion._();

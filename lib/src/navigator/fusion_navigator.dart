@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/channel/fusion_channel.dart';
-import 'package:fusion/src/container/fusion_overlay.dart';
-import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
+import '../channel/fusion_channel.dart';
+import '../container/fusion_overlay.dart';
+import '../navigator/fusion_navigator_delegate.dart';
 
 class FusionNavigator {
   FusionNavigator._();
@@ -10,20 +10,14 @@ class FusionNavigator {
 
   static FusionNavigator get instance => _instance;
 
-  /// Open a new container and push a new flutter page on the route stack.
-  Future open(
-    String routeName, [
-    Map<String, dynamic>? routeArgs,
-  ]) {
-    return FusionChannel.instance.open(routeName, routeArgs);
-  }
-
-  /// Push a new flutter page in the current container.
+  /// Push a new page.
   Future<T?> push<T extends Object?>(
-    String routeName, [
+    String routeName, {
     Map<String, dynamic>? routeArgs,
-  ]) async {
-    return FusionNavigatorDelegate.instance.push(routeName, routeArgs);
+    FusionRouteType routeType = FusionRouteType.adaption,
+  }) async {
+    return FusionNavigatorDelegate.instance
+        .push(routeName, routeArgs, routeType);
   }
 
   /// Replace a designated flutter page with a new flutter page in the current container.
@@ -59,4 +53,11 @@ class FusionNavigator {
 
   NavigatorState? get navigator =>
       FusionOverlayManager.instance.topRoute?.navigator;
+}
+
+enum FusionRouteType {
+  flutter,
+  flutterWithContainer,
+  native,
+  adaption;
 }

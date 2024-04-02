@@ -1,12 +1,12 @@
 package com.gtbluesky.fusion_example
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion.navigator.FusionNavigator
+import com.gtbluesky.fusion.navigator.FusionRouteType
 import com.gtbluesky.fusion.notification.FusionNotificationBinding
 import com.gtbluesky.fusion.notification.FusionNotificationListener
 import com.gtbluesky.fusion_example.databinding.ActivityMainBinding
@@ -25,22 +25,32 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
 
     private fun setListener() {
         activityMainBinding.tvFlutterActivity.setOnClickListener {
-            FusionNavigator.open("/test", mapOf("title" to "Android Flutter Page"))
+            FusionNavigator.push(
+                "/index",
+                mapOf(
+                    "title" to "Android Flutter Page"
+                ),
+                FusionRouteType.ADAPTION
+            )
         }
         activityMainBinding.tvTransparentFlutterActivity.setOnClickListener {
-            FusionNavigator.open(
+            FusionNavigator.push(
                 "/transparent",
                 mapOf(
                     "title" to "Transparent Flutter Page",
                     "transparent" to true
-                )
+                ),
+                FusionRouteType.FLUTTER_WITH_CONTAINER
             )
         }
 //        activityMainBinding.tvFlutterViewpager.setOnClickListener {
 //            startActivity(Intent(this, ViewPagerSceneActivity::class.java))
 //        }
         activityMainBinding.tvFlutterTab.setOnClickListener {
-            FusionNavigator.push("/native_tab_scene")
+            FusionNavigator.push(
+                "/native_tab_scene",
+                routeType = FusionRouteType.NATIVE
+            )
         }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
             if (!hasOpened) {

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fusion/src/container/fusion_overlay.dart';
-import 'package:fusion/src/container/fusion_page.dart';
-import 'package:fusion/src/data/fusion_state.dart';
-import 'package:fusion/src/extension/system_ui_overlay_extension.dart';
-import 'package:fusion/src/fusion.dart';
-import 'package:fusion/src/lifecycle/fusion_app_lifecycle.dart';
-import 'package:fusion/src/lifecycle/fusion_page_lifecycle.dart';
-import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
-import 'package:fusion/src/notification/fusion_notification.dart';
+import '../container/fusion_overlay.dart';
+import '../container/fusion_page.dart';
+import '../data/fusion_state.dart';
+import '../extension/system_ui_overlay_extension.dart';
+import '../fusion.dart';
+import '../lifecycle/fusion_app_lifecycle.dart';
+import '../lifecycle/fusion_page_lifecycle.dart';
+import '../navigator/fusion_navigator.dart';
+import '../navigator/fusion_navigator_delegate.dart';
+import '../notification/fusion_notification.dart';
 
 class FusionChannel {
   FusionChannel._();
@@ -19,8 +20,6 @@ class FusionChannel {
 
   static const _fusionChannel = 'fusion_channel';
 
-  final _hostOpen = const BasicMessageChannel(
-      '$_fusionChannel/host/open', StandardMessageCodec());
   final _hostPush = const BasicMessageChannel(
       '$_fusionChannel/host/push', StandardMessageCodec());
   final _hostDestroy = const BasicMessageChannel(
@@ -33,8 +32,8 @@ class FusionChannel {
       '$_fusionChannel/host/sendMessage', StandardMessageCodec());
   final _hostRemoveMaskView = const BasicMessageChannel(
       '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
-  final _flutterOpen = const BasicMessageChannel(
-      '$_fusionChannel/flutter/open', StandardMessageCodec());
+  final _flutterCreate = const BasicMessageChannel(
+      '$_fusionChannel/flutter/create', StandardMessageCodec());
   final _flutterSwitchTop = const BasicMessageChannel(
       '$_fusionChannel/flutter/switchTop', StandardMessageCodec());
   final _flutterRestore = const BasicMessageChannel(
@@ -65,20 +64,7 @@ class FusionChannel {
       '$_fusionChannel/flutter/checkStyle', StandardMessageCodec());
 
   void register() {
-    _flutterOpen.setMessageHandler((message) async {
-      FusionJobQueue.instance.runJob(() {
-        if (message is! Map) return null;
-        String uniqueId = message['uniqueId'];
-        String name = message['name'];
-        Map<String, dynamic>? args;
-        if (message['args'] != null) {
-          args = Map<String, dynamic>.from(message['args']);
-        }
-        FusionNavigatorDelegate.instance.open(uniqueId, name, args);
-        removeMaskView(uniqueId);
-      });
-      return null;
-    });
+    // external function
     _flutterPush.setMessageHandler((message) async {
       if (message is! Map) return null;
       String name = message['name'];
@@ -86,7 +72,8 @@ class FusionChannel {
       if (message['args'] != null) {
         args = Map<String, dynamic>.from(message['args']);
       }
-      return FusionNavigatorDelegate.instance.push(name, args);
+      final type = FusionRouteType.values[message['type']];
+      return FusionNavigatorDelegate.instance.push(name, args, type);
     });
     _flutterReplace.setMessageHandler((message) async {
       if (message is! Map) return null;
@@ -112,13 +99,27 @@ class FusionChannel {
       String name = message['name'];
       return FusionNavigatorDelegate.instance.remove(name);
     });
-    _flutterDestroy.setMessageHandler((message) async {
-      if (message is! Map) return;
-      FocusManager.instance.primaryFocus?.unfocus();
-      String uniqueId = message['uniqueId'];
-      await FusionNavigatorDelegate.instance.destroy(uniqueId);
-      // ignore: invalid_null_aware_operator
-      WidgetsBinding.instance?.drawFrame();
+    // internal function
+    _flutterCreate.setMessageHandler((message) async {
+      FusionJobQueue.instance.runJob(() {
+        if (message is! Map) return null;
+        String uniqueId = message['uniqueId'];
+        String name = message['name'];
+        Map<String, dynamic>? args;
+        if (message['args'] != null) {
+          args = Map<String, dynamic>.from(message['args']);
+        }
+        FusionNavigatorDelegate.instance.create(uniqueId, name, args);
+        removeMaskView(uniqueId);
+      });
+      return null;
+    });
+    _flutterSwitchTop.setMessageHandler((message) async {
+      FusionJobQueue.instance.runJob(() {
+        if (message is! Map) return;
+        String uniqueId = message['uniqueId'];
+        FusionOverlayManager.instance.switchTop(uniqueId);
+      });
       return null;
     });
     _flutterRestore.setMessageHandler((message) async {
@@ -139,12 +140,13 @@ class FusionChannel {
       });
       return;
     });
-    _flutterSwitchTop.setMessageHandler((message) async {
-      FusionJobQueue.instance.runJob(() {
-        if (message is! Map) return;
-        String uniqueId = message['uniqueId'];
-        FusionOverlayManager.instance.switchTop(uniqueId);
-      });
+    _flutterDestroy.setMessageHandler((message) async {
+      if (message is! Map) return;
+      FocusManager.instance.primaryFocus?.unfocus();
+      String uniqueId = message['uniqueId'];
+      await FusionNavigatorDelegate.instance.destroy(uniqueId);
+      // ignore: invalid_null_aware_operator
+      WidgetsBinding.instance?.drawFrame();
       return null;
     });
     _flutterNotifyPageVisible.setMessageHandler((message) async {
@@ -244,17 +246,11 @@ class FusionChannel {
     }
   }
 
-  Future open(String name, dynamic args) {
-    return _hostOpen.send({
-      'name': name,
-      'args': args,
-    });
-  }
-
-  Future push(String name, dynamic args) async {
+  Future push(String name, dynamic args, FusionRouteType type) async {
     return _hostPush.send({
       'name': name,
       'args': args,
+      'type': type.index,
     });
   }
 

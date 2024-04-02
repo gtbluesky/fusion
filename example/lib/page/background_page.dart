@@ -21,7 +21,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
       backgroundColor: Color(backgroundColor),
       appBar: AppBar(
         backgroundColor: Color(backgroundColor),
-        title: Text(widget.args?['title'] ??'自定义背景色', style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(widget.args?['title'] ?? '自定义背景色',
+            style: AppBarTheme.of(context).titleTextStyle),
       ),
       body: Center(
         child: Column(
@@ -29,10 +30,14 @@ class _BackgroundPageState extends State<BackgroundPage> {
           children: [
             InkWell(
               onTap: () {
-                FusionNavigator.instance.open('/lifecycle', {'title': 'Open'});
+                FusionNavigator.instance.push(
+                  '/lifecycle',
+                  routeArgs: {'title': 'Lifecycle Page'},
+                  routeType: FusionRouteType.flutterWithContainer,
+                );
               },
               child: const Text(
-                'open /lifecycle',
+                'push(flutterWithContainer) /lifecycle',
                 style: TextStyle(color: Colors.white),
               ),
             ),

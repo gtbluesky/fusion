@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fusion/src/app/fusion_home.dart';
-import 'package:fusion/src/container/fusion_container.dart';
-import 'package:fusion/src/container/fusion_page.dart';
+import '../app/fusion_home.dart';
+import '../container/fusion_container.dart';
+import '../container/fusion_page.dart';
 
 class FusionOverlayManager {
   FusionOverlayManager._();
