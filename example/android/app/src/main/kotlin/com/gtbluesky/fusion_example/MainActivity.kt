@@ -65,8 +65,11 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
     }
 
     override fun onReceive(name: String, body: Map<String, Any>?) {
-        Toast.makeText(this, "onReceive: name=$name, body=$body", Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(
+            this,
+            "onReceive: name=$name, body=$body",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onDestroy() {

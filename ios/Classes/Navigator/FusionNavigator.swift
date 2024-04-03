@@ -57,12 +57,12 @@ import Foundation
     public static func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil, type: FusionNotificationType = .global) {
         switch type {
         case .flutter:
-            Fusion.instance.engineBinding?.dispatchMessage(name: name, body: body)
+            Fusion.instance.engineBinding?.dispatchMessage(name, body)
         case .native:
-            FusionNotificationBinding.instance.dispatchMessage(name, body: body)
+            FusionNotificationBinding.instance.dispatchMessage(name, body)
         case .global:
-            FusionNotificationBinding.instance.dispatchMessage(name, body: body)
-            Fusion.instance.engineBinding?.dispatchMessage(name: name, body: body)
+            FusionNotificationBinding.instance.dispatchMessage(name, body)
+            Fusion.instance.engineBinding?.dispatchMessage(name, body)
         }
     }
 }

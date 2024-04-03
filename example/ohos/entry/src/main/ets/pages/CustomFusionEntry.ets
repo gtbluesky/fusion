@@ -5,16 +5,16 @@ import { FusionEntry, FusionMessengerHandler } from '@ohos/fusion';
 export default class CustomFusionEntry extends FusionEntry implements FusionMessengerHandler, MethodCallHandler {
   private channel: MethodChannel | null = null
 
-  configureFlutterChannel(binaryMessenger: BinaryMessenger): void {
+  /* override */ configureFlutterChannel(binaryMessenger: BinaryMessenger): void {
     this.channel = new MethodChannel(binaryMessenger, 'custom_channel')
     this.channel.setMethodCallHandler(this)
   }
 
-  onMethodCall(call: MethodCall, result: MethodResult): void {
+  /* override */ onMethodCall(call: MethodCall, result: MethodResult): void {
     result.success(`Custom Channel：${this}_${call.method}`)
   }
 
-  releaseFlutterChannel(): void {
+  /* override */ releaseFlutterChannel(): void {
     this.channel?.setMethodCallHandler(null)
     this.channel = null
   }

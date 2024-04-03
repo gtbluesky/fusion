@@ -136,6 +136,15 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
+                child: const Text('sendMessage'),
+                onTap: () {
+                  FusionNavigator.sendMessage('msg',
+                      body: {'time': DateTime.now().millisecondsSinceEpoch});
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
                 child: const Text('platform plugin'),
                 onTap: () async {
                   if (Platform.isAndroid) {
@@ -245,8 +254,6 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
-    FusionNavigator.sendMessage('msg1',
-        body: {'time': DateTime.now().millisecondsSinceEpoch});
     FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');

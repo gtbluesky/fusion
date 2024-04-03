@@ -30,7 +30,7 @@ import Foundation
         }
     }
 
-    internal func dispatchMessage(_ name: String, body: Dictionary<String, Any>?) {
+    internal func dispatchMessage(_ name: String, _ body: Dictionary<String, Any>?) {
         listeners.forEach {
             $0.value?.onReceive(name: name, body: body)
         }

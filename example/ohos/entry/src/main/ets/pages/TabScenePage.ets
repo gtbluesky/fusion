@@ -9,7 +9,7 @@ struct TabScenePage {
   @State currentIndex: number = 0
   private flutterEntryList = new List<FusionEntry>()
 
-  aboutToAppear(): void {
+  override aboutToAppear(): void {
     const context = getContext(this)
     const flutterEntry0 = new CustomFusionEntry(
       context,
@@ -46,7 +46,7 @@ struct TabScenePage {
     }
   }
 
-  build() {
+  override build() {
     Tabs({
       index: this.currentIndex,
       barPosition: BarPosition.End
@@ -74,17 +74,17 @@ struct TabScenePage {
     })
   }
 
-  onPageShow(): void {
+  override onPageShow(): void {
     this.onTabChange(this.currentIndex)
   }
 
-  onPageHide(): void {
+  override onPageHide(): void {
     for (const entry of this.flutterEntryList) {
       entry.onPageHide()
     }
   }
 
-  aboutToDisappear(): void {
+  override aboutToDisappear(): void {
     for (const entry of this.flutterEntryList) {
       entry.aboutToDisappear()
     }

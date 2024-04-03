@@ -8,7 +8,7 @@
 import UIKit
 import fusion
 
-class HostViewController: UIViewController {
+class HostViewController: UIViewController, FusionNotificationListener {
 //class HostViewController: UIViewController, UIViewControllerRestoration {
 
     @IBOutlet weak var button0: UIButton!
@@ -24,29 +24,10 @@ class HostViewController: UIViewController {
         FusionNotificationBinding.instance.register(self)
     }
 
-    deinit {
-        FusionNotificationBinding.instance.unregister(self)
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         NSLog("\(self) func=\(#function)")
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        NSLog("\(self) func=\(#function)")
-        super.viewDidAppear(animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        NSLog("\(self) func=\(#function)")
-        super.viewWillDisappear(animated)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        NSLog("\(self) func=\(#function)")
-        super.viewDidDisappear(animated)
     }
 
 //    class func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
@@ -81,13 +62,17 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click3(_ sender: Any) {
-        let fusionVc = CustomFusionViewController(routeName: "/lifecycle", routeArgs: nil)
+        let fusionVc = CustomFusionViewController(
+            routeName: "/lifecycle", routeArgs: nil
+        )
         presentLeftDrawer(fusionVc, animated: true)
     }
-}
-
-extension HostViewController: FusionNotificationListener {
+    
     public func onReceive(name: String, body: Dictionary<String, Any>?) {
-        NSLog("onReceive: name=\(name), body=\(body)")
+        NSLog("onReceive: name=\(name), body=\(String(describing: body))")
+    }
+    
+    deinit {
+        FusionNotificationBinding.instance.unregister(self)
     }
 }

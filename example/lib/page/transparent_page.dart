@@ -19,31 +19,18 @@ class TransparentPage extends StatefulWidget {
 }
 
 class _TransparentPageState extends State<TransparentPage>
-    implements FusionNotificationListener, FusionPageLifecycleListener {
+    implements FusionPageLifecycleListener {
   String? msg;
-
-  @override
-  void onReceive(String name, Map<String, dynamic>? body) {
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      msg = '$runtimeType@$hashCode, $name, $body';
-    });
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionNotificationBinding.instance.register(this);
     FusionPageLifecycleBinding.instance.register(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    FusionNavigator.sendMessage("close");
-    FusionNotificationBinding.instance.unregister(this);
     FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');

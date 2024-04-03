@@ -238,7 +238,7 @@ internal class FusionEngineBinding: NSObject {
         flutterNotifyEnterBackground?.sendMessage(nil)
     }
 
-    func dispatchMessage(name: String, body: Dictionary<String, Any>?) {
+    func dispatchMessage(_ name: String, _ body: Dictionary<String, Any>?) {
         let msg: Dictionary<String, Any?> = ["name": name, "body": body]
         flutterDispatchMessage?.sendMessage(msg)
     }

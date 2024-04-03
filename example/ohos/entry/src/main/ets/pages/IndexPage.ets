@@ -1,9 +1,27 @@
-import { FusionNavigator, FusionRouteType } from '@ohos/fusion';
+import { FusionNavigator, FusionNotificationBinding, FusionNotificationListener, FusionRouteType } from '@ohos/fusion';
+import { promptAction } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct IndexPage {
-  build() {
+
+  private notificationListener: FusionNotificationListener = {
+    onReceive(name: string, body: Map<string, Object>| null): void {
+      promptAction.showToast({
+        message: `onReceive: name=${name}, body=${body}`,
+      })
+    }
+  }
+
+  override aboutToAppear(): void {
+    FusionNotificationBinding.instance.register(this.notificationListener)
+  }
+
+  override aboutToDisappear(): void {
+    FusionNotificationBinding.instance.unregister(this.notificationListener)
+  }
+
+  override build() {
     Row() {
       Column() {
         Text('Flutter普通页面场景')
