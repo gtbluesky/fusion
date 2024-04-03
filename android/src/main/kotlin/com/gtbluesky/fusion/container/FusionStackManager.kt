@@ -2,7 +2,6 @@ package com.gtbluesky.fusion.container
 
 import android.app.Activity
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.notification.FusionNotificationBinding
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
@@ -67,13 +66,5 @@ internal object FusionStackManager {
             Fusion.engineBinding?.engine?.lifecycleChannel?.appIsPaused()
         }
         Fusion.engineBinding?.notifyEnterBackground()
-    }
-
-    fun sendMessage(name: String, body: Map<String, Any>?) {
-        // Native
-        FusionNotificationBinding.dispatchMessage(name, body)
-        // Flutter
-        val msg = mapOf("name" to name, "body" to body)
-        Fusion.engineBinding?.dispatchMessage(msg)
     }
 }

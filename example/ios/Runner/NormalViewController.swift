@@ -53,18 +53,18 @@ class NormalViewController: UIViewController {
     }
 
     @objc func btnClick2(btn: UIButton) {
-        FusionNavigator.instance.sendMessage("msg3", body: ["time": "\(Int64(round(Date().timeIntervalSince1970 * 1000)))"])
+        FusionNavigator.sendMessage("msg3", body: ["time": "\(Int64(round(Date().timeIntervalSince1970 * 1000)))"])
     }
 
     @objc func btnClick3(btn: UIButton) {
-        FusionNavigator.instance.push(
+        FusionNavigator.push(
             "/index",
             routeArgs: ["title": "New Flutter Page"]
         )
     }
 
     @objc func btnClick4(btn: UIButton) {
-        FusionNavigator.instance.push(
+        FusionNavigator.push(
             "/transparent",
             routeArgs: ["title": "Transparent Flutter Page", "transparent": true]
         )

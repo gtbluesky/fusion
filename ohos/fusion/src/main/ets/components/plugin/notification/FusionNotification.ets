@@ -1,4 +1,3 @@
-import FlutterEntry from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/FlutterEntry'
 import ArrayList from '@ohos.util.ArrayList'
 
 export interface FusionNotificationListener {
@@ -17,27 +16,27 @@ export default class FusionNotificationBinding {
   }
 
   register(listener: FusionNotificationListener): void {
-    if (!(listener instanceof FlutterEntry)) {
-      return
-    }
     this.unregister(listener)
     this.listeners.add(listener)
   }
 
   unregister(listener: FusionNotificationListener): void {
-    if (!(listener instanceof FlutterEntry)) {
-      return
-    }
-    for (let element of this.listeners) {
-      if (element == listener || element == null) {
-        this.listeners.remove(element)
+    for (let it of this.listeners) {
+      if (it == listener || it == null) {
+        this.listeners.remove(it)
       }
     }
   }
 
   dispatchMessage(name: string, body: Map<string, Object> | null): void {
-    for (let element of this.listeners) {
-      element.onReceive(name, body)
+    for (let it of this.listeners) {
+      it.onReceive(name, body)
     }
   }
+}
+
+export enum FusionNotificationType {
+  flutter,
+  native,
+  global
 }

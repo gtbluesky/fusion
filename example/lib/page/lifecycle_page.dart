@@ -31,7 +31,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
               child: const Text('push(native) /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/native_normal_scene',
                   routeArgs: {'title': 'Native Normal Scene'},
                   routeType: FusionRouteType.native,
@@ -44,7 +44,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push(flutter) /index'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/index',
                     routeArgs: {'title': 'Index Page'},
                     routeType: FusionRouteType.flutter,
@@ -59,8 +59,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push(flutter) /lifecycle'),
                 onTap: () async {
-                  // await FusionNavigator.instance.pop();
-                  final result = await FusionNavigator.instance.push<String?>(
+                  // await FusionNavigator.pop();
+                  final result = await FusionNavigator.push<String?>(
                     '/lifecycle',
                     routeArgs: {'title': 'Lifecycle Page'},
                     routeType: FusionRouteType.flutter,
@@ -75,7 +75,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push(flutterWithContainer) /lifecycle'),
                 onTap: () async {
-                  FusionNavigator.instance.push(
+                  FusionNavigator.push(
                     '/lifecycle',
                     routeArgs: {'title': 'Lifecycle Page'},
                     routeType: FusionRouteType.flutterWithContainer,
@@ -87,7 +87,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push(flutter) /willpop'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/willpop',
                     routeType: FusionRouteType.flutter,
                   );
@@ -101,8 +101,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('push(flutter) /web'),
                 onTap: () async {
-                  final result =
-                      await FusionNavigator.instance.push<String?>('/web', routeType: FusionRouteType.flutter);
+                  final result = await FusionNavigator.push<String?>('/web',
+                      routeType: FusionRouteType.flutter);
                   if (kDebugMode) {
                     print('result=$result');
                   }
@@ -113,7 +113,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('pop'),
                 onTap: () {
-                  FusionNavigator.instance.pop('test返回结果');
+                  FusionNavigator.pop('test返回结果');
                 }),
             const SizedBox(
               height: 20,
@@ -121,8 +121,8 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('replace /list'),
                 onTap: () {
-                  FusionNavigator.instance
-                      .replace('/list', {'title': 'replace success'});
+                  FusionNavigator.replace(
+                      '/list', {'title': 'replace success'});
                 }),
             const SizedBox(
               height: 20,
@@ -130,7 +130,7 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('remove /lifecycle'),
                 onTap: () {
-                  FusionNavigator.instance.remove('/lifecycle');
+                  FusionNavigator.remove('/lifecycle');
                 }),
             const SizedBox(
               height: 20,
@@ -173,8 +173,6 @@ class _LifecyclePageState extends State<LifecyclePage>
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          // FusionNavigator.instance.sendMessage(
-          //     'msg1', {'time': DateTime.now().millisecondsSinceEpoch});
           showDialog(
               context: context,
               builder: (context) {
@@ -182,7 +180,7 @@ class _LifecyclePageState extends State<LifecyclePage>
                   child: const Text('我是弹窗'),
                   onTap: () {
                     Navigator.of(context).pop();
-                    FusionNavigator.instance.pop();
+                    FusionNavigator.pop();
                   },
                 );
               });
@@ -247,6 +245,8 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
+    FusionNavigator.sendMessage('msg1',
+        body: {'time': DateTime.now().millisecondsSinceEpoch});
     FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');

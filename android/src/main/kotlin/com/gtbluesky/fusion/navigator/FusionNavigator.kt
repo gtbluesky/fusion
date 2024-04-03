@@ -1,7 +1,8 @@
 package com.gtbluesky.fusion.navigator
 
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.notification.FusionNotificationBinding
+import com.gtbluesky.fusion.notification.FusionNotificationType
 
 object FusionNavigator {
     /**
@@ -54,12 +55,23 @@ object FusionNavigator {
     }
 
     /**
-     * 发送全局消息
+     * 发送消息
      */
     @JvmStatic
     @JvmOverloads
-    fun sendMessage(name: String, body: Map<String, Any>? = null) {
-        FusionStackManager.sendMessage(name, body)
+    fun sendMessage(name: String, body: Map<String, Any>? = null, type: FusionNotificationType = FusionNotificationType.GLOBAL) {
+        when (type) {
+            FusionNotificationType.FLUTTER -> {
+                Fusion.engineBinding?.dispatchMessage(name, body)
+            }
+            FusionNotificationType.NATIVE -> {
+                FusionNotificationBinding.dispatchMessage(name, body)
+            }
+            FusionNotificationType.GLOBAL -> {
+                FusionNotificationBinding.dispatchMessage(name, body)
+                Fusion.engineBinding?.dispatchMessage(name, body)
+            }
+        }
     }
 }
 

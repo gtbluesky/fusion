@@ -3,7 +3,9 @@ package com.gtbluesky.fusion.engine
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.navigator.FusionRouteType
+import com.gtbluesky.fusion.notification.FusionNotificationType
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.embedding.engine.systemchannels.PlatformViewsChannel
@@ -15,7 +17,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     private var hostDestroy: BasicMessageChannel<Any>? = null
     private var hostRestore: BasicMessageChannel<Any>? = null
     private var hostSync: BasicMessageChannel<Any>? = null
-    private var hostSendMessage: BasicMessageChannel<Any>? = null
+    private var hostDispatchMessage: BasicMessageChannel<Any>? = null
     private var hostRemoveMaskView: BasicMessageChannel<Any>? = null
     private var flutterCreate: BasicMessageChannel<Any>? = null
     private var flutterSwitchTop: BasicMessageChannel<Any>? = null
@@ -71,9 +73,9 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 "${FusionConstant.FUSION_CHANNEL}/host/sync",
                 messageCodec
             )
-            hostSendMessage = BasicMessageChannel(
+            hostDispatchMessage = BasicMessageChannel(
                 binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/host/sendMessage",
+                "${FusionConstant.FUSION_CHANNEL}/host/dispatchMessage",
                 messageCodec
             )
             hostRemoveMaskView = BasicMessageChannel(
@@ -218,7 +220,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
             }
             reply.reply(true)
         }
-        hostSendMessage?.setMessageHandler { message, reply ->
+        hostDispatchMessage?.setMessageHandler { message, reply ->
             if (message !is Map<*, *>) {
                 reply.reply(null)
                 return@setMessageHandler
@@ -229,7 +231,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 return@setMessageHandler
             }
             val body = message["body"] as? Map<String, Any>
-            FusionStackManager.sendMessage(name, body)
+            FusionNavigator.sendMessage(name, body, FusionNotificationType.NATIVE)
             reply.reply(null)
         }
         hostRemoveMaskView?.setMessageHandler { message, reply ->
@@ -379,7 +381,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         flutterNotifyEnterBackground?.send(null)
     }
 
-    fun dispatchMessage(msg: Map<String, Any?>) {
+    fun dispatchMessage(name: String, body: Map<String, Any>?) {
+        val msg = mapOf("name" to name, "body" to body)
         flutterDispatchMessage?.send(msg)
     }
 
@@ -435,8 +438,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         hostRestore = null
         hostSync?.setMessageHandler(null)
         hostSync = null
-        hostSendMessage?.setMessageHandler(null)
-        hostSendMessage = null
+        hostDispatchMessage?.setMessageHandler(null)
+        hostDispatchMessage = null
         hostRemoveMaskView?.setMessageHandler(null)
         hostRemoveMaskView = null
         flutterCreate = null

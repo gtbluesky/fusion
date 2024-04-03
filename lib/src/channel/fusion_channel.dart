@@ -28,8 +28,8 @@ class FusionChannel {
       '$_fusionChannel/host/restore', StandardMessageCodec());
   final _hostSync = const BasicMessageChannel(
       '$_fusionChannel/host/sync', StandardMessageCodec());
-  final _hostSendMessage = const BasicMessageChannel(
-      '$_fusionChannel/host/sendMessage', StandardMessageCodec());
+  final _hostDispatchMessage = const BasicMessageChannel(
+      '$_fusionChannel/host/dispatchMessage', StandardMessageCodec());
   final _hostRemoveMaskView = const BasicMessageChannel(
       '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
   final _flutterCreate = const BasicMessageChannel(
@@ -181,7 +181,8 @@ class FusionChannel {
         final msg = Map<String, dynamic>.from(message);
         String name = msg['name'];
         final body = (msg['body'] as Map?)?.cast<String, dynamic>();
-        FusionNotificationBinding.instance.dispatchMessage(name, body);
+        FusionNavigator.sendMessage(name,
+            body: body, type: FusionNotificationType.flutter);
       });
       return;
     });
@@ -270,8 +271,8 @@ class FusionChannel {
     return list;
   }
 
-  void sendMessage(String name, [Map<String, dynamic>? body]) {
-    _hostSendMessage.send({
+  void dispatchMessage(String name, [Map<String, dynamic>? body]) {
+    _hostDispatchMessage.send({
       'name': name,
       'body': body,
     });

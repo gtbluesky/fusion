@@ -58,7 +58,7 @@ class HostViewController: UIViewController {
 //    }
 
     @IBAction func click0(_ sender: UIButton) {
-        FusionNavigator.instance.push(
+        FusionNavigator.push(
             "/index",
             routeArgs: ["title": "iOS Flutter Page"],
             routeType: .adaption
@@ -66,7 +66,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click1(_ sender: Any) {
-        FusionNavigator.instance.push(
+        FusionNavigator.push(
             "/transparent",
             routeArgs: ["title": "iOS Flutter Page", "transparent": true],
             routeType: .flutterWithContainer
@@ -74,7 +74,7 @@ class HostViewController: UIViewController {
     }
 
     @IBAction func click2(_ sender: Any) {
-        FusionNavigator.instance.push(
+        FusionNavigator.push(
             "/native_tab_scene",
             routeType: .native
         )

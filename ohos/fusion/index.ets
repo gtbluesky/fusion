@@ -18,7 +18,8 @@ import Fusion from './src/main/ets/components/plugin/Fusion';
 import FusionNavigator, { FusionRouteDelegate,
   FusionRouteType } from './src/main/ets/components/plugin/navigator/FusionNavigator';
 import FusionNotificationBinding, {
-  FusionNotificationListener
+  FusionNotificationListener,
+  FusionNotificationType
 } from './src/main/ets/components/plugin/notification/FusionNotification';
 import FusionMessengerHandler from './src/main/ets/components/plugin/handler/FusionMessengerHandler';
 import FusionEntry from './src/main/ets/components/plugin/container/FusionEntry';
@@ -36,6 +37,7 @@ export {
   FusionNavigator,
   FusionNotificationBinding,
   FusionNotificationListener,
+  FusionNotificationType,
 }
 
 export default FusionPlugin;

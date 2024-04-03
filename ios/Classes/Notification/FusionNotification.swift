@@ -20,19 +20,13 @@ import Foundation
     }
 
     public func register(_ listener: FusionNotificationListener) {
-        if !(listener is UIViewController) {
-            return
-        }
         unregister(listener)
         listeners.append(WeakReference(listener))
     }
 
     public func unregister(_ listener: FusionNotificationListener) {
-        if !(listener is UIViewController) {
-            return
-        }
         listeners.removeAll {
-            ($0.value as? UIViewController) == (listener as? UIViewController) || $0.value == nil
+            ($0.value as AnyObject) === (listener as AnyObject) || $0.value == nil
         }
     }
 
@@ -42,3 +36,9 @@ import Foundation
         }
     }
 }
+
+@objc public enum FusionNotificationType: Int {
+    case flutter
+    case native
+    case global
+  }

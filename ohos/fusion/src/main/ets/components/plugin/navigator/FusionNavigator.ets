@@ -1,5 +1,5 @@
-import FusionStackManager from '../container/FusionStackManager'
 import Fusion from '../Fusion'
+import FusionNotificationBinding, { FusionNotificationType } from '../notification/FusionNotification'
 
 export default class FusionNavigator {
   private constructor() {
@@ -52,10 +52,21 @@ export default class FusionNavigator {
   }
 
   /**
-   * 发送全局消息
+   * 发送消息
    */
-  static sendMessage(name: string, body: Map<string, Object> | null = null): void {
-    FusionStackManager.instance.sendMessage(name, body)
+  static sendMessage(name: string, body: Map<string, Object> | null = null, type: FusionNotificationType = FusionNotificationType.global): void {
+    switch (type) {
+      case FusionNotificationType.flutter:
+        Fusion.instance.engineBinding?.dispatchMessage(name, body)
+        break
+      case FusionNotificationType.native:
+        FusionNotificationBinding.instance.dispatchMessage(name, body)
+        break
+      case FusionNotificationType.global:
+        FusionNotificationBinding.instance.dispatchMessage(name, body)
+        Fusion.instance.engineBinding?.dispatchMessage(name, body)
+        break
+    }
   }
 }
 

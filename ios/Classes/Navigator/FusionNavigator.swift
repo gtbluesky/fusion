@@ -8,15 +8,10 @@
 import Foundation
 
 @objc public class FusionNavigator: NSObject {
-    public static let instance = FusionNavigator()
-
-    private override init() {
-    }
-
     /**
      * 将对应路由入栈
      */
-    public func push(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil, routeType: FusionRouteType = FusionRouteType.adaption) {
+    public static func push(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil, routeType: FusionRouteType = FusionRouteType.adaption) {
         switch routeType {
         case .flutterWithContainer:
             Fusion.instance.delegate?.pushFlutterRoute(name: routeName, args: routeArgs)
@@ -30,21 +25,21 @@ import Foundation
     /**
      * 在当前Flutter容器中将栈顶路由替换为对应路由
      */
-    public func replace(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil) {
+    public static func replace(_ routeName: String, routeArgs: Dictionary<String, Any>? = nil) {
         Fusion.instance.engineBinding?.replace(routeName, args: routeArgs)
     }
 
     /**
      * 在当前Flutter容器中将栈顶路由出栈
      */
-    public func pop<T>(_ result: T? = nil) {
+    public static func pop<T>(_ result: T? = nil) {
         Fusion.instance.engineBinding?.pop(result)
     }
 
     /**
      * 在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
      */
-    public func maybePop<T>(_ result: T? = nil) {
+    public static func maybePop<T>(_ result: T? = nil) {
         Fusion.instance.engineBinding?.maybePop(result)
     }
 
@@ -52,12 +47,23 @@ import Foundation
      * 在当前Flutter容器中移除对应路由
      * @param routeName: 路由名
      */
-    public func remove(_ routeName: String) {
+    public static func remove(_ routeName: String) {
         Fusion.instance.engineBinding?.remove(routeName)
     }
 
-    public func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil) {
-        FusionStackManager.instance.sendMessage(name, body: body)
+    /**
+     * 发送消息
+     */
+    public static func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil, type: FusionNotificationType = .global) {
+        switch type {
+        case .flutter:
+            Fusion.instance.engineBinding?.dispatchMessage(name: name, body: body)
+        case .native:
+            FusionNotificationBinding.instance.dispatchMessage(name, body: body)
+        case .global:
+            FusionNotificationBinding.instance.dispatchMessage(name, body: body)
+            Fusion.instance.engineBinding?.dispatchMessage(name: name, body: body)
+        }
     }
 }
 

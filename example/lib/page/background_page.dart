@@ -30,7 +30,7 @@ class _BackgroundPageState extends State<BackgroundPage> {
           children: [
             InkWell(
               onTap: () {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/lifecycle',
                   routeArgs: {'title': 'Lifecycle Page'},
                   routeType: FusionRouteType.flutterWithContainer,
@@ -46,7 +46,7 @@ class _BackgroundPageState extends State<BackgroundPage> {
             ),
             InkWell(
               onTap: () {
-                FusionNavigator.instance.pop('pop');
+                FusionNavigator.pop('pop');
               },
               child: const Text(
                 'pop',

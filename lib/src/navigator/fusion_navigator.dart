@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import '../channel/fusion_channel.dart';
 import '../container/fusion_overlay.dart';
 import '../navigator/fusion_navigator_delegate.dart';
+import '../notification/fusion_notification.dart';
 
 class FusionNavigator {
   FusionNavigator._();
 
-  static final FusionNavigator _instance = FusionNavigator._();
-
-  static FusionNavigator get instance => _instance;
-
   /// Push a new page.
-  Future<T?> push<T extends Object?>(
+  static Future<T?> push<T extends Object?>(
     String routeName, {
     Map<String, dynamic>? routeArgs,
     FusionRouteType routeType = FusionRouteType.adaption,
@@ -21,7 +18,7 @@ class FusionNavigator {
   }
 
   /// Replace a designated flutter page with a new flutter page in the current container.
-  Future<T?> replace<T extends Object?>(
+  static Future<T?> replace<T extends Object?>(
     String routeName, [
     Map<String, dynamic>? routeArgs,
     bool animated = false,
@@ -31,28 +28,45 @@ class FusionNavigator {
   }
 
   /// Pop in the current container.
-  Future<void> pop<T extends Object?>([T? result]) async {
+  static Future<void> pop<T extends Object?>([T? result]) async {
     return FusionNavigatorDelegate.instance.pop(result);
   }
 
   /// Pop in the current container.
   /// Can be used with [WillPopScope].
-  Future<bool> maybePop<T extends Object?>([T? result]) async {
+  static Future<bool> maybePop<T extends Object?>([T? result]) async {
     return FusionNavigatorDelegate.instance.maybePop(result);
   }
 
   /// Remove a designated flutter page in all containers.
-  Future<void> remove(String routeName) async {
+  static Future<void> remove(String routeName) async {
     return FusionNavigatorDelegate.instance.remove(routeName);
   }
 
   /// Send a message to flutter side and native side.
-  void sendMessage(String name, [Map<String, dynamic>? body]) {
-    return FusionChannel.instance.sendMessage(name, body);
+  static void sendMessage(
+    String name, {
+    Map<String, dynamic>? body,
+    FusionNotificationType type = FusionNotificationType.global,
+  }) {
+    switch (type) {
+      case FusionNotificationType.flutter:
+        FusionNotificationBinding.instance.dispatchMessage(name, body);
+        break;
+      case FusionNotificationType.native:
+        FusionChannel.instance.dispatchMessage(name, body);
+        break;
+      case FusionNotificationType.global:
+        FusionNotificationBinding.instance.dispatchMessage(name, body);
+        FusionChannel.instance.dispatchMessage(name, body);
+        break;
+    }
   }
 
-  NavigatorState? get navigator =>
+  static NavigatorState? get navigator =>
       FusionOverlayManager.instance.topRoute?.navigator;
+
+  static BuildContext? get context => navigator?.context;
 }
 
 enum FusionRouteType {

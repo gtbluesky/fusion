@@ -13,7 +13,7 @@ internal class FusionEngineBinding: NSObject {
     private var hostDestroy: FlutterBasicMessageChannel? = nil
     private var hostRestore: FlutterBasicMessageChannel? = nil
     private var hostSync: FlutterBasicMessageChannel? = nil
-    private var hostSendMessage: FlutterBasicMessageChannel? = nil
+    private var hostDispatchMessage: FlutterBasicMessageChannel? = nil
     private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
     private var flutterCreate: FlutterBasicMessageChannel? = nil
     private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
@@ -55,7 +55,7 @@ internal class FusionEngineBinding: NSObject {
         hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: binaryMessenger)
         hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: binaryMessenger)
         hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: binaryMessenger)
-        hostSendMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sendMessage", binaryMessenger: binaryMessenger)
+        hostDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/dispatchMessage", binaryMessenger: binaryMessenger)
         hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: binaryMessenger)
         flutterCreate = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/create", binaryMessenger: binaryMessenger)
         flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: binaryMessenger)
@@ -119,13 +119,13 @@ internal class FusionEngineBinding: NSObject {
             }
             reply(true)
         }
-        hostSendMessage?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+        hostDispatchMessage?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
             guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
                 reply(nil)
                 return
             }
             let body = dict["body"] as? Dictionary<String, Any>
-            FusionStackManager.instance.sendMessage(name, body: body)
+            FusionNavigator.sendMessage(name, body: body, type: .native)
             reply(nil)
         }
         hostRemoveMaskView?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
@@ -238,7 +238,8 @@ internal class FusionEngineBinding: NSObject {
         flutterNotifyEnterBackground?.sendMessage(nil)
     }
 
-    func dispatchMessage(_ msg: Dictionary<String, Any?>) {
+    func dispatchMessage(name: String, body: Dictionary<String, Any>?) {
+        let msg: Dictionary<String, Any?> = ["name": name, "body": body]
         flutterDispatchMessage?.sendMessage(msg)
     }
 
@@ -291,8 +292,8 @@ internal class FusionEngineBinding: NSObject {
         hostRestore = nil
         hostSync?.setMessageHandler(nil)
         hostSync = nil
-        hostSendMessage?.setMessageHandler(nil)
-        hostSendMessage = nil
+        hostDispatchMessage?.setMessageHandler(nil)
+        hostDispatchMessage = nil
         hostRemoveMaskView?.setMessageHandler(nil)
         hostRemoveMaskView = nil
         flutterCreate = nil

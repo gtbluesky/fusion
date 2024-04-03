@@ -1,5 +1,4 @@
 import FusionContainer from './FusionContainer'
-import FusionNotificationBinding from '../notification/FusionNotification'
 import Fusion from '../Fusion'
 import List from '@ohos.util.List'
 import { router, window } from '@kit.ArkUI'
@@ -79,15 +78,5 @@ export default class FusionStackManager {
       Fusion.instance.engineBinding?.engine?.getLifecycleChannel()?.appIsPaused()
     }
     Fusion.instance.engineBinding?.notifyEnterBackground()
-  }
-
-  public sendMessage(name: string, body: Map<string, Object> | null): void {
-    // Native
-    FusionNotificationBinding.instance.dispatchMessage(name, body)
-    // Flutter
-    const msg = new Map<string, Object | null>()
-    msg.set('name', name)
-    msg.set('body', body)
-    Fusion.instance.engineBinding?.dispatchMessage(msg)
   }
 }

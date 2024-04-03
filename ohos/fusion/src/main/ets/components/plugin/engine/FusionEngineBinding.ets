@@ -7,14 +7,15 @@ import FusionConstant from '../constant/FusionConstant';
 import Fusion from '../Fusion';
 import { SystemChromeStyle } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
 import { Brightness } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
-import { FusionRouteType } from '../navigator/FusionNavigator';
+import FusionNavigator, { FusionRouteType } from '../navigator/FusionNavigator';
+import { FusionNotificationType } from '../notification/FusionNotification';
 
 export default class FusionEngineBinding {
   private hostPush: BasicMessageChannel<Object> | null = null
   private hostDestroy: BasicMessageChannel<Object> | null = null
   private hostRestore: BasicMessageChannel<Object> | null = null
   private hostSync: BasicMessageChannel<Object> | null = null
-  private hostSendMessage: BasicMessageChannel<Object> | null = null
+  private hostDispatchMessage: BasicMessageChannel<Object> | null = null
   private hostRemoveMaskView: BasicMessageChannel<Object> | null = null
   private flutterCreate: BasicMessageChannel<Object> | null = null
   private flutterSwitchTop: BasicMessageChannel<Object> | null = null
@@ -75,9 +76,9 @@ export default class FusionEngineBinding {
       `${FusionConstant.FUSION_CHANNEL}/host/sync`,
       messageCodec
     )
-    this.hostSendMessage = new BasicMessageChannel(
+    this.hostDispatchMessage = new BasicMessageChannel(
       binaryMessenger,
-      `${FusionConstant.FUSION_CHANNEL}/host/sendMessage`,
+      `${FusionConstant.FUSION_CHANNEL}/host/dispatchMessage`,
       messageCodec
     )
     this.hostRemoveMaskView = new BasicMessageChannel(
@@ -229,7 +230,7 @@ export default class FusionEngineBinding {
         reply.reply(true)
       }
     })
-    this.hostSendMessage?.setMessageHandler({
+    this.hostDispatchMessage?.setMessageHandler({
       onMessage: (message, reply) => {
         if (!(message instanceof Map)) {
           reply.reply(null)
@@ -241,7 +242,7 @@ export default class FusionEngineBinding {
           return
         }
         const body = message.get('body') as Map<string, Object> | null
-        FusionStackManager.instance.sendMessage(name, body)
+        FusionNavigator.sendMessage(name, body, FusionNotificationType.native)
         reply.reply(null)
       }
     })
@@ -348,7 +349,10 @@ export default class FusionEngineBinding {
     this.flutterNotifyEnterBackground?.send(null)
   }
 
-  dispatchMessage(msg: Map<string, Object | null>): void {
+  dispatchMessage(name: string, body: Map<string, Object> | null): void {
+    const msg = new Map<string, Object | null>()
+    msg.set('name', name)
+    msg.set('body', body)
     this.flutterDispatchMessage?.send(msg)
   }
 
@@ -410,8 +414,8 @@ export default class FusionEngineBinding {
     this.hostRestore = null
     this.hostSync?.setMessageHandler(null)
     this.hostSync = null
-    this.hostSendMessage?.setMessageHandler(null)
-    this.hostSendMessage = null
+    this.hostDispatchMessage?.setMessageHandler(null)
+    this.hostDispatchMessage = null
     this.hostRemoveMaskView?.setMessageHandler(null)
     this.hostRemoveMaskView = null
     this.flutterCreate = null

@@ -84,12 +84,4 @@ internal class FusionStackManager {
     func notifyEnterBackground() {
         Fusion.instance.engineBinding?.notifyEnterBackground()
     }
-
-    func sendMessage(_ name: String, body: Dictionary<String, Any>?) {
-        // Native
-        FusionNotificationBinding.instance.dispatchMessage(name, body: body)
-        // Flutter
-        let msg: Dictionary<String, Any?> = ["name": name, "body": body]
-        Fusion.instance.engineBinding?.dispatchMessage(msg)
-    }
 }

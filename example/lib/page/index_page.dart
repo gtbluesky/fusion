@@ -25,8 +25,13 @@ class _IndexPageState extends State<IndexPage>
 
   @override
   void onReceive(String name, Map<String, dynamic>? body) {
-    setState(() {
-      msg = '$runtimeType@$hashCode, $name, $body';
+    Future.delayed(const Duration(seconds: 1), () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        msg = '$runtimeType@$hashCode, $name, $body';
+      });
     });
   }
 
@@ -40,7 +45,6 @@ class _IndexPageState extends State<IndexPage>
   @override
   void dispose() {
     super.dispose();
-    FusionNavigator.instance.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
     FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
@@ -90,7 +94,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
             child: const Text('push(adaption) /native_normal_scene'),
             onTap: () {
-              FusionNavigator.instance.push(
+              FusionNavigator.push(
                 '/native_normal_scene',
                 routeArgs: {'title': 'Native Normal Scene'},
                 routeType: FusionRouteType.adaption,
@@ -103,7 +107,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /index'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push<String?>(
+                final result = await FusionNavigator.push<String?>(
                   '/index',
                   routeArgs: {'title': 'Index Page'},
                   routeType: FusionRouteType.flutter,
@@ -118,8 +122,8 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /lifecycle'),
               onTap: () async {
-                // await FusionNavigator.instance.pop();
-                final result = await FusionNavigator.instance.push<String?>(
+                // await FusionNavigator.pop();
+                final result = await FusionNavigator.push<String?>(
                   '/lifecycle',
                   routeArgs: {'title': 'Lifecycle Page'},
                   routeType: FusionRouteType.flutter,
@@ -134,7 +138,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /refresh'),
               onTap: () async {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/refresh',
                   routeType: FusionRouteType.flutter,
                 );
@@ -145,7 +149,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutterWithContainer) /lifecycle'),
               onTap: () async {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/lifecycle',
                   routeArgs: {'title': 'Lifecycle Page'},
                   routeType: FusionRouteType.flutterWithContainer,
@@ -157,7 +161,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutterWithContainer) /background'),
               onTap: () async {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/background',
                   routeArgs: {'backgroundColor': 0xFF546E7A},
                   routeType: FusionRouteType.flutterWithContainer,
@@ -169,7 +173,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /navigator'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push<String?>(
+                final result = await FusionNavigator.push<String?>(
                   '/navigator',
                   routeArgs: {'title': 'System Navigator'},
                   routeType: FusionRouteType.flutter,
@@ -184,7 +188,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /willpop'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push(
+                final result = await FusionNavigator.push(
                   '/willpop',
                   routeType: FusionRouteType.flutter,
                 );
@@ -198,7 +202,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('push(flutter) /web'),
               onTap: () async {
-                final result = await FusionNavigator.instance.push<String?>(
+                final result = await FusionNavigator.push<String?>(
                   '/web',
                   routeType: FusionRouteType.flutter,
                 );
@@ -212,7 +216,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('pop'),
               onTap: () {
-                FusionNavigator.instance.pop('test返回结果');
+                FusionNavigator.pop('test返回结果');
               }),
           const SizedBox(
             height: 20,
@@ -220,8 +224,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('replace /list'),
               onTap: () {
-                FusionNavigator.instance
-                    .replace('/list', {'title': 'replace success'});
+                FusionNavigator.replace('/list', {'title': 'replace success'});
               }),
           const SizedBox(
             height: 20,
@@ -229,7 +232,7 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('remove /lifecycle'),
               onTap: () {
-                FusionNavigator.instance.remove('/lifecycle');
+                FusionNavigator.remove('/lifecycle');
               }),
           const SizedBox(
             height: 20,

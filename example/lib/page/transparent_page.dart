@@ -24,6 +24,9 @@ class _TransparentPageState extends State<TransparentPage>
 
   @override
   void onReceive(String name, Map<String, dynamic>? body) {
+    if (!mounted) {
+      return;
+    }
     setState(() {
       msg = '$runtimeType@$hashCode, $name, $body';
     });
@@ -39,7 +42,7 @@ class _TransparentPageState extends State<TransparentPage>
   @override
   void dispose() {
     super.dispose();
-    FusionNavigator.instance.sendMessage("close");
+    FusionNavigator.sendMessage("close");
     FusionNotificationBinding.instance.unregister(this);
     FusionPageLifecycleBinding.instance.unregister(this);
     if (kDebugMode) {
@@ -90,7 +93,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
               child: const Text('push(native) /native_normal_scene'),
               onTap: () {
-                FusionNavigator.instance.push(
+                FusionNavigator.push(
                   '/native_normal_scene',
                   routeArgs: {'title': 'Native Normal Scene'},
                   routeType: FusionRouteType.native,
@@ -103,7 +106,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('push(flutter) /index'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/index',
                     routeArgs: {'title': 'Index Page'},
                     routeType: FusionRouteType.flutter,
@@ -118,7 +121,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('push(flutter) /lifecycle'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/lifecycle',
                     routeArgs: {'title': 'Lifecycle Page'},
                     routeType: FusionRouteType.flutter,
@@ -133,7 +136,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('push(flutter) /willpop'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/willpop',
                     routeType: FusionRouteType.flutter,
                   );
@@ -147,7 +150,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('push(flutter) /web'),
                 onTap: () async {
-                  final result = await FusionNavigator.instance.push<String?>(
+                  final result = await FusionNavigator.push<String?>(
                     '/web',
                     routeType: FusionRouteType.flutter,
                   );
@@ -161,7 +164,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('pop'),
                 onTap: () {
-                  FusionNavigator.instance.pop('test返回结果');
+                  FusionNavigator.pop('test返回结果');
                 }),
             const SizedBox(
               height: 20,
@@ -169,7 +172,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('replace /list'),
                 onTap: () {
-                  FusionNavigator.instance
+                  FusionNavigator
                       .replace('/list', {'title': 'replace success'});
                 }),
             const SizedBox(
@@ -178,7 +181,7 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('remove /lifecycle'),
                 onTap: () {
-                  FusionNavigator.instance.remove('/lifecycle');
+                  FusionNavigator.remove('/lifecycle');
                 }),
             const SizedBox(
               height: 20,
