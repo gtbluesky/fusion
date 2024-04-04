@@ -143,9 +143,12 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
     const routeArgsRecord = (this._params[FusionConstant.ROUTE_ARGS] ?? {}) as Record<string, Object>
     const routeArgs = new Map<string, Object>(Object.entries(routeArgsRecord));
-    if (this.isTransparent()) {
-      window.findWindow(FusionConstant.TRANSPARENT_WINDOW).setWindowBackgroundColor('#00000000')
-    }
+    window.getLastWindow(this._context, (_, win) => {
+      win.setWindowLayoutFullScreen(true)
+      if (this.isTransparent()) {
+        win.setWindowBackgroundColor('#00000000')
+      }
+    })
     this.engineBinding?.create(this._uniqueId, routeName, routeArgs)
     this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
@@ -163,6 +166,10 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   override aboutToDisappear(): void {
+    // 由于子窗口销毁时不走onPageHide()，因此在aboutToDisappear()处兜底
+    if (this.isTransparent()) {
+      this.onContainerInvisible()
+    }
     super.aboutToDisappear()
     this.onContainerDestroy()
     if (FusionStackManager.instance.isEmpty()) {

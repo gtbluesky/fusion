@@ -91,6 +91,7 @@ class FusionLifecycleCallback extends AbilityLifecycleCallback {
 
   onWindowStageCreate(ability: UIAbility, windowStage: window.WindowStage): void {
     FlutterManager.getInstance().pushWindowStage(ability, windowStage)
+    windowStage.getMainWindowSync().setWindowLayoutFullScreen(true)
   }
 
   onWindowStageDestroy(ability: UIAbility, windowStage: window.WindowStage): void {

@@ -24,12 +24,10 @@ import FusionNotificationBinding, {
 import FusionMessengerHandler from './src/main/ets/components/plugin/handler/FusionMessengerHandler';
 import FusionEntry from './src/main/ets/components/plugin/container/FusionEntry';
 import buildFusionParams from './src/main/ets/components/plugin/container/FusionExt';
-import { FusionPage } from './src/main/ets/components/plugin/container/FusionPage';
 
 export {
   Fusion,
   FusionEntry,
-  FusionPage,
   buildFusionParams,
   FusionRouteDelegate,
   FusionRouteType,

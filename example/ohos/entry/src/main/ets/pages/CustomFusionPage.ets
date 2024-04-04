@@ -37,7 +37,6 @@ struct CustomFusionPage {
     Stack() {
       FlutterPage({
         viewId: this.flutterView?.getId(),
-        xComponentType: XComponentType.TEXTURE
       })
     }
   }

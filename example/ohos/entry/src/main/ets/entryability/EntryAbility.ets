@@ -18,7 +18,6 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   override onWindowStageCreate(windowStage: window.WindowStage): void {
     this.windowStage = windowStage
     this.mainWindow = windowStage.getMainWindowSync()
-    this.mainWindow.setWindowLayoutFullScreen(true)
     windowStage.loadContent('pages/IndexPage')
   }
 
@@ -49,12 +48,11 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     const params = buildFusionParams(name, args, transparent, backgroundColor)
     const url = transparent ? 'pages/TransparentFusionPage' : 'pages/CustomFusionPage'
     if (transparent) {
-      this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (err, win) => {
+      this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (_, win) => {
         const record: Record<string, Object> = {
           'params': params
         }
         win.loadContent(url, new LocalStorage(record))
-        win.setWindowLayoutFullScreen(true)
         win.showWindow()
       })
     } else {

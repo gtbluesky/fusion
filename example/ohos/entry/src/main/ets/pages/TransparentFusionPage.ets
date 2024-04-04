@@ -36,7 +36,6 @@ struct TransparentFusionPage {
     Stack() {
       FlutterPage({
         viewId: this.flutterView?.getId(),
-        xComponentType: XComponentType.TEXTURE
       })
     }
   }
