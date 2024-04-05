@@ -102,9 +102,10 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
       top?.detachFromContainer()
     }
     FusionStackManager.instance.add(this)
-    this.engineBinding?.switchTop(this._uniqueId)
+    this.engineBinding?.switchTop(this._uniqueId, () => {
+      this.attachToContainer()
+    })
     this.engineBinding?.notifyPageVisible(this._uniqueId)
-    this.attachToContainer()
   }
 
   private updateSystemOverlayStyle() {

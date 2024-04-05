@@ -304,12 +304,14 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         )
     }
 
-    fun switchTop(uniqueId: String) {
+    fun switchTop(uniqueId: String, callback: () -> Unit) {
         flutterSwitchTop?.send(
             mapOf(
                 "uniqueId" to uniqueId,
             )
-        )
+        ) {
+            callback()
+        }
     }
 
     /**

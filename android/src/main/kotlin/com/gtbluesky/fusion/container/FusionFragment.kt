@@ -129,9 +129,10 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         } else {
             FusionStackManager.add(this)
         }
-        engineBinding?.switchTop(uniqueId)
+        engineBinding?.switchTop(uniqueId) {
+            this.attachToContainer()
+        }
         engineBinding?.notifyPageVisible(uniqueId)
-        attachToContainer()
     }
 
     private fun updateSystemOverlayStyle() {
@@ -302,6 +303,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         NewEngineFragmentBuilder(fragmentClass) {
         private var routeName: String = FusionConstant.INITIAL_ROUTE
         private var routeArgs: Map<String, Any>? = null
+
         @ColorInt
         private var backgroundColor = Color.WHITE
 

@@ -64,14 +64,20 @@ open class FusionViewController: FlutterViewController {
 
     private func onContainerVisible() {
         FusionStackManager.instance.add(self)
-        engineBinding?.switchTop(uniqueId)
+        engineBinding?.switchTop(uniqueId) {
+            self.attachToContainer()
+        }
         engineBinding?.notifyPageVisible(uniqueId)
-        attachToContainer()
+        self.attachToContainer()
     }
     
     private func updateSystemOverlayStyle() {
         engineBinding?.checkStyle { statusBarStyle in
-            NotificationCenter.default.post(name: .OverlayStyleUpdateNotificationName, object: nil, userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue])
+            NotificationCenter.default.post(
+                name: .OverlayStyleUpdateNotificationName,
+                object: nil,
+                userInfo: [FusionConstant.OverlayStyleUpdateNotificationKey: statusBarStyle.rawValue]
+            )
         }
     }
 

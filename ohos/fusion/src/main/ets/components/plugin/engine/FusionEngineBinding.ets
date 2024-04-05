@@ -306,10 +306,15 @@ export default class FusionEngineBinding {
     this.flutterCreate?.send(map)
   }
 
-  switchTop(uniqueId: string): void {
+  switchTop(uniqueId: string, callback: () => void): void {
     const map = new Map<string, Object>()
     map.set('uniqueId', uniqueId)
-    this.flutterSwitchTop?.send(map)
+    this.flutterSwitchTop?.send(
+      map,
+      (_) => {
+        callback()
+      }
+    )
   }
 
   restore(uniqueId: string, history: List<Map<string, Object | null>>): void {
@@ -357,13 +362,16 @@ export default class FusionEngineBinding {
   }
 
   checkStyle(callback: (systemChromeStyle: SystemChromeStyle) => void) {
-    this.flutterCheckStyle?.send(null, (reply) => {
-      let systemChromeStyle = this.decodeSystemChromeStyle(reply as Map<string, object> | null)
-      if (systemChromeStyle == null) {
-        return
+    this.flutterCheckStyle?.send(
+      null,
+      (reply) => {
+        let systemChromeStyle = this.decodeSystemChromeStyle(reply as Map<string, object> | null)
+        if (systemChromeStyle == null) {
+          return
+        }
+        callback(systemChromeStyle)
       }
-      callback(systemChromeStyle)
-    })
+    )
   }
 
   private decodeSystemChromeStyle(styleMap: Map<string, Object> | null): SystemChromeStyle | null {

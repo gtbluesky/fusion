@@ -90,7 +90,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private fun onContainerCreate() {
         if (!isTransparent()) {
-            val backgroundColor = intent.getIntExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, Color.WHITE)
+            val backgroundColor =
+                intent.getIntExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, Color.WHITE)
             window.setBackgroundDrawable(ColorDrawable(backgroundColor))
             val frameLayout = flutterView?.parent as? FrameLayout
             if (frameLayout != null) {
@@ -111,9 +112,10 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             top?.detachFromContainer()
         }
         FusionStackManager.add(this)
-        engineBinding?.switchTop(uniqueId)
+        engineBinding?.switchTop(uniqueId) {
+            this.attachToContainer()
+        }
         engineBinding?.notifyPageVisible(uniqueId)
-        attachToContainer()
     }
 
     private fun updateSystemOverlayStyle() {

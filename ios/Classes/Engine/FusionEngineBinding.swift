@@ -189,10 +189,13 @@ internal class FusionEngineBinding: NSObject {
         ])
     }
 
-    func switchTop(_ uniqueId: String) {
-        flutterSwitchTop?.sendMessage([
-            "uniqueId": uniqueId
-        ])
+    func switchTop(_ uniqueId: String, _ callback: @escaping () -> Void) {
+        flutterSwitchTop?.sendMessage(
+            ["uniqueId": uniqueId],
+            reply: { (_) in
+                callback()
+            }
+        )
     }
 
     /**
