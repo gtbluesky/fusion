@@ -2,7 +2,6 @@
   "src": [
     "pages/IndexPage",
     "pages/CustomFusionPage",
-    "pages/TransparentFusionPage",
     "pages/TabScenePage"
   ]
 }

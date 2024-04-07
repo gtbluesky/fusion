@@ -142,8 +142,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     }
     await super.aboutToAppear()
     const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
-    const routeArgsRecord = (this._params[FusionConstant.ROUTE_ARGS] ?? {}) as Record<string, Object>
-    const routeArgs = new Map<string, Object>(Object.entries(routeArgsRecord));
+    const routeArgs = this._params[FusionConstant.ROUTE_ARGS] as Map<string, Object>
     window.getLastWindow(this._context, (_, win) => {
       win.setWindowLayoutFullScreen(true)
       if (this.isTransparent()) {

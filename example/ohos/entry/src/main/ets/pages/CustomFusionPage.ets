@@ -1,7 +1,6 @@
 import { FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import hilog from '@ohos.hilog';
 import { FusionEntry } from '@ohos/fusion';
-import { router } from '@kit.ArkUI';
 import CustomFusionEntry from './CustomFusionEntry';
 
 @Entry
@@ -12,7 +11,8 @@ struct CustomFusionPage {
   private flutterView: FlutterView | null = null
 
   override aboutToAppear() {
-    this.flutterEntry = new CustomFusionEntry(getContext(this), router.getParams() as Record<string, Object>)
+    const storage = LocalStorage.getShared()
+    this.flutterEntry = new CustomFusionEntry(getContext(this), storage.get('params') as Record<string, Object>)
     this.flutterEntry.aboutToAppear()
     this.flutterView = this.flutterEntry.getFlutterView()
     hilog.debug(0xFF00, CustomFusionPage.TAG, 'aboutToAppear')

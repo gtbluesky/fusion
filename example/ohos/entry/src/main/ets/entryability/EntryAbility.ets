@@ -9,6 +9,7 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   private static TAG = 'EntryAbility'
   private mainWindow: window.Window | null = null
   private windowStage: window.WindowStage | null = null
+  private mainLocalStorage: LocalStorage | null = null
 
   override async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     await Fusion.instance.install(this.context, this)
@@ -18,7 +19,8 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   override onWindowStageCreate(windowStage: window.WindowStage): void {
     this.windowStage = windowStage
     this.mainWindow = windowStage.getMainWindowSync()
-    windowStage.loadContent('pages/IndexPage')
+    this.mainLocalStorage = new LocalStorage()
+    windowStage.loadContent('pages/IndexPage', this.mainLocalStorage)
   }
 
   /* override */ pushNativeRoute(name: string, args: Map<string, Object> | null): void {
@@ -44,21 +46,22 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   /* override */ pushFlutterRoute(name: string, args: Map<string, Object> | null): void {
     hilog.debug(0xFF00, EntryAbility.TAG, `pushFlutterRoute: name=${name}, args=${args}`)
     const transparent = (args?.get('transparent') ?? false) as boolean
-    const backgroundColor = (args?.get('backgroundColor') ?? 0xFFFFFFFF) as number
+    const backgroundColor = (args?.get('backgroundColor') ?? BigInt(0xFFFFFFFF)) as bigint
     const params = buildFusionParams(name, args, transparent, backgroundColor)
-    const url = transparent ? 'pages/TransparentFusionPage' : 'pages/CustomFusionPage'
+    // const customFusionPageUrl = 'pages/CustomFusionPage'
     if (transparent) {
       this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (_, win) => {
         const record: Record<string, Object> = {
           'params': params
         }
-        win.loadContent(url, new LocalStorage(record))
+        win.loadContentByName(FusionConstant.FUSION_ROUTE_NAME, new LocalStorage(record))
+        // win.loadContent(customFusionPageUrl, new LocalStorage(record))
         win.showWindow()
       })
     } else {
-      router.pushUrl({
-        url: url, params: params
-      })
+      this.mainLocalStorage?.setOrCreate('params', params)
+      router.pushNamedRoute({name: FusionConstant.FUSION_ROUTE_NAME})
+      // router.pushUrl({url: customFusionPageUrl})
     }
   }
 }

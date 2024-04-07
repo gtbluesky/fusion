@@ -8,4 +8,5 @@ export default class FusionConstant {
   static FUSION_RESTORATION_HISTORY_KEY = 'history'
   static FUSION_RESTORATION_UNIQUE_ID_KEY = 'uniqueId'
   static TRANSPARENT_WINDOW = 'TRANSPARENT_WINDOW'
+  static FUSION_ROUTE_NAME = 'FusionPage'
 }
