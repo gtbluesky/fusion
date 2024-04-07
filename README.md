@@ -1,24 +1,20 @@
 # Fusion
 [![pub package](https://img.shields.io/pub/v/fusion.svg)](https://pub.dev/packages/fusion)
 
+| **OS**        | Android    | iOS   | HarmonyOS |
+|---------------|------------|-------|-----------|
+| **SDK**   | 5.0(21)+   | 11.0+ | 4.1(11)+  |
+
 ## 简介
 
-Fusion 是新一代的混合栈管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
+Fusion 是新一代的混合栈管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。此外，Fusion 彻底解决了混合开发过程中普遍存在的黑屏、白屏、闪屏等问题，更加适合重视用户体验的App使用。
+
+从 4.0 开始，Fusion 已完成纯鸿蒙平台（HarmonyOS Next/OpenHarmony，以下简称 HarmonyOS）的适配，开发者可以在Android、iOS、HarmonyOS上得到完全一致的体验。（HarmonyOS 的 Flutter SDK 可以在[这里](https://gitee.com/openharmony-sig/flutter_flutter)获取）
 
 Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用。
 
-不像其他类似框架，随着 Flutter 版本的更新往往需要对框架本身进行版本适配工作，如果开发者维护不及时就会导致整个项目都无法使用新版 Flutter，而 Fusion 优秀的兼容性使得使用者可以更加从容地升级 Flutter 版本，目前支持 Flutter SDK 3.x 的全部版本。
+Fusion 也是目前仅有的支持混合开发时应用在后台被系统回收后，所有Flutter页面均可正常恢复的混合栈框架。
 
-Fusion 更加注重细节的处理，着力解决了其他类似框架中普遍存在的问题，如：Flutter 容器与 Native 容器跳转时状态栏图标颜色可能出现显示不正确的问题； 混合开发时当栈顶是 Flutter 页面时进入到任务界面其应用名称不显示的问题等。
-
-Fusion 彻底解决了混合栈框架普遍存在的黑屏、白屏、闪屏等疑难杂症。
-
-此外，Fusion 也是目前仅有的支持混合开发时应用在后台被系统回收后，所有Flutter页面均可正常恢复的混合栈框架。
-
-
-| **系统平台**      | Android       | iOS | HarmonyOS |
-|---------------|---------------|-----|-------------|
-| **兼容版本** | 5.0(API 21) | 11  | 4.1(API 11) |
 ## 开始使用
 
 ### 0、准备
@@ -89,17 +85,12 @@ class MyApplication : Application(), FusionRouteDelegate {
     }
 
     override fun pushNativeRoute(name: String?, arguments: Map<String, Any>?) {
-        // Flutter 跳转 Native 页面时被调用
-        // 根据路由 name 跳转对应原生 Activity
+        // 根据路由 name 跳转对应 Native 页面
     }
 
     override fun pushFlutterRoute(name: String?, arguments: Map<String, Any>?) {
-        // Native 跳转 Flutter 页面时被调用
-        // 根据路由 name 跳转对应 FusionActivity 或其子类
+        // 根据路由 name 跳转对应 Flutter 页面
         // 可在 arguments 中存放参数判断是否需要打开透明页面
-      	context?.let {
-        	it.startActivity(buildFusionIntent(it, CustomFusionActivity::class.java, name, arguments))
-        }
     }
 }
 ```
@@ -123,30 +114,47 @@ iOS 侧
   }
     
     func pushNativeRoute(name: String?, arguments: Dictionary<String, Any>?) {
-        // Flutter 跳转 Native 页面时被调用
-        // 根据路由 name 跳转对应原生 VC
+        // 根据路由 name 跳转对应 Native 页面
     }
     
     func pushFlutterRoute(name: String?, arguments: Dictionary<String, Any>?) {
-        // Native 跳转 Flutter 页面时被调用
-        // 根据路由 name 跳转对应 FusionViewController 或其子类
+        // 根据路由 name 跳转对应 Flutter 页面
         // 可在 arguments 中存放参数判断是否需要打开透明页面
-        guard let name = name else {
-            return
-        }
-        let nc = self.window?.rootViewController as? UINavigationController
-        let fusionVc = CustomViewController(routeName: name, routeArguments: arguments)
         // 可在 arguments 中存放参数判断是 push 还是 present
-        nc?.pushViewController(fusionVc, animated: true)
     }
 }
 ```
+HarmonyOS 侧
 
+在 UIAbility 中进行初始化，并实现 FusionRouteDelegate 代理
+```typescript
+export default class EntryAbility extends UIAbility implements FusionRouteDelegate {
+  private static TAG = 'EntryAbility'
+  private mainWindow: window.Window | null = null
+  private windowStage: window.WindowStage | null = null
+
+  override async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
+    await Fusion.instance.install(this.context, this)
+    GeneratedPluginRegistrant.registerWith(Fusion.instance.defaultEngine!)
+  }
+
+  pushNativeRoute(name: string, args: Map<string, Object> | null): void {
+    // 根据路由 name 跳转对应 Native 页面
+  }
+
+  pushFlutterRoute(name: string, args: Map<string, Object> | null): void {
+    // 根据路由 name 跳转对应 Flutter 页面
+    // 可在 arguments 中存放参数判断是否需要打开透明页面
+  }
+}
+```
 ### 2、Flutter 容器
 
 #### 普通页面模式
 
-Android 通过 `FusionActivity`（或其子类） 创建 Flutter 容器，启动容器时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 需设为 false。其 xml 配置参考如下：
+Android 侧
+
+通过 `FusionActivity`（或其子类） 创建 Flutter 容器，启动容器时需要使用 Fusion 提供的 `buildFusionIntent` 方法，其中参数 `transparent` 需设为 false。其 xml 配置参考如下（如果使用 `FusionActivity` 则不用配置）：
 
 ```xml
         <activity
@@ -160,8 +168,9 @@ Android 通过 `FusionActivity`（或其子类） 创建 Flutter 容器，启动
 ```
 
 
+iOS 侧
 
-iOS 通过 `FusionViewController` （或其子类）创建 Flutter 容器，`push` 和 `present` 均支持。FusionViewController 默认隐藏了 UINavigationController。
+通过 `FusionViewController` （或其子类）创建 Flutter 容器，`push` 和 `present` 均支持。FusionViewController 默认隐藏了 UINavigationController。
 
 在 iOS 中需要处理原生右滑退出手势和 Flutter 手势冲突的问题，解决方法也很简单：只需在自定义的 Flutter 容器中实现 `FusionPopGestureHandler` 并在对应方法中启用或者关闭原生手势即可，这样可以实现如果当前 Flutter 容器存在多个 Flutter 页面时，右滑手势是退出 Flutter 页面，而当 Flutter 页面只有一个时则右滑退出 Flutter 容器。
 
@@ -179,7 +188,14 @@ iOS 通过 `FusionViewController` （或其子类）创建 Flutter 容器，`pus
     }
 ```
 
+HarmonyOS 侧
 
+通过 `FusionEntry`（或其子类） 创建 Flutter 容器，启动容器时需要使用 Fusion 提供的 `buildFusionParams` 方法，也可直接使用 `FusionPage`。默认全屏模式。
+```typescript
+    const params = buildFusionParams(name, args, false, backgroundColor)
+    this.mainLocalStorage?.setOrCreate('params', params)
+    router.pushNamedRoute({name: FusionConstant.FUSION_ROUTE_NAME})
+```
 
 #### 透明页面模式
 
@@ -200,30 +216,47 @@ Android 侧
 
 iOS 侧
 
-使用方式与普通页面模式相似，区别如下：
+使用方式与普通页面模式相似：
 
 ```swift
 let fusionVc = CustomViewController(routeName: name, routeArguments: arguments, transparent: true)
 navController?.present(fusionVc, animated: false)
 ```
 
-同时Flutter页面背景也需要设置为透明
+HarmonyOS 侧
 
+使用方式与普通页面模式相似：
+```typescript
+    const params = buildFusionParams(name, args, true, backgroundColor)
+    this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (_, win) => {
+      const record: Record<string, Object> = {
+        'params': params
+      }
+      win.loadContentByName(FusionConstant.FUSION_ROUTE_NAME, new LocalStorage(record))
+      win.showWindow()
+    })
+```
+
+Flutter 侧
+
+同时Flutter页面背景也需要设置为透明
 
 
 #### 子页面模式
 
-子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中。
+子页面模式是指一个或多个 Flutter 页面同时嵌入到 Native 容器中的场景，如：使用Tab切换Flutter和原生页面，Fusion 支持多个 Flutter 页面嵌入同一个 Native 容器中
 
 Android 侧
 
-使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法。
+使用 FusionFragment 以支持子页面模式，创建 FusionFragment 对象需要使用 `buildFusionFragment` 方法
 
 iOS 侧
 
 与页面模式一样使用 FusionViewController 
 
+HarmonyOS 侧
 
+与页面模式一样使用 FusionEntry，配合 `buildFusionParams`方法配置参数
 
 #### 自定义容器背景色
 
@@ -237,26 +270,26 @@ iOS 侧
 
 在创建 FusionViewController （或其子类）对象时，参数 `backgroundColor` 设为所需背景色
 
+HarmonyOS 侧
 
+在 `buildFusionParams`方法中参数 `backgroundColor` 设为所需背景色
 
 ### 3、路由API（FusionNavigator）
 
-open：打开新Flutter容器并将对应路由入栈，Native页面跳转Flutter页面使用该API（可连续使用）
-
-push：在当前Flutter容器中将对应路由入栈，Navigator.pushNamed 与之等同
-
-pop：在当前Flutter容器中将栈顶路由出栈，Navigator.pop 与之等同
-
-maybePop：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
-
-replace：在当前Flutter容器中将栈顶路由替换为对应路由，Navigator.pushReplacementNamed 与之等同
-
-remove：在当前Flutter容器中移除对应路由
+- push：将对应路由入栈，Navigator.pushNamed 与之等同，根据FusionRouteType分为以下几种方式：
+  - flutter模式: 在当前Flutter容器中将指定路由对应的Flutter页面入栈，如果没有则跳转kUnknownRoute对应Flutter页面
+  - flutterWithContainer模式: 创建一个新的Flutter容器，并将指定路由对应的Flutter页面入栈，如果没有则跳转kUnknownRoute对应Flutter页面。即执行FusionRouteDelegate的pushFlutterRoute
+  - native模式: 将指定路由对应的Native页面入栈，即执行FusionRouteDelegate的pushNativeRoute
+  - adaption模式: 自适应模式，默认类型。首先判断该路由是否是Flutter路由，如果不是则进入native模式，如果是再判断当前是否是页面是否是Flutter容器，如果是则进入flutter模式，如果不是则进入flutterWithContainer模式
+- pop：在当前Flutter容器中将栈顶路由出栈，Navigator.pop 与之等同
+- maybePop：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
+- replace：在当前Flutter容器中将栈顶路由替换为对应路由，Navigator.pushReplacementNamed 与之等同
+- remove：在当前Flutter容器中移除对应路由
 
 路由跳转与关闭等操作既可使用`FusionNavigator`的 API，也可使用`Navigator`中与之对应的API（仅上述提到的部分）
 ### 4、Flutter Plugin 注册
 
-框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册
+在 Android 和 iOS 平台上框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册，但 HarmonyOS 必须手动调用该方法。
 
 ### 5、自定义 Channel
 
@@ -281,7 +314,7 @@ channel?.setMethodCallHandler { call, result ->
 
 ②、与容器相关的方法
 
-在自实现的 FusionActivity 、 FusionFragmentActivity、FusionFragment 上实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
+在自实现的 FusionActivity、FusionFragmentActivity、FusionFragment 上实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
 
 ```kotlin
 class CustomActivity : FusionActivity(), FusionMessengerHandler {
@@ -337,6 +370,46 @@ class CustomViewController : FusionViewController, FusionMessengerHandler {
 }
 ```
 
+HarmonyOS 侧
+
+①、与容器无关的方法
+
+在 UIAbility 中进行注册
+
+```typescript
+const binaryMessenger = Fusion.instance.defaultEngine?.dartExecutor.getBinaryMessenger()
+const channel = new MethodChannel(binaryMessenger!, 'custom_channel')
+channel.setMethodCallHandler({
+  onMethodCall(call: MethodCall, result: MethodResult): void {
+    
+  }
+})
+```
+
+②、与容器相关的方法
+
+在自实现的 FusionEntry 上实现 FusionMessengerHandler 接口，在 configureFlutterChannel 中创建 Channel，在 releaseFlutterChannel 释放 Channel
+
+```typescript
+export default class CustomFusionEntry extends FusionEntry implements FusionMessengerHandler, MethodCallHandler {
+  private channel: MethodChannel | null = null
+
+  configureFlutterChannel(binaryMessenger: BinaryMessenger): void {
+    this.channel = new MethodChannel(binaryMessenger, 'custom_channel')
+    this.channel.setMethodCallHandler(this)
+  }
+
+  onMethodCall(call: MethodCall, result: MethodResult): void {
+    result.success(`Custom Channel：${this}_${call.method}`)
+  }
+
+  releaseFlutterChannel(): void {
+    this.channel?.setMethodCallHandler(null)
+    this.channel = null
+  }
+}
+```
+
 > BasicMessageChannel 和 EventChannel 使用也是类似
 
 P.S.: 与容器相关的方法是与容器生命周期绑定的，如果容器不可见或者销毁了则无法收到Channel消息。
@@ -369,7 +442,7 @@ FusionAppLifecycleListener 生命周期回调函数：
 - onBackground: 应用退到后台会被调用
 
 页面生命周期监听：
-- ①、在需要监听生命周期页面的 State 中 `implements` PageLifecycleListener
+- ①、在需要监听生命周期页面的 State 中 `implements` FusionPageLifecycleListener
 - ②、在 didChangeDependencies 中注册监听
 - ③、在 dispose 中注销监听
 ```dart
@@ -381,7 +454,7 @@ class LifecyclePage extends StatefulWidget {
 }
 
 class _LifecyclePageState extends State<LifecyclePage>
-    implements PageLifecycleListener {
+    implements FusionPageLifecycleListener {
   @override
   Widget build(BuildContext context) {
     return Container();
@@ -390,7 +463,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    PageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleBinding.instance.register(this);
   }
 
   @override
@@ -408,7 +481,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
-    PageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleBinding.instance.unregister(this);
   }
 }
 ```
@@ -419,12 +492,12 @@ PageLifecycleListener 生命周期回调函数：
 - onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；应用退到后台时也会被调用。
 
 ### 7、全局通信
-支持消息在应用全局中的传递，不论是 Native 还是 Flutter 皆可接收和发送。
+支持消息在应用中的传递，可以指定 Native 还是 Flutter 或者全局接收和发送。
 #### 注册消息监听
 Flutter侧
-- ①、在需要监听消息的 Widget（支持任意Widget） 的 State 中 `implements` FusionNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
-- ②、在 didChangeDependencies 中注册监听
-- ③、在 dispose 中注销监听
+- ①、在需要监听消息的类中 `implements` FusionNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+- ②、在合适时机注册监听
+- ③、在合适时机注销监听
 ```dart
 class TestPage extends StatefulWidget {
 
@@ -453,18 +526,16 @@ class _TestPageState extends State<TestPage> implements FusionNotificationListen
 }
 ```
 
-Android侧
-- ①、在需要监听消息的 Activity 或 Fragment 中实现 FusionNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
+Native侧
+- ①、在需要监听消息的类中实现 FusionNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
 - ②、在适当时机使用 `FusionNotificationBinding` 的 `register` 方法注册监听
-- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听，若不手动注销，在该 Activity 或 Fragment 被销毁后 Fusion 内部则会自动注销
-
-iOS侧
-- ①、在需要监听消息的 UIViewController 中实现 FusionNotificationListener 协议，并复写 `onReceive` 方法，该方法可收到发送过来的消息
-- ②、在适当时机使用 `FusionNotificationBinding` 的 `register` 方法注册监听
-- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听，若不手动注销，在该 UIViewController 被销毁后 Fusion 内部则会自动注销
+- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听
 
 #### 发送消息
-三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息。
+三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息，根据使用FusionNotificationType 不同类型有不同效果：
+- flutter: 仅 Flutter 可以收到
+- native: 仅 Native 可以收到
+- global: Flutter 和 Native 都可以收到
 
 ### 8、返回拦截
 
@@ -472,4 +543,4 @@ iOS侧
 
 ### 9、状态恢复
 
-Fusion 支持 Android 和 iOS 平台 APP 被回收后 Flutter 路由的恢复
+Fusion 支持 Android 和 iOS 平台 APP 被回收后 Flutter 路由的恢复。

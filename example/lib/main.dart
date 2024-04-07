@@ -100,7 +100,7 @@ const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =
     <TargetPlatform, PageTransitionsBuilder>{
   TargetPlatform.android: SlidePageTransitionsBuilder(),
   TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-  TargetPlatform.ohos: SlidePageTransitionsBuilder(),
+  // TargetPlatform.ohos: SlidePageTransitionsBuilder(),
 };
 
 class SlidePageTransitionsBuilder extends PageTransitionsBuilder {
