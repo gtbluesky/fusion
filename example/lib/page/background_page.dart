@@ -21,8 +21,7 @@ class _BackgroundPageState extends State<BackgroundPage> {
       backgroundColor: Color(backgroundColor),
       appBar: AppBar(
         backgroundColor: Color(backgroundColor),
-        title: Text(widget.args?['title'] ?? '自定义背景色',
-            style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(widget.args?['title'] ?? '自定义背景色'),
       ),
       body: Center(
         child: Column(

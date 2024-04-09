@@ -1,20 +1,19 @@
-import { BinaryMessenger, MethodCall, MethodChannel } from '@ohos/flutter_ohos';
-import { MethodCallHandler, MethodResult } from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodChannel';
+import { BinaryMessenger, MethodChannel } from '@ohos/flutter_ohos';
 import { FusionEntry, FusionMessengerHandler } from '@ohos/fusion';
 
-export default class CustomFusionEntry extends FusionEntry implements FusionMessengerHandler, MethodCallHandler {
+export default class CustomFusionEntry extends FusionEntry implements FusionMessengerHandler {
   private channel: MethodChannel | null = null
 
-  /* override */ configureFlutterChannel(binaryMessenger: BinaryMessenger): void {
-    this.channel = new MethodChannel(binaryMessenger, 'custom_channel')
-    this.channel.setMethodCallHandler(this)
+  configureFlutterChannel(binaryMessenger: BinaryMessenger): void {
+    this.channel = new MethodChannel(binaryMessenger, 'container_related_channel')
+    this.channel.setMethodCallHandler({
+      onMethodCall(call, result) {
+        result.success(`container_related_channel：${this}_${call.method}`)
+      }
+    })
   }
 
-  /* override */ onMethodCall(call: MethodCall, result: MethodResult): void {
-    result.success(`Custom Channel：${this}_${call.method}`)
-  }
-
-  /* override */ releaseFlutterChannel(): void {
+  releaseFlutterChannel(): void {
     this.channel?.setMethodCallHandler(null)
     this.channel = null
   }

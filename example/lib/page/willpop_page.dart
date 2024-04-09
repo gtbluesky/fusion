@@ -46,7 +46,7 @@ class _WillPopPageState extends State<WillPopPage> {
       child: Scaffold(
         appBar: AppBar(
           title:
-              Text(widget.args?['title'] ?? '返回拦截测试页面', style: AppBarTheme.of(context).titleTextStyle),
+              Text(widget.args?['title'] ?? '返回拦截测试页面'),
         ),
         body: Center(
           child: Column(

@@ -13,9 +13,9 @@ open class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerHandl
 
     override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
         Log.d(this.toString(), "configureFlutterChannel")
-        channel = MethodChannel(binaryMessenger, "custom_channel")
+        channel = MethodChannel(binaryMessenger, "container_related_channel")
         channel?.setMethodCallHandler { call, result ->
-            result.success("Custom Channel：${this}_${call.method}")
+            result.success("container_related_channel: ${this}_${call.method}")
         }
     }
 

@@ -66,6 +66,7 @@ open class FusionViewController: FlutterViewController {
         FusionStackManager.instance.add(self)
         engineBinding?.switchTop(uniqueId) {
             self.attachToContainer()
+            self.updateSystemOverlayStyle()
         }
         engineBinding?.notifyPageVisible(uniqueId)
         self.attachToContainer()
@@ -150,7 +151,6 @@ open class FusionViewController: FlutterViewController {
 
     open override func viewDidAppear(_ animated: Bool) {
         viewDidLayoutSubviews()
-        updateSystemOverlayStyle()
         super.viewDidAppear(animated)
     }
 

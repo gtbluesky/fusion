@@ -43,15 +43,18 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
                 FusionRouteType.FLUTTER_WITH_CONTAINER
             )
         }
-//        activityMainBinding.tvFlutterViewpager.setOnClickListener {
-//            startActivity(Intent(this, ViewPagerSceneActivity::class.java))
-//        }
         activityMainBinding.tvFlutterTab.setOnClickListener {
             FusionNavigator.push(
-                "/native_tab_scene",
+                "/native_tab_fixed",
                 routeType = FusionRouteType.NATIVE
             )
         }
+//        activityMainBinding.tvFlutterViewpager.setOnClickListener {
+//            FusionNavigator.push(
+//                "/native_tab_sliding",
+//                routeType = FusionRouteType.NATIVE
+//            )
+//        }
         activityMainBinding.tvFlutterDrawer.setOnClickListener {
             if (!hasOpened) {
                 hasOpened = true

@@ -114,6 +114,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         FusionStackManager.add(this)
         engineBinding?.switchTop(uniqueId) {
             this.attachToContainer()
+            this.updateSystemOverlayStyle()
         }
         engineBinding?.notifyPageVisible(uniqueId)
     }
@@ -187,7 +188,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun onResume() {
         super.onResume()
         onContainerVisible()
-        updateSystemOverlayStyle()
     }
 
     override fun onPause() {

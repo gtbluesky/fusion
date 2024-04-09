@@ -1,5 +1,4 @@
 import UIKit
-import Flutter
 import fusion
 
 @UIApplicationMain
@@ -17,10 +16,12 @@ import fusion
             didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Fusion.instance.install(self)
+        let channel = FlutterMethodChannel(name: "container_unrelated_channel", binaryMessenger: Fusion.instance.defaultEngine!.binaryMessenger)
+        channel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            result("container_unrelated_channel: \(self)_\(call.method)")
+        }
         if window?.rootViewController == nil {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let initialViewController = storyboard.instantiateViewController(withIdentifier: "HostVC")
-            let naviController = UINavigationController(rootViewController: initialViewController)
+            let naviController = UINavigationController(rootViewController: MainViewController())
             naviController.restorationIdentifier = "naviController"
             window?.rootViewController = naviController
         }
@@ -44,11 +45,10 @@ import fusion
     func pushNativeRoute(name: String, args: Dictionary<String, Any>?) {
         NSLog("pushNativeRoute: name=\(name), args=\(args)")
         let navController = self.window?.rootViewController as? UINavigationController
-        if name == "/native_normal_scene" {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "HostVC")
+        if name == "/native_normal" {
+            let vc = MainViewController()
             navController?.pushViewController(vc, animated: true)
-        } else if name == "/native_tab_scene" {
+        } else if name == "/native_tab_fixed" {
             let vc = TabSceneViewController()
             navController?.pushViewController(vc, animated: true)
         }

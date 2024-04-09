@@ -104,6 +104,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     FusionStackManager.instance.add(this)
     this.engineBinding?.switchTop(this._uniqueId, () => {
       this.attachToContainer()
+      this.updateSystemOverlayStyle()
     })
     this.engineBinding?.notifyPageVisible(this._uniqueId)
   }
@@ -157,7 +158,6 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   override onPageShow(): void {
     super.onPageShow()
     this.onContainerVisible()
-    this.updateSystemOverlayStyle()
   }
 
   override onPageHide(): void {

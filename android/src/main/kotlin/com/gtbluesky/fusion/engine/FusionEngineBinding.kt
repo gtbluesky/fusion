@@ -335,6 +335,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     fun destroy(uniqueId: String) {
         if (!FusionStackManager.isAttached()) {
             engine?.let {
+                // it.platformViewsController.attach(null, null, it.dartExecutor)
                 try {
                     val platformViewsChannelField =
                         it.platformViewsController.javaClass.getDeclaredField("platformViewsChannel")

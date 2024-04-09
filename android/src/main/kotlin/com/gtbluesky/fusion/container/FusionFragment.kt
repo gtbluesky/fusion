@@ -131,6 +131,7 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         }
         engineBinding?.switchTop(uniqueId) {
             this.attachToContainer()
+            this.updateSystemOverlayStyle()
         }
         engineBinding?.notifyPageVisible(uniqueId)
     }
@@ -257,7 +258,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         if (!isHidden && userVisibleHint) {
             onContainerVisible()
         }
-        updateSystemOverlayStyle()
     }
 
     override fun onPause() {

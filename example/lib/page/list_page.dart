@@ -9,8 +9,7 @@ class ListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(args?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(args?['title'] ?? '未知页面'),
       ),
       body: ListView.builder(
         itemCount: 50,

@@ -9,8 +9,10 @@ export default struct FusionPage {
   private flutterView: FlutterView | null = null
 
   override aboutToAppear() {
-    const storage = LocalStorage.getShared()
-    this.flutterEntry = new FusionEntry(getContext(this), storage.get('params') as Record<string, Object>)
+    this.flutterEntry = new FusionEntry(
+      getContext(this),
+      LocalStorage.getShared().get('params') as Record<string, Object>
+    )
     this.flutterEntry.aboutToAppear()
     this.flutterView = this.flutterEntry.getFlutterView()
   }

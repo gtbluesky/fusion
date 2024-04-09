@@ -20,10 +20,9 @@ class ViewPagerSceneActivity : FragmentActivity() {
         configureStatusBarForFullscreenFlutterExperience()
         val adapter = MyFragmentStateAdapter(this)
         binding.vp.adapter = adapter
-        binding.vp.isUserInputEnabled = false
-        val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/background", mapOf("backgroundColor" to 0xFF546E7A), backgroundColor = 0xFF546E7A.toInt())
-        val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "flutter1"))
-        val fragment2 = buildFusionFragment(FusionFragment::class.java,"/web", mapOf("title" to "flutter2"))
+        val fragment0 = buildFusionFragment(CustomFusionFragment::class.java,"/background", mapOf("title" to "Flutter Tab0", "backgroundColor" to 0xFF546E7A), backgroundColor = 0xFF546E7A.toInt())
+        val fragment1 = buildFusionFragment(FusionFragment::class.java, "/lifecycle", mapOf("title" to "Flutter Tab1"))
+        val fragment2 = buildFusionFragment(FusionFragment::class.java,"/web", mapOf("title" to "Flutter Tab2"))
         adapter.addFragment(fragment0)
         adapter.addFragment(fragment1)
         adapter.addFragment(fragment2)
@@ -56,13 +55,13 @@ class ViewPagerSceneActivity : FragmentActivity() {
         binding.rgVp.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 binding.rbHome.id -> {
-                    binding.vp.setCurrentItem(0, false)
+                    binding.vp.setCurrentItem(0, true)
                 }
                 binding.rbMsg.id -> {
-                    binding.vp.setCurrentItem(1, false)
+                    binding.vp.setCurrentItem(1, true)
                 }
                 binding.rbMy.id -> {
-                    binding.vp.setCurrentItem(2, false)
+                    binding.vp.setCurrentItem(2, true)
                 }
             }
         }

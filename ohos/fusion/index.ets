@@ -25,9 +25,11 @@ import FusionMessengerHandler from './src/main/ets/components/plugin/handler/Fus
 import FusionEntry from './src/main/ets/components/plugin/container/FusionEntry';
 import buildFusionParams from './src/main/ets/components/plugin/container/FusionExt';
 import FusionPage from './src/main/ets/components/plugin/container/FusionPage';
+import FusionConstant from './src/main/ets/components/plugin/constant/FusionConstant';
 
 export {
   Fusion,
+  FusionConstant,
   FusionEntry,
   FusionPage,
   buildFusionParams,

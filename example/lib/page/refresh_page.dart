@@ -66,10 +66,10 @@ class _RefreshPageState extends State<RefreshPage> {
           itemBuilder: (context, index) {
             if (index == 0) {
               return InkWell(
-                child: const Text('push(adaption) /native_normal_scene'),
+                child: const Text('push(adaption) /native_normal'),
                 onTap: () {
                   FusionNavigator.push(
-                    '/native_normal_scene',
+                    '/native_normal',
                     routeArgs: {'title': 'Native Normal Scene'},
                     routeType: FusionRouteType.adaption,
                   );

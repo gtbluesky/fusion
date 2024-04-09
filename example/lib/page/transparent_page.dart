@@ -70,18 +70,17 @@ class _TransparentPageState extends State<TransparentPage>
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(widget.args?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(widget.args?['title'] ?? '未知页面'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push(native) /native_normal_scene'),
+              child: const Text('push(native) /native_normal'),
               onTap: () {
                 FusionNavigator.push(
-                  '/native_normal_scene',
+                  '/native_normal',
                   routeArgs: {'title': 'Native Normal Scene'},
                   routeType: FusionRouteType.native,
                 );

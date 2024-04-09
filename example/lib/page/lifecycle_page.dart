@@ -20,19 +20,20 @@ class _LifecyclePageState extends State<LifecyclePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.args?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
-        backgroundColor: Colors.blueGrey,
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20),
+        title: Text(widget.args?['title'] ?? '未知页面'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: const Text('push(native) /native_normal_scene'),
+              child: const Text('push(native) /native_normal'),
               onTap: () {
                 FusionNavigator.push(
-                  '/native_normal_scene',
+                  '/native_normal',
                   routeArgs: {'title': 'Native Normal Scene'},
                   routeType: FusionRouteType.native,
                 );

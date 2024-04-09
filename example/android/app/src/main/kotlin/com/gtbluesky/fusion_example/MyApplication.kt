@@ -21,7 +21,7 @@ class MyApplication : Application(), FusionRouteDelegate {
     override fun pushNativeRoute(name: String, args: Map<String, Any>?) {
         Log.e(TAG, "pushNativeRoute: name=$name, args=${args}")
         when (name) {
-            "/native_normal_scene" -> {
+            "/native_normal" -> {
                 val intent = Intent(applicationContext, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 (args?.get("title") as? String).let {
@@ -29,13 +29,20 @@ class MyApplication : Application(), FusionRouteDelegate {
                 }
                 startActivity(intent)
             }
-            "/native_tab_scene" -> {
+            "/native_tab_fixed" -> {
                 val intent = Intent(
                     this,
                     TabSceneActivity::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
+//            "/native_tab_sliding" -> {
+//                val intent = Intent(
+//                    this,
+//                    ViewPagerSceneActivity::class.java
+//                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                startActivity(intent)
+//            }
         }
     }
 

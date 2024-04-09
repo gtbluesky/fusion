@@ -1,5 +1,5 @@
 import { FusionNavigator, FusionNotificationBinding, FusionNotificationListener, FusionRouteType } from '@ohos/fusion';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, window } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -15,6 +15,12 @@ struct IndexPage {
 
   override aboutToAppear(): void {
     FusionNotificationBinding.instance.register(this.notificationListener)
+  }
+
+  override onPageShow(): void {
+    window.getLastWindow(getContext(this), (_, win) => {
+      win.setWindowSystemBarProperties({isStatusBarLightIcon: false, statusBarContentColor: '#000000'})
+    })
   }
 
   override aboutToDisappear(): void {
@@ -39,7 +45,7 @@ struct IndexPage {
         }).margin({ top: 20 })
         Text('Flutter子页面场景')
           .fontSize(18).onClick(() => {
-          FusionNavigator.push('/native_tab_scene', null, FusionRouteType.native)
+          FusionNavigator.push('/native_tab_fixed', null, FusionRouteType.native)
         }).margin({ top: 20 })
         // Text('Native侧边栏嵌入Flutter场景')
         //   .fontSize(18).onClick(() => {

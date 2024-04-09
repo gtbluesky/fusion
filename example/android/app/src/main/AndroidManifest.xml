@@ -32,10 +32,6 @@
             android:theme="@style/FusionTransparentTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".NormalActivity"
-            android:label="NormalActivity"
-            android:theme="@style/Theme.AppCompat.Light" />
-        <activity
             android:name=".ViewPagerSceneActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="false"

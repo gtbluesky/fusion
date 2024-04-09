@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Flutter
 import fusion
 
 class CustomFusionViewController: FusionViewController, FusionMessengerHandler, FusionPopGestureHandler {
@@ -49,9 +50,9 @@ class CustomFusionViewController: FusionViewController, FusionMessengerHandler, 
 
     func configureFlutterChannel(binaryMessenger: FlutterBinaryMessenger) {
         NSLog("\(self) configureFlutterChannel")
-        channel = FlutterMethodChannel(name: "custom_channel", binaryMessenger: binaryMessenger)
+        channel = FlutterMethodChannel(name: "container_related_channel", binaryMessenger: binaryMessenger)
         channel?.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            result("Custom Channel：\(self)_\(call.method)")
+            result("container_related_channel: \(self)_\(call.method)")
         }
     }
 

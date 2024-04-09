@@ -86,16 +86,16 @@ class _IndexPageState extends State<IndexPage>
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
-        title: Text(widget.args?['title'] ?? '未知页面',
-            style: const TextStyle(color: Colors.black, fontSize: 20)),
+        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20),
+        title: Text(widget.args?['title'] ?? '未知页面',),
       ),
       body: ListView(
         children: [
           InkWell(
-            child: const Text('push(adaption) /native_normal_scene'),
+            child: const Text('push(adaption) /native_normal'),
             onTap: () {
               FusionNavigator.push(
-                '/native_normal_scene',
+                '/native_normal',
                 routeArgs: {'title': 'Native Normal Scene'},
                 routeType: FusionRouteType.adaption,
               );
@@ -264,10 +264,10 @@ class _IndexPageState extends State<IndexPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('custom channel'),
+              child: const Text('container_related_channel'),
               onTap: () async {
-                final result = await const MethodChannel('custom_channel')
-                    .invokeMethod('custom channel');
+                final result = await const MethodChannel('container_related_channel')
+                    .invokeMethod('container_related_channel');
                 if (kDebugMode) {
                   print('result=$result');
                 }

@@ -17,8 +17,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.args?['title'] ?? '未知页面',
-            style: AppBarTheme.of(context).titleTextStyle),
+        title: Text(widget.args?['title'] ?? '未知页面'),
       ),
       body: Center(
         child: Column(

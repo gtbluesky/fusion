@@ -1,9 +1,9 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { buildFusionParams, Fusion, FusionRouteDelegate } from '@ohos/fusion';
+import { buildFusionParams, Fusion, FusionRouteDelegate, FusionConstant } from '@ohos/fusion';
 import { router, window } from '@kit.ArkUI';
 import hilog from '@ohos.hilog';
 import { GeneratedPluginRegistrant } from '../plugins/GeneratedPluginRegistrant';
-import FusionConstant from '@ohos/fusion/src/main/ets/components/plugin/constant/FusionConstant';
+import { MethodChannel } from '@ohos/flutter_ohos';
 
 export default class EntryAbility extends UIAbility implements FusionRouteDelegate {
   private static TAG = 'EntryAbility'
@@ -14,6 +14,12 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   override async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     await Fusion.instance.install(this.context, this)
     GeneratedPluginRegistrant.registerWith(Fusion.instance.defaultEngine!)
+    const channel = new MethodChannel(Fusion.instance.defaultEngine?.dartExecutor!, 'container_unrelated_channel')
+    channel.setMethodCallHandler({
+      onMethodCall(call, result) {
+        result.success(`container_unrelated_channel：${this}_${call.method}`)
+      }
+    })
   }
 
   override onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -23,16 +29,16 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     windowStage.loadContent('pages/IndexPage', this.mainLocalStorage)
   }
 
-  /* override */ pushNativeRoute(name: string, args: Map<string, Object> | null): void {
+  pushNativeRoute(name: string, args: Map<string, Object> | null): void {
     hilog.debug(0xFF00, EntryAbility.TAG, `pushNativeRoute: name=${name}, args=${args}`)
     switch (name) {
-      case '/native_normal_scene':
+      case '/native_normal':
         router.pushUrl({
           url: 'pages/IndexPage',
           params: args,
         })
         break;
-      case '/native_tab_scene':
+      case '/native_tab_fixed':
         router.pushUrl({
           url: 'pages/TabScenePage',
           params: args,
@@ -43,7 +49,7 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     }
   }
 
-  /* override */ pushFlutterRoute(name: string, args: Map<string, Object> | null): void {
+  pushFlutterRoute(name: string, args: Map<string, Object> | null): void {
     hilog.debug(0xFF00, EntryAbility.TAG, `pushFlutterRoute: name=${name}, args=${args}`)
     const transparent = (args?.get('transparent') ?? false) as boolean
     const backgroundColor = (args?.get('backgroundColor') ?? BigInt(0xFFFFFFFF)) as bigint
