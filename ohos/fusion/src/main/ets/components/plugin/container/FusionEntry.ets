@@ -150,12 +150,11 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     await super.aboutToAppear()
     const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
     const routeArgs = this._params[FusionConstant.ROUTE_ARGS] as Map<string, Object>
-    window.getLastWindow(this._context, (_, win) => {
+    if (this.isTransparent()) {
+      const win = window.findWindow(FusionConstant.TRANSPARENT_WINDOW)
       win.setWindowLayoutFullScreen(true)
-      if (this.isTransparent()) {
-        win.setWindowBackgroundColor('#00000000')
-      }
-    })
+      win.setWindowBackgroundColor('#00000000')
+    }
     this.engineBinding?.create(this._uniqueId, routeName, routeArgs)
     this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
