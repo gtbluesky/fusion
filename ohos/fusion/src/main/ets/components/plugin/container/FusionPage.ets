@@ -1,12 +1,11 @@
-import { FlutterPage, FlutterView } from '@ohos/flutter_ohos'
-import FusionConstant from '../constant/FusionConstant'
+import FusionComponent from './FusionComponent'
 import FusionEntry from './FusionEntry'
 
-@Entry({routeName: FusionConstant.FUSION_ROUTE_NAME})
+@Entry({ routeName: FusionPage.ROUTE_NAME })
 @Component
 export default struct FusionPage {
+  static ROUTE_NAME = 'FusionPage'
   private flutterEntry: FusionEntry | null = null
-  private flutterView: FlutterView | null = null
 
   override aboutToAppear() {
     this.flutterEntry = new FusionEntry(
@@ -14,7 +13,6 @@ export default struct FusionPage {
       LocalStorage.getShared().get('params') as Record<string, Object>
     )
     this.flutterEntry.aboutToAppear()
-    this.flutterView = this.flutterEntry.getFlutterView()
   }
 
   override onPageShow() {
@@ -31,9 +29,7 @@ export default struct FusionPage {
 
   override build() {
     Stack() {
-      FlutterPage({
-        viewId: this.flutterView?.getId(),
-      })
+      FusionComponent({entry: this.flutterEntry})
     }
   }
 

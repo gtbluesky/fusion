@@ -37,8 +37,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun removeMask() {
         maskView?.let {
-            (it.parent as? FrameLayout)?.removeView(it)
+            it.postDelayed({
+                (it.parent as? FrameLayout)?.removeView(it)
+            }, 100)
         }
+        maskView = null
     }
 
     @Suppress("UNCHECKED_CAST")

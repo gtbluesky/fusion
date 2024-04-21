@@ -1,9 +1,10 @@
 import { FusionNavigator, FusionNotificationBinding, FusionNotificationListener, FusionRouteType } from '@ohos/fusion';
 import { promptAction, window } from '@kit.ArkUI';
 
-@Entry
+@Entry({routeName: IndexPage.ROUTE_NAME})
 @Component
-struct IndexPage {
+export default struct IndexPage {
+  static ROUTE_NAME = 'IndexPage'
 
   private notificationListener: FusionNotificationListener = {
     onReceive(name: string, body: Map<string, Object>| null): void {

@@ -41,8 +41,11 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     override fun removeMask() {
         maskView?.let {
-            (it.parent as? FrameLayout)?.removeView(it)
+            it.postDelayed({
+                (it.parent as? FrameLayout)?.removeView(it)
+            }, 100)
         }
+        maskView = null
     }
 
     private fun attachToContainer() {

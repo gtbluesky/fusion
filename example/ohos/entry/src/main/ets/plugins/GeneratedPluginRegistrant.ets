@@ -1,5 +1,4 @@
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
-import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
+import { FlutterEngine, Log } from '@ohos/flutter_ohos';
 import FusionPlugin from '@ohos/fusion'
 import WebViewFlutterPlugin from '@ohos/webview_flutter_ohos'
 

@@ -1,9 +1,11 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { buildFusionParams, Fusion, FusionRouteDelegate, FusionConstant } from '@ohos/fusion';
+import { buildFusionParams, Fusion, FusionRouteDelegate, FusionConstant, FusionPage } from '@ohos/fusion';
 import { router, window } from '@kit.ArkUI';
 import hilog from '@ohos.hilog';
 import { GeneratedPluginRegistrant } from '../plugins/GeneratedPluginRegistrant';
 import { MethodChannel } from '@ohos/flutter_ohos';
+import IndexPage from '../pages/IndexPage';
+import TabScenePage from '../pages/TabScenePage';
 
 export default class EntryAbility extends UIAbility implements FusionRouteDelegate {
   private static TAG = 'EntryAbility'
@@ -26,21 +28,21 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     this.windowStage = windowStage
     this.mainWindow = windowStage.getMainWindowSync()
     this.mainLocalStorage = new LocalStorage()
-    windowStage.loadContent('pages/IndexPage', this.mainLocalStorage)
+    windowStage.loadContentByName(IndexPage.ROUTE_NAME, this.mainLocalStorage)
   }
 
   pushNativeRoute(name: string, args: Map<string, Object> | null): void {
     hilog.debug(0xFF00, EntryAbility.TAG, `pushNativeRoute: name=${name}, args=${args}`)
     switch (name) {
       case '/native_normal':
-        router.pushUrl({
-          url: 'pages/IndexPage',
+        router.pushNamedRoute({
+          name: IndexPage.ROUTE_NAME,
           params: args,
         })
         break;
       case '/native_tab_fixed':
-        router.pushUrl({
-          url: 'pages/TabScenePage',
+        router.pushNamedRoute({
+          name: TabScenePage.ROUTE_NAME,
           params: args,
         })
         break;
@@ -54,19 +56,17 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     const transparent = (args?.get('transparent') ?? false) as boolean
     const backgroundColor = (args?.get('backgroundColor') ?? BigInt(0xFFFFFFFF)) as bigint
     const params = buildFusionParams(name, args, transparent, backgroundColor)
-    // const customFusionPageUrl = 'pages/CustomFusionPage'
     if (transparent) {
       this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (_, win) => {
         const record: Record<string, Object> = {
           'params': params
         }
-        win.loadContentByName(FusionConstant.FUSION_ROUTE_NAME, new LocalStorage(record))
-        // win.loadContent(customFusionPageUrl, new LocalStorage(record))
+        win.loadContentByName(FusionPage.ROUTE_NAME, new LocalStorage(record))
         win.showWindow()
       })
     } else {
       this.mainLocalStorage?.setOrCreate('params', params)
-      router.pushNamedRoute({name: FusionConstant.FUSION_ROUTE_NAME})
+      router.pushNamedRoute({name: FusionPage.ROUTE_NAME})
       // router.pushUrl({url: customFusionPageUrl})
     }
   }

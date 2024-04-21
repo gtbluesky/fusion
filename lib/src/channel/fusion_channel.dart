@@ -281,12 +281,9 @@ class FusionChannel {
   void removeMaskView(String uniqueId) {
     // ignore: invalid_null_aware_operator
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // ignore: invalid_null_aware_operator
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        // callback of the next frame completes
-        _hostRemoveMaskView.send({
-          'uniqueId': uniqueId,
-        });
+      // callback of the next frame completes
+      _hostRemoveMaskView.send({
+        'uniqueId': uniqueId,
       });
     });
   }

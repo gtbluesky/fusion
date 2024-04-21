@@ -1,11 +1,11 @@
-import { buildFusionParams, FusionEntry } from '@ohos/fusion'
+import { buildFusionParams, FusionEntry, FusionComponent } from '@ohos/fusion'
 import List from '@ohos.util.List'
-import { FlutterPage } from '@ohos/flutter_ohos'
 import CustomFusionEntry from './CustomFusionEntry'
 
-@Entry
+@Entry({ routeName: TabScenePage.ROUTE_NAME })
 @Component
-struct TabScenePage {
+export default struct TabScenePage {
+  static ROUTE_NAME = 'TabScenePage'
   @State currentIndex: number = 0
   private flutterEntryList = new List<FusionEntry>()
 
@@ -17,7 +17,10 @@ struct TabScenePage {
         '/background',
         new Map<string, Object>([
           ['title', 'Flutter Tab0'],
-          ['backgroundColor', 0xFF546E7A]]),
+          ['backgroundColor', 0xFF546E7A]
+        ]),
+        false,
+        BigInt(0xFF546E7A)
       )
     )
     const flutterEntry1 = new FusionEntry(
@@ -52,17 +55,17 @@ struct TabScenePage {
       barPosition: BarPosition.End
     }) {
       TabContent() {
-        FlutterPage({ viewId: this.flutterEntryList.get(0).getFlutterView()?.getId() })
+        FusionComponent({ entry: this.flutterEntryList.get(0)})
       }
       .tabBar('Tab0')
 
       TabContent() {
-        FlutterPage({ viewId: this.flutterEntryList.get(1).getFlutterView()?.getId() })
+        FusionComponent({ entry: this.flutterEntryList.get(1)})
       }
       .tabBar('Tab1')
 
       TabContent() {
-        FlutterPage({ viewId: this.flutterEntryList.get(2).getFlutterView()?.getId() })
+        FusionComponent({ entry: this.flutterEntryList.get(2)})
       }
       .tabBar('Tab2')
     }

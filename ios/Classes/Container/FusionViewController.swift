@@ -22,8 +22,13 @@ open class FusionViewController: FlutterViewController {
     }
     
     func removeMask() {
-        maskView?.removeFromSuperview()
-        maskView = nil
+        guard let maskView = maskView else {
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+            maskView.removeFromSuperview()
+        }
+        self.maskView = nil
     }
     
     private func attachToContainer() {

@@ -26,10 +26,12 @@ import FusionEntry from './src/main/ets/components/plugin/container/FusionEntry'
 import buildFusionParams from './src/main/ets/components/plugin/container/FusionExt';
 import FusionPage from './src/main/ets/components/plugin/container/FusionPage';
 import FusionConstant from './src/main/ets/components/plugin/constant/FusionConstant';
+import FusionComponent from './src/main/ets/components/plugin/container/FusionComponent';
 
 export {
   Fusion,
   FusionConstant,
+  FusionComponent,
   FusionEntry,
   FusionPage,
   buildFusionParams,

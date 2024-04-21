@@ -1,7 +1,5 @@
 {
   "src": [
-    "pages/IndexPage",
-    "pages/CustomFusionPage",
-    "pages/TabScenePage"
+    "pages/IndexPage"
   ]
 }

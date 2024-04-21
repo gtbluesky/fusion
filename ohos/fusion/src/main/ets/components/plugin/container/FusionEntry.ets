@@ -38,7 +38,12 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   /* override */ removeMask(): void {
-    //todo
+    if (this.isTransparent()) {
+      return
+    }
+    setTimeout(() => {
+      this._context.eventHub.emit(this._uniqueId)
+    }, 100)
   }
 
   private attachToContainer(): void {
@@ -87,9 +92,6 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   }
 
   private onContainerCreate(): void {
-    if (!this.isTransparent()) {
-      // todo
-    }
     if (FusionStackManager.instance.isEmpty()) {
       this.engineBinding?.engine?.getLifecycleChannel()?.appIsResumed()
     }
@@ -134,6 +136,10 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     super(context, params)
     this._context = context
     this._params = params
+  }
+
+  params(): Record<string, Object> {
+    return this._params
   }
 
   override async aboutToAppear() {
