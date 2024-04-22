@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Solves the problem of white screen or black screen when switching pages.
+
 ## 4.0.0
 
 * Adapts to HarmonyOS Next/OpenHarmony.
