@@ -8,19 +8,30 @@ export default struct FusionComponent {
   @State private showMask: boolean = false
   private bgColor = BigInt(0xFFFFFFFF)
 
-  override aboutToAppear() {
-    // this.showMask = this.entry?.isTransparent() == false
-    this.bgColor = (this.entry?.params()[FusionConstant.EXTRA_BACKGROUND_COLOR] ?? BigInt(0xFFFFFFFF)) as bigint
-    // getContext(this).eventHub.on(this.entry?.uniqueId(), () => {
-    //   this.showMask = false
-    // })
+  override async aboutToAppear(): Promise<void> {
+    await this.entry?.aboutToAppear()
+    this.showMask = this.entry?.isTransparent() == false
+    this.bgColor = (this.entry?.params[FusionConstant.EXTRA_BACKGROUND_COLOR] ?? BigInt(0xFFFFFFFF)) as bigint
+    getContext(this).eventHub.on(this.entry?.uniqueId(), () => {
+      this.showMask = false
+    })
   }
 
-  // override aboutToDisappear() {
-  //   getContext(this).eventHub.off(this.entry?.uniqueId())
-  // }
+  onComponentShow(): void {
+    this.entry?.onPageShow()
+  }
 
-  override build() {
+  onComponentHide(): void {
+    this.entry?.onPageHide()
+  }
+
+  override aboutToDisappear(): void {
+    getContext(this).eventHub.off(this.entry?.uniqueId())
+    this.entry?.aboutToDisappear()
+    this.entry = null
+  }
+
+  override build(): void {
     Stack() {
       FlutterPage({
         viewId: this.entry?.getFlutterView()?.getId(),
@@ -31,6 +42,12 @@ export default struct FusionComponent {
           .width('100%')
           .height('100%')
       }
-    }
+    }.onVisibleAreaChange([0.0, 1.0], (isVisible, _) => {
+      if (isVisible) {
+        this.onComponentShow()
+      } else {
+        this.onComponentHide()
+      }
+    })
   }
 }

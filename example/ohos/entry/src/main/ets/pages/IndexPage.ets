@@ -28,7 +28,7 @@ export default struct IndexPage {
     FusionNotificationBinding.instance.unregister(this.notificationListener)
   }
 
-  override build() {
+  override build(): void {
     Row() {
       Column() {
         Text('Flutter普通页面场景')

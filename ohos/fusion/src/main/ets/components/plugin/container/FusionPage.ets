@@ -7,27 +7,14 @@ export default struct FusionPage {
   static ROUTE_NAME = 'FusionPage'
   private flutterEntry: FusionEntry | null = null
 
-  override aboutToAppear() {
+  override aboutToAppear(): void {
     this.flutterEntry = new FusionEntry(
       getContext(this),
       LocalStorage.getShared().get('params') as Record<string, Object>
     )
-    this.flutterEntry.aboutToAppear()
   }
 
-  override onPageShow() {
-    this.flutterEntry?.onPageShow()
-  }
-
-  override onPageHide() {
-    this.flutterEntry?.onPageHide()
-  }
-
-  override aboutToDisappear() {
-    this.flutterEntry?.aboutToDisappear()
-  }
-
-  override build() {
+  override build(): void {
     Stack() {
       FusionComponent({entry: this.flutterEntry})
     }

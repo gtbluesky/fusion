@@ -44,12 +44,9 @@ export default struct TabScenePage {
     this.flutterEntryList.add(flutterEntry0)
     this.flutterEntryList.add(flutterEntry1)
     this.flutterEntryList.add(flutterEntry2)
-    for (const entry of this.flutterEntryList) {
-      entry.aboutToAppear()
-    }
   }
 
-  override build() {
+  override build(): void {
     Tabs({
       index: this.currentIndex,
       barPosition: BarPosition.End
@@ -73,34 +70,6 @@ export default struct TabScenePage {
     .animationDuration(0)
     .onChange((index) => {
       this.currentIndex = index
-      this.onTabChange(index)
     })
-  }
-
-  override onPageShow(): void {
-    this.onTabChange(this.currentIndex)
-  }
-
-  override onPageHide(): void {
-    for (const entry of this.flutterEntryList) {
-      entry.onPageHide()
-    }
-  }
-
-  override aboutToDisappear(): void {
-    for (const entry of this.flutterEntryList) {
-      entry.aboutToDisappear()
-    }
-  }
-
-  private onTabChange(index: number): void {
-    for (let i = 0; i < this.flutterEntryList.length; i++) {
-      const entry = this.flutterEntryList.get(i)
-      if (i == index) {
-        entry.onPageShow()
-      } else {
-        entry.onPageHide()
-      }
-    }
   }
 }

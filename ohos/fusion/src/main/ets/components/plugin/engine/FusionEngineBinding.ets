@@ -361,7 +361,7 @@ export default class FusionEngineBinding {
     this.flutterDispatchMessage?.send(msg)
   }
 
-  checkStyle(callback: (systemChromeStyle: SystemChromeStyle) => void) {
+  checkStyle(callback: (systemChromeStyle: SystemChromeStyle) => void): void {
     this.flutterCheckStyle?.send(
       null,
       (reply) => {

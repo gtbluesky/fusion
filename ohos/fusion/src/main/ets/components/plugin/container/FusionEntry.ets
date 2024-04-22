@@ -111,7 +111,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     this.engineBinding?.notifyPageVisible(this._uniqueId)
   }
 
-  private updateSystemOverlayStyle() {
+  private updateSystemOverlayStyle(): void {
     this.engineBinding?.checkStyle((systemChromeStyle) => {
       if (this.platformPlugin == null) {
         return
@@ -138,11 +138,11 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     this._params = params
   }
 
-  params(): Record<string, Object> {
+  get params(): Record<string, Object> {
     return this._params
   }
 
-  override async aboutToAppear() {
+  override async aboutToAppear(): Promise<void> {
     const top = FusionStackManager.instance.getTopContainer()
     if (top != this) {
       top?.detachFromContainer()
