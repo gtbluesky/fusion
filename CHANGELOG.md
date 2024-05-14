@@ -1,3 +1,7 @@
+## 4.2.0
+
+* **BREAKING CHANGE**: Changes the class `FusionPageLifecycleBinding` to `FusionPageLifecycleManager`, changes the class `FusionAppLifecycleBinding` to `FusionAppLifecycleManager`, changes the class `FusionNotificationBinding` to `FusionEventManager`.
+
 ## 4.1.0
 
 * Solves the problem of white screen or black screen when switching pages.
@@ -6,7 +10,7 @@
 
 * Adapts to HarmonyOS Next/OpenHarmony.
 * **BREAKING CHANGE**: Changes the parameter `arguments` to `args` in some functions.
-* **BREAKING CHANGE**: Changes the class `PageLifecycleListener` to `FusionPageLifecycleListener`, changes the class `PageLifecycleBinding` to `FusionPageLifecycleBinding`
+* **BREAKING CHANGE**: Changes the class `PageLifecycleListener` to `FusionPageLifecycleListener`, changes the class `PageLifecycleBinding` to `FusionPageLifecycleBinding`.
 * **BREAKING CHANGE**: Combines `push` and `open` method into a new `push` method. For specific usage, please refer to README.
 * **BREAKING CHANGE**: `sendMessage` is no longer limited to Activity/Fragment/UIViewController/State, and the range of message delivery can be selected through `FusionNotificationType`. For specific usage, please refer to README.
 * Provides global context in `FusionNavigator`.

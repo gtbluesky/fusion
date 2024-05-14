@@ -1,5 +1,4 @@
 import '../channel/fusion_channel.dart';
-import '../log/fusion_log.dart';
 
 typedef FusionEventCallback = void Function(Map<String, dynamic>?);
 

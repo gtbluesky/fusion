@@ -421,7 +421,7 @@ P.S.: 与容器相关的方法是与容器生命周期绑定的，如果容器�
 ```dart
 void main() {
   ...
-  FusionAppLifecycleBinding.instance.register(MyAppLifecycleListener());
+  FusionAppLifecycleManager.instance.register(MyAppLifecycleListener());
   runApp(const MyApp());
 }
 
@@ -463,7 +463,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionPageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleManager.instance.register(this);
   }
 
   @override
@@ -481,7 +481,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
-    FusionPageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleManager.instance.unregister(this);
   }
 }
 ```
@@ -491,13 +491,11 @@ PageLifecycleListener 生命周期回调函数：
 - onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；应用进入前台时也会被调用。
 - onPageInvisible: 该 Flutter 页面不可见时被调用，如：从该 Flutter 页面 `push` 到 Native 页面或其他 Flutter 页面时；如从该 Flutter 页面 `pop` 到 Native 页面或其他 Flutter 页面时；应用退到后台时也会被调用。
 
-### 7、全局通信
-支持消息在应用中的传递，可以指定 Native 还是 Flutter 或者全局接收和发送。
-#### 注册消息监听
+### 7、全局事件
+#### 注册事件回调
 Flutter侧
-- ①、在需要监听消息的类中 `implements` FusionNotificationListener，并复写 `onReceive` 方法，该方法可收到发送过来的消息
-- ②、在合适时机注册监听
-- ③、在合适时机注销监听
+- ①、在合适时机通过`register`注册事件回调
+- ②、在合适时机通过`unregister`注销事件回调，如果传入callback则只注销该callback，如果不传callback则该event对应的所有callback均被注销
 ```dart
 class TestPage extends StatefulWidget {
 
@@ -505,34 +503,49 @@ class TestPage extends StatefulWidget {
   State<TestPage> createState() => _TestPageState();
 }
 
-class _TestPageState extends State<TestPage> implements FusionNotificationListener {
+class _TestPageState extends State<TestPage> {
 
-  @override
-  void onReceive(String name, Map<String, dynamic>? body) {
+  void onReceive(Map<String, dynamic>? args) {
     
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionNotificationBinding.instance.register(this);
+    FusionEventManager.instance.register('custom_event', onReceive);
   }
 
   @override
   void dispose() {
     super.dispose();
-    FusionNotificationBinding.instance.unregister(this);
+    FusionEventManager.instance.unregister('custom_event');
   }
 }
 ```
 
 Native侧
-- ①、在需要监听消息的类中实现 FusionNotificationListener 接口，并复写 `onReceive` 方法，该方法可收到发送过来的消息
-- ②、在适当时机使用 `FusionNotificationBinding` 的 `register` 方法注册监听
-- ③、在适当时机使用 `FusionNotificationBinding` 的 `unregister` 方法注销监听
+- ①、在合适时机通过`register`注册事件回调
+- ②、在合适时机通过`unregister`注销事件回调，如果传入callback则只注销该callback，如果不传callback则该event对应的所有callback均被注销
 
-#### 发送消息
-三端均可使用`FusionNavigator` 的 `sendMessage` 方法来发送消息，根据使用FusionNotificationType 不同类型有不同效果：
+* 注意：在iOS上，由于closure的相等性检测机制问题，如果需要注销指定callback，则不能直接传入Swift函数引用，需按以下方式定义，如果不需要注销指定callback，则可以使用平台支持的任意closure定义方式：
+
+```swift
+    // 事件回调定义1
+    let onReceive: FusionEventCallback = { args in
+        NSLog("onReceive: args=\(String(describing: args))")
+    }
+    // 事件回调定义2
+    lazy var onReceive: FusionEventCallback = onReceiveFunc
+   
+    public func onReceiveFunc(args: Dictionary<String, Any>?) {
+        NSLog("onReceive: args=\(String(describing: args))")
+    }
+    // 注册
+    FusionEventManager.instance.register("custom_event", callback: onReceive)
+```
+
+#### 发送时间
+三端均可使用`FusionEventManager` 的 `send` 方法来发送事件，根据使用FusionEventType 不同类型有不同效果：
 - flutter: 仅 Flutter 可以收到
 - native: 仅 Native 可以收到
 - global: Flutter 和 Native 都可以收到
