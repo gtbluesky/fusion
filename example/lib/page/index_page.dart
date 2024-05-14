@@ -19,18 +19,16 @@ class IndexPage extends StatefulWidget {
   State<IndexPage> createState() => _IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage>
-    implements FusionNotificationListener, FusionPageLifecycleListener {
+class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleListener {
   String? msg;
 
-  @override
-  void onReceive(String name, Map<String, dynamic>? body) {
+  void onReceive(Map<String, dynamic>? args) {
     Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) {
         return;
       }
       setState(() {
-        msg = '$runtimeType@$hashCode, $name, $body';
+        msg = '$runtimeType@$hashCode, $args';
       });
     });
   }
@@ -38,15 +36,15 @@ class _IndexPageState extends State<IndexPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionNotificationBinding.instance.register(this);
-    FusionPageLifecycleBinding.instance.register(this);
+    FusionEventManager.instance.register('custom_event', onReceive);
+    FusionPageLifecycleManager.instance.register(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    FusionNotificationBinding.instance.unregister(this);
-    FusionPageLifecycleBinding.instance.unregister(this);
+    FusionEventManager.instance.unregister('custom_event');
+    FusionPageLifecycleManager.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }
@@ -87,7 +85,9 @@ class _IndexPageState extends State<IndexPage>
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20),
-        title: Text(widget.args?['title'] ?? '未知页面',),
+        title: Text(
+          widget.args?['title'] ?? '未知页面',
+        ),
       ),
       body: ListView(
         children: [
@@ -266,8 +266,9 @@ class _IndexPageState extends State<IndexPage>
           InkWell(
               child: const Text('container_related_channel'),
               onTap: () async {
-                final result = await const MethodChannel('container_related_channel')
-                    .invokeMethod('container_related_channel');
+                final result =
+                    await const MethodChannel('container_related_channel')
+                        .invokeMethod('container_related_channel');
                 if (kDebugMode) {
                   print('result=$result');
                 }

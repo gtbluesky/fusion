@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import '../container/fusion_overlay.dart';
 import '../container/fusion_page.dart';
 import '../data/fusion_state.dart';
+import '../event/fusion_event.dart';
 import '../extension/system_ui_overlay_extension.dart';
 import '../fusion.dart';
 import '../lifecycle/fusion_app_lifecycle.dart';
 import '../lifecycle/fusion_page_lifecycle.dart';
 import '../navigator/fusion_navigator.dart';
 import '../navigator/fusion_navigator_delegate.dart';
-import '../notification/fusion_notification.dart';
 
 class FusionChannel {
   FusionChannel._();
@@ -28,8 +28,8 @@ class FusionChannel {
       '$_fusionChannel/host/restore', StandardMessageCodec());
   final _hostSync = const BasicMessageChannel(
       '$_fusionChannel/host/sync', StandardMessageCodec());
-  final _hostDispatchMessage = const BasicMessageChannel(
-      '$_fusionChannel/host/dispatchMessage', StandardMessageCodec());
+  final _hostDispatchEvent = const BasicMessageChannel(
+      '$_fusionChannel/host/dispatchEvent', StandardMessageCodec());
   final _hostRemoveMaskView = const BasicMessageChannel(
       '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
   final _flutterCreate = const BasicMessageChannel(
@@ -58,8 +58,8 @@ class FusionChannel {
       '$_fusionChannel/flutter/notifyEnterForeground', StandardMessageCodec());
   final _flutterNotifyEnterBackground = const BasicMessageChannel(
       '$_fusionChannel/flutter/notifyEnterBackground', StandardMessageCodec());
-  final _flutterDispatchMessage = const BasicMessageChannel(
-      '$_fusionChannel/flutter/dispatchMessage', StandardMessageCodec());
+  final _flutterDispatchEvent = const BasicMessageChannel(
+      '$_fusionChannel/flutter/dispatchEvent', StandardMessageCodec());
   final _flutterCheckStyle = const BasicMessageChannel(
       '$_fusionChannel/flutter/checkStyle', StandardMessageCodec());
 
@@ -166,23 +166,23 @@ class FusionChannel {
       return;
     });
     _flutterNotifyEnterForeground.setMessageHandler((message) async {
-      FusionAppLifecycleBinding.instance.dispatchAppForegroundEvent();
-      FusionPageLifecycleBinding.instance.dispatchPageForegroundEvent();
+      FusionAppLifecycleManager.instance.dispatchAppForegroundEvent();
+      FusionPageLifecycleManager.instance.dispatchPageForegroundEvent();
       return;
     });
     _flutterNotifyEnterBackground.setMessageHandler((message) async {
-      FusionAppLifecycleBinding.instance.dispatchAppBackgroundEvent();
-      FusionPageLifecycleBinding.instance.dispatchPageBackgroundEvent();
+      FusionAppLifecycleManager.instance.dispatchAppBackgroundEvent();
+      FusionPageLifecycleManager.instance.dispatchPageBackgroundEvent();
       return;
     });
-    _flutterDispatchMessage.setMessageHandler((message) async {
+    _flutterDispatchEvent.setMessageHandler((message) async {
       FusionJobQueue.instance.runJob(() {
         if (message is! Map) return;
         final msg = Map<String, dynamic>.from(message);
         String name = msg['name'];
-        final body = (msg['body'] as Map?)?.cast<String, dynamic>();
-        FusionNavigator.sendMessage(name,
-            body: body, type: FusionNotificationType.flutter);
+        final args = (msg['args'] as Map?)?.cast<String, dynamic>();
+        FusionEventManager.instance
+            .send(name, args: args, type: FusionEventType.flutter);
       });
       return;
     });
@@ -201,7 +201,7 @@ class FusionChannel {
     if (!page.isVisible) {
       page.containerVisible = true;
       if (page.isVisible) {
-        FusionPageLifecycleBinding.instance
+        FusionPageLifecycleManager.instance
             .dispatchPageVisibleEvent(page.route, isFirstTime: isFirstTime);
       }
     }
@@ -211,7 +211,7 @@ class FusionChannel {
     final page = FusionOverlayManager.instance.findContainer(uniqueId)?.topPage;
     if (page == null) return;
     if (page.isVisible) {
-      FusionPageLifecycleBinding.instance
+      FusionPageLifecycleManager.instance
           .dispatchPageInvisibleEvent(page.route);
     }
     page.containerVisible = false;
@@ -271,10 +271,10 @@ class FusionChannel {
     return list;
   }
 
-  void dispatchMessage(String name, [Map<String, dynamic>? body]) {
-    _hostDispatchMessage.send({
+  void dispatchEvent(String name, [Map<String, dynamic>? args]) {
+    _hostDispatchEvent.send({
       'name': name,
-      'body': body,
+      'args': args,
     });
   }
 

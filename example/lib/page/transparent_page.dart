@@ -25,13 +25,13 @@ class _TransparentPageState extends State<TransparentPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionPageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleManager.instance.register(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    FusionPageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleManager.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }
@@ -158,8 +158,8 @@ class _TransparentPageState extends State<TransparentPage>
             InkWell(
                 child: const Text('replace /list'),
                 onTap: () {
-                  FusionNavigator
-                      .replace('/list', {'title': 'replace success'});
+                  FusionNavigator.replace(
+                      '/list', {'title': 'replace success'});
                 }),
             const SizedBox(
               height: 20,

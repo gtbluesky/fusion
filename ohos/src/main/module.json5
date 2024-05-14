@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "fusion",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

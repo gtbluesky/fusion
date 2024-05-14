@@ -1,4 +1,4 @@
-import { buildFusionParams, FusionEntry, FusionComponent } from '@ohos/fusion'
+import { buildFusionParams, FusionEntry, FusionComponent } from 'fusion'
 import List from '@ohos.util.List'
 import CustomFusionEntry from './CustomFusionEntry'
 

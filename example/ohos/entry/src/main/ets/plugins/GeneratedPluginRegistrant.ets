@@ -1,6 +1,6 @@
 import { FlutterEngine, Log } from '@ohos/flutter_ohos';
-import FusionPlugin from '@ohos/fusion'
-import WebViewFlutterPlugin from '@ohos/webview_flutter_ohos'
+import FusionPlugin from 'fusion';
+import WebViewFlutterPlugin from 'webview_flutter_ohos';
 
 /**
  * Generated file. Do not edit.

@@ -1,11 +1,9 @@
 /node_modules
 /oh_modules
-/local.properties
+/.preview
 /.idea
-**/build
-/.hvigor
-.cxx
-/.clangd
-/.clang-format
-/.clang-tidy
-**/.test
+/build
+/.cxx
+/.test
+/BuildProfile.ets
+/oh-package-lock.json5

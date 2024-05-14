@@ -1,5 +1,5 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { buildFusionParams, Fusion, FusionRouteDelegate, FusionConstant, FusionPage } from '@ohos/fusion';
+import { buildFusionParams, Fusion, FusionRouteDelegate, FusionConstant, FusionPage } from 'fusion';
 import { router, window } from '@kit.ArkUI';
 import hilog from '@ohos.hilog';
 import { GeneratedPluginRegistrant } from '../plugins/GeneratedPluginRegistrant';

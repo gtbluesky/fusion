@@ -19,7 +19,7 @@ import 'package:fusion_example/page/willpop_page.dart';
 void main() {
   print('defaultRouteName=${ui.window.defaultRouteName}');
   Fusion.instance.install();
-  FusionAppLifecycleBinding.instance.register(MyAppLifecycleListener());
+  FusionAppLifecycleManager.instance.register(MyAppLifecycleListener());
   runApp(const MyApp());
 }
 

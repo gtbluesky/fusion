@@ -8,13 +8,13 @@ class FusionAppLifecycleListener {
   void onBackground() {}
 }
 
-class FusionAppLifecycleBinding {
-  FusionAppLifecycleBinding._();
+class FusionAppLifecycleManager {
+  FusionAppLifecycleManager._();
 
-  static final FusionAppLifecycleBinding _instance =
-      FusionAppLifecycleBinding._();
+  static final FusionAppLifecycleManager _instance =
+      FusionAppLifecycleManager._();
 
-  static FusionAppLifecycleBinding get instance => _instance;
+  static FusionAppLifecycleManager get instance => _instance;
 
   final _listeners = <FusionAppLifecycleListener>{};
 

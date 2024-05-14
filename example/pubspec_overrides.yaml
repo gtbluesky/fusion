@@ -1,0 +1,11 @@
+dependency_overrides:
+  webview_flutter:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_packages
+      path: packages/webview_flutter/webview_flutter
+      ref: master
+  webview_flutter_platform_interface:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_packages
+      path: packages/webview_flutter/webview_flutter_platform_interface
+      ref: master

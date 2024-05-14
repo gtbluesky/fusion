@@ -40,7 +40,7 @@ class FusionNavigatorDelegate {
         return null;
       case FusionRouteType.adaption:
         if (_isFlutterPage(routeName)) {
-          if (FusionPageLifecycleBinding.instance.isVisible) {
+          if (FusionPageLifecycleManager.instance.isVisible) {
             return _push(routeName, args);
           } else {
             FusionChannel.instance
@@ -260,7 +260,7 @@ class FusionNavigatorDelegate {
     Future.microtask(() {
       FusionPage? page = FusionOverlayManager.instance.findPage(route);
       if (page == null) return;
-      FusionPageLifecycleBinding.instance
+      FusionPageLifecycleManager.instance
           .dispatchPageVisibleEvent(route, isFirstTime: isFirstTime);
     });
   }
@@ -271,6 +271,6 @@ class FusionNavigatorDelegate {
     }
     FusionPage? page = FusionOverlayManager.instance.findPage(route);
     if (page == null) return;
-    FusionPageLifecycleBinding.instance.dispatchPageInvisibleEvent(route);
+    FusionPageLifecycleManager.instance.dispatchPageInvisibleEvent(route);
   }
 }

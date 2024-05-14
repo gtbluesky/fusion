@@ -8,7 +8,7 @@
 import Foundation
 import fusion
 
-class MainViewController: UIViewController, FusionNotificationListener {
+class MainViewController: UIViewController {
 //class MainViewController: UIViewController, FusionNotificationListener, UIViewControllerRestoration {
     
     //    class func viewController(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
@@ -27,7 +27,17 @@ class MainViewController: UIViewController, FusionNotificationListener {
         newButton(button: UIButton(), offsetY: -25, title: "Flutter透明页面场景", action: #selector(click1(btn:)))
         newButton(button: UIButton(), offsetY: 25, title: "Flutter子页面场景", action: #selector(click2(btn:)))
         newButton(button: UIButton(), offsetY: 75, title: "Native侧边栏嵌入Flutter场景", action: #selector(click3(btn:)))
-        FusionNotificationBinding.instance.register(self)
+        FusionEventManager.instance.register("custom_event", callback: onReceive)
+    }
+    
+//    lazy var onReceive: FusionEventCallback = onReceiveFunc
+//    
+//    public func onReceiveFunc(args: Dictionary<String, Any>?) {
+//        NSLog("onReceive: args=\(String(describing: args))")
+//    }
+    
+    let onReceive: FusionEventCallback = { args in
+        NSLog("onReceive: args=\(String(describing: args))")
     }
 
     private func newButton(button: UIButton, offsetY: CGFloat, title: String, action: Selector) {
@@ -68,18 +78,16 @@ class MainViewController: UIViewController, FusionNotificationListener {
     }
 
     @IBAction func click3(btn: Any) {
-        let fusionVc = CustomFusionViewController(
-            routeName: "/lifecycle", routeArgs: nil
-        )
-        presentLeftDrawer(fusionVc, animated: true)
-    }
-    
-    public func onReceive(name: String, body: Dictionary<String, Any>?) {
-        NSLog("onReceive: name=\(name), body=\(String(describing: body))")
+        FusionEventManager.instance.unregister("custom_event", callback: onReceive)
+
+//        let fusionVc = CustomFusionViewController(
+//            routeName: "/lifecycle", routeArgs: nil
+//        )
+//        presentLeftDrawer(fusionVc, animated: true)
     }
     
     deinit {
-        FusionNotificationBinding.instance.unregister(self)
+        FusionEventManager.instance.unregister("custom_event")
     }
 }
 

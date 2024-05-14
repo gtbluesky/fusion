@@ -50,21 +50,6 @@ import Foundation
     public static func remove(_ routeName: String) {
         Fusion.instance.engineBinding?.remove(routeName)
     }
-
-    /**
-     * 发送消息
-     */
-    public static func sendMessage(_ name: String, body: Dictionary<String, Any>? = nil, type: FusionNotificationType = .global) {
-        switch type {
-        case .flutter:
-            Fusion.instance.engineBinding?.dispatchMessage(name, body)
-        case .native:
-            FusionNotificationBinding.instance.dispatchMessage(name, body)
-        case .global:
-            FusionNotificationBinding.instance.dispatchMessage(name, body)
-            Fusion.instance.engineBinding?.dispatchMessage(name, body)
-        }
-    }
 }
 
 @objc public protocol FusionRouteDelegate {

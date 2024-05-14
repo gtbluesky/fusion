@@ -1,5 +1,5 @@
 import { BinaryMessenger, MethodChannel } from '@ohos/flutter_ohos';
-import { FusionEntry, FusionMessengerHandler } from '@ohos/fusion';
+import { FusionEntry, FusionMessengerHandler } from 'fusion';
 
 export default class CustomFusionEntry extends FusionEntry implements FusionMessengerHandler {
   private channel: MethodChannel | null = null

@@ -7,11 +7,10 @@ import androidx.core.view.GravityCompat
 import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.navigator.FusionRouteType
-import com.gtbluesky.fusion.notification.FusionNotificationBinding
-import com.gtbluesky.fusion.notification.FusionNotificationListener
+import com.gtbluesky.fusion.event.FusionEventManager
 import com.gtbluesky.fusion_example.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), FusionNotificationListener {
+class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private var hasOpened = false
 
@@ -20,7 +19,15 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
         setListener()
-        FusionNotificationBinding.register(this)
+        FusionEventManager.register("custom_event", ::onReceive)
+    }
+
+    private fun onReceive(args: Map<String, Any>?) {
+        Toast.makeText(
+            this,
+            "onReceive: args=$args",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun setListener() {
@@ -67,16 +74,8 @@ class MainActivity : AppCompatActivity(), FusionNotificationListener {
         }
     }
 
-    override fun onReceive(name: String, body: Map<String, Any>?) {
-        Toast.makeText(
-            this,
-            "onReceive: name=$name, body=$body",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        FusionNotificationBinding.unregister(this)
+        FusionEventManager.unregister("custom_event")
     }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '../channel/fusion_channel.dart';
 import '../container/fusion_overlay.dart';
 import '../navigator/fusion_navigator_delegate.dart';
-import '../notification/fusion_notification.dart';
 
 class FusionNavigator {
   FusionNavigator._();
@@ -41,26 +39,6 @@ class FusionNavigator {
   /// Remove a designated flutter page in all containers.
   static Future<void> remove(String routeName) async {
     return FusionNavigatorDelegate.instance.remove(routeName);
-  }
-
-  /// Send a message to flutter side and native side.
-  static void sendMessage(
-    String name, {
-    Map<String, dynamic>? body,
-    FusionNotificationType type = FusionNotificationType.global,
-  }) {
-    switch (type) {
-      case FusionNotificationType.flutter:
-        FusionNotificationBinding.instance.dispatchMessage(name, body);
-        break;
-      case FusionNotificationType.native:
-        FusionChannel.instance.dispatchMessage(name, body);
-        break;
-      case FusionNotificationType.global:
-        FusionNotificationBinding.instance.dispatchMessage(name, body);
-        FusionChannel.instance.dispatchMessage(name, body);
-        break;
-    }
   }
 
   static NavigatorState? get navigator =>

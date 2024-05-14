@@ -1,31 +1,29 @@
-import { FusionNavigator, FusionNotificationBinding, FusionNotificationListener, FusionRouteType } from '@ohos/fusion';
+import { FusionNavigator, FusionEventManager, FusionRouteType } from 'fusion';
 import { promptAction, window } from '@kit.ArkUI';
 
-@Entry({routeName: IndexPage.ROUTE_NAME})
+@Entry({ routeName: IndexPage.ROUTE_NAME })
 @Component
 export default struct IndexPage {
   static ROUTE_NAME = 'IndexPage'
 
-  private notificationListener: FusionNotificationListener = {
-    onReceive(name: string, body: Map<string, Object>| null): void {
-      promptAction.showToast({
-        message: `onReceive: name=${name}, body=${body}`,
-      })
-    }
+  private onReceive(args: Map<string, Object> | null): void {
+    promptAction.showToast({
+      message: `onReceive: args=${args}`,
+    })
   }
 
   override aboutToAppear(): void {
-    FusionNotificationBinding.instance.register(this.notificationListener)
+    FusionEventManager.instance.register('custom_event', this.onReceive)
   }
 
   override onPageShow(): void {
     window.getLastWindow(getContext(this), (_, win) => {
-      win.setWindowSystemBarProperties({isStatusBarLightIcon: false, statusBarContentColor: '#000000'})
+      win.setWindowSystemBarProperties({ isStatusBarLightIcon: false, statusBarContentColor: '#000000' })
     })
   }
 
   override aboutToDisappear(): void {
-    FusionNotificationBinding.instance.unregister(this.notificationListener)
+    FusionEventManager.instance.unregister('custom_event')
   }
 
   override build(): void {

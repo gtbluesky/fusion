@@ -15,13 +15,13 @@ class FusionPageLifecycleListener {
   void onBackground() {}
 }
 
-class FusionPageLifecycleBinding {
-  FusionPageLifecycleBinding._();
+class FusionPageLifecycleManager {
+  FusionPageLifecycleManager._();
 
-  static final FusionPageLifecycleBinding _instance =
-      FusionPageLifecycleBinding._();
+  static final FusionPageLifecycleManager _instance =
+      FusionPageLifecycleManager._();
 
-  static FusionPageLifecycleBinding get instance => _instance;
+  static FusionPageLifecycleManager get instance => _instance;
 
   final _listeners = <Route<dynamic>, FusionPageLifecycleListener>{};
 

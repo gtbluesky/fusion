@@ -3,9 +3,10 @@ package com.gtbluesky.fusion.engine
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.container.FusionStackManager
+import com.gtbluesky.fusion.event.FusionEventManager
 import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.navigator.FusionRouteType
-import com.gtbluesky.fusion.notification.FusionNotificationType
+import com.gtbluesky.fusion.event.FusionEventType
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.systemchannels.PlatformChannel
 import io.flutter.embedding.engine.systemchannels.PlatformViewsChannel
@@ -17,7 +18,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     private var hostDestroy: BasicMessageChannel<Any>? = null
     private var hostRestore: BasicMessageChannel<Any>? = null
     private var hostSync: BasicMessageChannel<Any>? = null
-    private var hostDispatchMessage: BasicMessageChannel<Any>? = null
+    private var hostDispatchEvent: BasicMessageChannel<Any>? = null
     private var hostRemoveMaskView: BasicMessageChannel<Any>? = null
     private var flutterCreate: BasicMessageChannel<Any>? = null
     private var flutterSwitchTop: BasicMessageChannel<Any>? = null
@@ -32,7 +33,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     private var flutterNotifyPageInvisible: BasicMessageChannel<Any>? = null
     private var flutterNotifyEnterForeground: BasicMessageChannel<Any>? = null
     private var flutterNotifyEnterBackground: BasicMessageChannel<Any>? = null
-    private var flutterDispatchMessage: BasicMessageChannel<Any>? = null
+    private var flutterDispatchEvent: BasicMessageChannel<Any>? = null
     private var flutterCheckStyle: BasicMessageChannel<Any>? = null
 
     var engine: FlutterEngine? = null
@@ -73,9 +74,9 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 "${FusionConstant.FUSION_CHANNEL}/host/sync",
                 messageCodec
             )
-            hostDispatchMessage = BasicMessageChannel(
+            hostDispatchEvent = BasicMessageChannel(
                 binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/host/dispatchMessage",
+                "${FusionConstant.FUSION_CHANNEL}/host/dispatchEvent",
                 messageCodec
             )
             hostRemoveMaskView = BasicMessageChannel(
@@ -148,9 +149,9 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 "${FusionConstant.FUSION_CHANNEL}/flutter/notifyEnterBackground",
                 messageCodec
             )
-            flutterDispatchMessage = BasicMessageChannel(
+            flutterDispatchEvent = BasicMessageChannel(
                 binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/flutter/dispatchMessage",
+                "${FusionConstant.FUSION_CHANNEL}/flutter/dispatchEvent",
                 messageCodec
             )
             flutterCheckStyle = BasicMessageChannel(
@@ -220,7 +221,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
             }
             reply.reply(true)
         }
-        hostDispatchMessage?.setMessageHandler { message, reply ->
+        hostDispatchEvent?.setMessageHandler { message, reply ->
             if (message !is Map<*, *>) {
                 reply.reply(null)
                 return@setMessageHandler
@@ -230,8 +231,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
                 reply.reply(null)
                 return@setMessageHandler
             }
-            val body = message["body"] as? Map<String, Any>
-            FusionNavigator.sendMessage(name, body, FusionNotificationType.NATIVE)
+            val args = message["args"] as? Map<String, Any>
+            FusionEventManager.send(name, args, FusionEventType.NATIVE)
             reply.reply(null)
         }
         hostRemoveMaskView?.setMessageHandler { message, reply ->
@@ -384,9 +385,9 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         flutterNotifyEnterBackground?.send(null)
     }
 
-    fun dispatchMessage(name: String, body: Map<String, Any>?) {
-        val msg = mapOf("name" to name, "body" to body)
-        flutterDispatchMessage?.send(msg)
+    fun dispatchEvent(name: String, args: Map<String, Any>?) {
+        val msg = mapOf("name" to name, "args" to args)
+        flutterDispatchEvent?.send(msg)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -441,8 +442,8 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         hostRestore = null
         hostSync?.setMessageHandler(null)
         hostSync = null
-        hostDispatchMessage?.setMessageHandler(null)
-        hostDispatchMessage = null
+        hostDispatchEvent?.setMessageHandler(null)
+        hostDispatchEvent = null
         hostRemoveMaskView?.setMessageHandler(null)
         hostRemoveMaskView = null
         flutterCreate = null
@@ -458,7 +459,7 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         flutterNotifyPageInvisible = null
         flutterNotifyEnterForeground = null
         flutterNotifyEnterBackground = null
-        flutterDispatchMessage = null
+        flutterDispatchEvent = null
         flutterCheckStyle = null
         engine?.destroy()
         engine = null

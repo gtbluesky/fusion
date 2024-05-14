@@ -102,7 +102,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionPageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleManager.instance.register(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:didChangeDependencies');
     }
@@ -111,7 +111,7 @@ class _NavigatorPageState extends State<NavigatorPage>
   @override
   void dispose() {
     super.dispose();
-    FusionPageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleManager.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }

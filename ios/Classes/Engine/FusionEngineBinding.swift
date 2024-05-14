@@ -13,7 +13,7 @@ internal class FusionEngineBinding: NSObject {
     private var hostDestroy: FlutterBasicMessageChannel? = nil
     private var hostRestore: FlutterBasicMessageChannel? = nil
     private var hostSync: FlutterBasicMessageChannel? = nil
-    private var hostDispatchMessage: FlutterBasicMessageChannel? = nil
+    private var hostDispatchEvent: FlutterBasicMessageChannel? = nil
     private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
     private var flutterCreate: FlutterBasicMessageChannel? = nil
     private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
@@ -28,7 +28,7 @@ internal class FusionEngineBinding: NSObject {
     private var flutterNotifyPageInvisible: FlutterBasicMessageChannel? = nil
     private var flutterNotifyEnterForeground: FlutterBasicMessageChannel? = nil
     private var flutterNotifyEnterBackground: FlutterBasicMessageChannel? = nil
-    private var flutterDispatchMessage: FlutterBasicMessageChannel? = nil
+    private var flutterDispatchEvent: FlutterBasicMessageChannel? = nil
     private var flutterCheckStyle: FlutterBasicMessageChannel? = nil
 
     var engine: FlutterEngine? = nil
@@ -55,7 +55,7 @@ internal class FusionEngineBinding: NSObject {
         hostDestroy = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/destroy", binaryMessenger: binaryMessenger)
         hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: binaryMessenger)
         hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: binaryMessenger)
-        hostDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/dispatchMessage", binaryMessenger: binaryMessenger)
+        hostDispatchEvent = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/dispatchEvent", binaryMessenger: binaryMessenger)
         hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: binaryMessenger)
         flutterCreate = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/create", binaryMessenger: binaryMessenger)
         flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: binaryMessenger)
@@ -70,7 +70,7 @@ internal class FusionEngineBinding: NSObject {
         flutterNotifyPageInvisible = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyPageInvisible", binaryMessenger: binaryMessenger)
         flutterNotifyEnterForeground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterForeground", binaryMessenger: binaryMessenger)
         flutterNotifyEnterBackground = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/notifyEnterBackground", binaryMessenger: binaryMessenger)
-        flutterDispatchMessage = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/dispatchMessage", binaryMessenger: binaryMessenger)
+        flutterDispatchEvent = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/dispatchEvent", binaryMessenger: binaryMessenger)
         flutterCheckStyle = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/checkStyle", binaryMessenger: binaryMessenger)
     }
 
@@ -119,13 +119,13 @@ internal class FusionEngineBinding: NSObject {
             }
             reply(true)
         }
-        hostDispatchMessage?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
+        hostDispatchEvent?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
             guard let dict = message as? Dictionary<String, Any>, let name = dict["name"] as? String else {
                 reply(nil)
                 return
             }
-            let body = dict["body"] as? Dictionary<String, Any>
-            FusionNavigator.sendMessage(name, body: body, type: .native)
+            let args = dict["args"] as? Dictionary<String, Any>
+            FusionEventManager.instance.send(name, args: args, type: .native)
             reply(nil)
         }
         hostRemoveMaskView?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
@@ -241,9 +241,9 @@ internal class FusionEngineBinding: NSObject {
         flutterNotifyEnterBackground?.sendMessage(nil)
     }
 
-    func dispatchMessage(_ name: String, _ body: Dictionary<String, Any>?) {
-        let msg: Dictionary<String, Any?> = ["name": name, "body": body]
-        flutterDispatchMessage?.sendMessage(msg)
+    func dispatchEvent(_ name: String, _ args: Dictionary<String, Any>?) {
+        let msg: Dictionary<String, Any?> = ["name": name, "args": args]
+        flutterDispatchEvent?.sendMessage(msg)
     }
 
     func checkStyle(_ callback: @escaping (_ statusBarStyle: UIStatusBarStyle) -> Void) {
@@ -295,8 +295,8 @@ internal class FusionEngineBinding: NSObject {
         hostRestore = nil
         hostSync?.setMessageHandler(nil)
         hostSync = nil
-        hostDispatchMessage?.setMessageHandler(nil)
-        hostDispatchMessage = nil
+        hostDispatchEvent?.setMessageHandler(nil)
+        hostDispatchEvent = nil
         hostRemoveMaskView?.setMessageHandler(nil)
         hostRemoveMaskView = nil
         flutterCreate = nil
@@ -312,7 +312,7 @@ internal class FusionEngineBinding: NSObject {
         flutterNotifyPageInvisible = nil
         flutterNotifyEnterForeground = nil
         flutterNotifyEnterBackground = nil
-        flutterDispatchMessage = nil
+        flutterDispatchEvent = nil
         flutterCheckStyle = nil
         engine?.viewController = nil
         engine?.destroyContext()

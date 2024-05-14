@@ -137,10 +137,10 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
-                child: const Text('sendMessage'),
+                child: const Text('send event'),
                 onTap: () {
-                  FusionNavigator.sendMessage('msg',
-                      body: {'time': DateTime.now().millisecondsSinceEpoch});
+                  FusionEventManager.instance.send('custom_event',
+                      args: {'time': DateTime.now().millisecondsSinceEpoch});
                 }),
             const SizedBox(
               height: 20,
@@ -246,7 +246,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FusionPageLifecycleBinding.instance.register(this);
+    FusionPageLifecycleManager.instance.register(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:didChangeDependencies');
     }
@@ -255,7 +255,7 @@ class _LifecyclePageState extends State<LifecyclePage>
   @override
   void dispose() {
     super.dispose();
-    FusionPageLifecycleBinding.instance.unregister(this);
+    FusionPageLifecycleManager.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }

@@ -1,8 +1,8 @@
 package com.gtbluesky.fusion.navigator
 
 import com.gtbluesky.fusion.Fusion
-import com.gtbluesky.fusion.notification.FusionNotificationBinding
-import com.gtbluesky.fusion.notification.FusionNotificationType
+import com.gtbluesky.fusion.event.FusionEventManager
+import com.gtbluesky.fusion.event.FusionEventType
 
 object FusionNavigator {
     /**
@@ -52,26 +52,6 @@ object FusionNavigator {
     @JvmStatic
     fun remove(routeName: String) {
         Fusion.engineBinding?.remove(routeName)
-    }
-
-    /**
-     * 发送消息
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun sendMessage(name: String, body: Map<String, Any>? = null, type: FusionNotificationType = FusionNotificationType.GLOBAL) {
-        when (type) {
-            FusionNotificationType.FLUTTER -> {
-                Fusion.engineBinding?.dispatchMessage(name, body)
-            }
-            FusionNotificationType.NATIVE -> {
-                FusionNotificationBinding.dispatchMessage(name, body)
-            }
-            FusionNotificationType.GLOBAL -> {
-                FusionNotificationBinding.dispatchMessage(name, body)
-                Fusion.engineBinding?.dispatchMessage(name, body)
-            }
-        }
     }
 }
 
