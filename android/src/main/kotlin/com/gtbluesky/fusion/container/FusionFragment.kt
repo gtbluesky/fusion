@@ -72,7 +72,11 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             platformPlugin = activity?.let { PlatformPlugin(it, platformChannel, this) } ?: return
         }
         // Configure custom channel
-        (activity as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+        if (activity is FusionFragmentActivity) {
+            (activity as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+        } else {
+            (this as? FusionMessengerHandler)?.configureFlutterChannel(engine.dartExecutor.binaryMessenger)
+        }
     }
 
     override fun detachFromContainer() {

@@ -29,7 +29,7 @@ class TabSceneActivity : FragmentActivity() {
             backgroundColor = 0xFF546E7A.toInt()
         )
         val fragment1 = buildFusionFragment(
-            FusionFragment::class.java,
+            CustomFusionFragment::class.java,
             "/lifecycle",
             mapOf("title" to "Flutter Tab1")
         )
