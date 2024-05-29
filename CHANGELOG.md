@@ -1,3 +1,7 @@
+## 4.3.0
+
+* Adds `popUntil`、`pushAndClear` and `hasRouteByName` methods in `FusionNavigator`.
+
 ## 4.2.0
 
 * **BREAKING CHANGE**: Changes the class `FusionPageLifecycleBinding` to `FusionPageLifecycleManager`, changes the class `FusionAppLifecycleBinding` to `FusionAppLifecycleManager`, changes the class `FusionNotificationBinding` to `FusionEventManager`.
