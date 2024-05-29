@@ -1,15 +1,13 @@
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine'
-import FlutterEngineGroup from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngineGroup'
-import { Options } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngineGroup'
 import FusionEngineBinding from './engine/FusionEngineBinding'
 import FusionConstant from './constant/FusionConstant'
-import { DartEntrypoint } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/dart/DartExecutor'
 import AbilityLifecycleCallback from '@ohos.app.ability.AbilityLifecycleCallback'
 import UIAbility from '@ohos.app.ability.UIAbility'
 import FusionStackManager from './container/FusionStackManager'
-import { FlutterManager } from '@ohos/flutter_ohos'
+import { FlutterEngine, FlutterEngineGroup, FlutterManager } from '@ohos/flutter_ohos'
 import { window } from '@kit.ArkUI'
 import { FusionRouteDelegate } from './navigator/FusionNavigator'
+import { Options } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngineGroup'
+import { DartEntrypoint } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/dart/DartExecutor'
 
 export default class Fusion {
   private static _instance = new Fusion()

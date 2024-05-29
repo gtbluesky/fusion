@@ -1,15 +1,15 @@
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
-import BasicMessageChannel from '@ohos/flutter_ohos/src/main/ets/plugin/common/BasicMessageChannel';
 import { List } from '@kit.ArkTS';
 import FusionEventManager from '../event/FusionEvent';
+import FusionContainer from '../container/FusionContainer';
 import FusionStackManager from '../container/FusionStackManager';
-import StandardMessageCodec from '@ohos/flutter_ohos/src/main/ets/plugin/common/StandardMessageCodec';
 import FusionConstant from '../constant/FusionConstant';
 import Fusion from '../Fusion';
-import { SystemChromeStyle } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
-import { Brightness } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
 import { FusionRouteType } from '../navigator/FusionNavigator';
 import { FusionEventType } from '../event/FusionEvent';
+import { BasicMessageChannel, FlutterEngine, StandardMessageCodec } from '@ohos/flutter_ohos';
+import {
+  Brightness,
+  SystemChromeStyle } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/systemchannels/PlatformChannel';
 
 export default class FusionEngineBinding {
   private hostPush: BasicMessageChannel<Object> | null = null
@@ -43,8 +43,8 @@ export default class FusionEngineBinding {
     const list = new List<Map<string, Object | null>>()
     for (let value of FusionStackManager.instance.containerStack) {
       let map = new Map<string, Object | null>()
-      map.set('uniqueId', value.uniqueId())
-      map.set('history', value.history())
+      map.set('uniqueId', value.deref()?.uniqueId() ?? null)
+      map.set('history', value.deref()?.history() ?? null)
       list.add(map)
     }
     return list

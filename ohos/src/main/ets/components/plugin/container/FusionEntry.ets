@@ -1,16 +1,13 @@
-import FlutterEntry from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/FlutterEntry';
 import FusionContainer from './FusionContainer';
 import util from '@ohos.util';
 import FusionStackManager from './FusionStackManager';
 import { List } from '@kit.ArkTS';
 import Fusion from '../Fusion';
-import PlatformPlugin from '@ohos/flutter_ohos/src/main/ets/plugin/PlatformPlugin';
 import FusionMessengerHandler from '../handler/FusionMessengerHandler';
-import ToolUtils from '@ohos/flutter_ohos/src/main/ets/util/ToolUtils';
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
 import { Context } from '@kit.AbilityKit';
 import FusionConstant from '../constant/FusionConstant';
 import { window } from '@kit.ArkUI';
+import { FlutterEngine, FlutterEntry, PlatformChannel, PlatformPlugin, ToolUtils } from '@ohos/flutter_ohos';
 
 export default class FusionEntry extends FlutterEntry implements FusionContainer {
   private _context: Context

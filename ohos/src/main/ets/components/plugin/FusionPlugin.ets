@@ -1,6 +1,5 @@
-import { FlutterPlugin, FlutterPluginBinding } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/FlutterPlugin';
-import MethodChannel, { MethodCallHandler, MethodResult } from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodChannel';
-import MethodCall from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodCall';
+import { FlutterPlugin, FlutterPluginBinding, MethodCall, MethodCallHandler, MethodChannel,
+  MethodResult } from '@ohos/flutter_ohos';
 
 /** FusionPlugin **/
 export default class FusionPlugin implements FlutterPlugin, MethodCallHandler {

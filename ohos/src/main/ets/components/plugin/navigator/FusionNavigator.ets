@@ -1,5 +1,4 @@
 import Fusion from '../Fusion'
-import FusionEventManager, { FusionEventType } from '../event/FusionEvent'
 
 export default class FusionNavigator {
   private constructor() {

@@ -1,4 +1,4 @@
-import { BinaryMessenger } from '@ohos/flutter_ohos/src/main/ets/plugin/common/BinaryMessenger'
+import { BinaryMessenger } from '@ohos/flutter_ohos'
 
 export default interface FusionMessengerHandler {
   configureFlutterChannel(binaryMessenger: BinaryMessenger): void

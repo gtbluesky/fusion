@@ -14,8 +14,7 @@ export default class FusionStackManager {
     return FusionStackManager._instance
   }
 
-  // todo 弱引用
-  public containerStack = new List<FusionContainer>()
+  public containerStack = new List<WeakRef<FusionContainer>>()
 
   public isEmpty(): boolean {
     return this.containerStack.isEmpty()
@@ -23,27 +22,32 @@ export default class FusionStackManager {
 
   public add(container: FusionContainer): void {
     this.remove(container)
-    this.containerStack.add(container)
+    this.containerStack.add(new WeakRef(container))
   }
 
   public remove(container: FusionContainer): void {
-    this.containerStack.remove(container)
+    for (let i: number = this.containerStack.length - 1; i >= 0; --i) {
+      let containerRef: WeakRef<FusionContainer> = this.containerStack.get(i)
+      if (containerRef.deref() == container || containerRef.deref() == null) {
+        this.containerStack.removeByIndex(i)
+      }
+    }
   }
 
   public getTopContainer(): FusionContainer | null {
     if (this.containerStack.isEmpty()) {
       return null
     }
-    return this.containerStack.getLast()
+    return this.containerStack.getLast().deref() ?? null
   }
 
   public findContainer(uniqueId: string): FusionContainer | null {
     if (uniqueId == '') {
       return null
     }
-    for (let element of this.containerStack) {
-      if (element.uniqueId() == uniqueId) {
-        return element
+    for (let containerRef of this.containerStack) {
+      if (containerRef.deref()?.uniqueId() == uniqueId) {
+        return containerRef.deref() ?? null
       }
     }
     return null
@@ -61,8 +65,8 @@ export default class FusionStackManager {
   }
 
   public isAttached(): boolean {
-    for (let element of this.containerStack) {
-      if (element.isAttached()) {
+    for (let containerRef of this.containerStack) {
+      if (containerRef.deref()?.isAttached() == true) {
         return true
       }
     }

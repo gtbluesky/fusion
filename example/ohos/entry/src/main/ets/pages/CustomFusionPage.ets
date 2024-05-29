@@ -1,4 +1,4 @@
-import { FusionEntry, FusionComponent } from '@ohos/fusion';
+import { FusionEntry, FusionComponent } from 'fusion';
 import CustomFusionEntry from './CustomFusionEntry';
 
 @Entry({ routeName: CustomFusionPage.ROUTE_NAME })
