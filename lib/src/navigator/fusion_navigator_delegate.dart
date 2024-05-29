@@ -33,7 +33,7 @@ class FusionNavigatorDelegate {
   ]) async {
     switch (type) {
       case FusionRouteType.flutter:
-        return _push(routeName, args);
+        return _push<T>(routeName, args);
       case FusionRouteType.flutterWithContainer:
       case FusionRouteType.native:
         FusionChannel.instance.push(routeName, args, type);
@@ -41,14 +41,15 @@ class FusionNavigatorDelegate {
       case FusionRouteType.adaption:
         if (_isFlutterPage(routeName)) {
           if (FusionPageLifecycleManager.instance.isVisible) {
-            return _push(routeName, args);
+            return _push<T>(routeName, args);
           } else {
-            FusionChannel.instance
+            await FusionChannel.instance
                 .push(routeName, args, FusionRouteType.flutterWithContainer);
             return null;
           }
         } else {
-          FusionChannel.instance.push(routeName, args, FusionRouteType.native);
+          await FusionChannel.instance
+              .push(routeName, args, FusionRouteType.native);
           return null;
         }
     }
@@ -73,6 +74,25 @@ class FusionNavigatorDelegate {
     _handlePageInvisible(previousRoute);
     _handlePageVisible(page.route, isFirstTime: true);
     return await container.push<dynamic>(page);
+  }
+
+  Future<T?> pushAndClear<T extends Object?>(
+    String routeName, [
+    Map<String, dynamic>? args,
+  ]) async {
+    final result = _push<T>(routeName, args);
+    final containers =
+        FusionOverlayManager.instance.containers.reversed.toList();
+    final topContainer = containers.removeAt(0);
+    final pages = topContainer.pages.reversed.toList();
+    pages.removeAt(0);
+    topContainer.removeAll(pages);
+    FusionChannel.instance
+        .sync(topContainer.uniqueId, topContainer.pageEntities);
+    for (final container in containers) {
+      await FusionChannel.instance.destroy(container.uniqueId);
+    }
+    return result;
   }
 
   Future<T?> replace<T extends Object?>(
@@ -104,7 +124,7 @@ class FusionNavigatorDelegate {
   Future<void> pop<T extends Object?>([T? result]) async {
     final topRoute = FusionOverlayManager.instance.topRoute;
     if (topRoute is! PageRoute) {
-      topRoute?.navigator?.pop(result);
+      topRoute?.navigator?.pop<T>(result);
       return;
     }
     FusionContainer? container = FusionOverlayManager.instance.topContainer();
@@ -120,7 +140,7 @@ class FusionNavigatorDelegate {
       container.pop(result);
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     } else {
-      FusionChannel.instance.destroy(container.uniqueId);
+      await FusionChannel.instance.destroy(container.uniqueId);
     }
   }
 
@@ -129,16 +149,54 @@ class FusionNavigatorDelegate {
     RoutePopDisposition? disposition = await route?.willPop();
     switch (disposition) {
       case RoutePopDisposition.bubble:
-        pop(result);
+        pop<T>(result);
         return false;
       case RoutePopDisposition.pop:
-        pop(result);
+        pop<T>(result);
         return true;
       case RoutePopDisposition.doNotPop:
         return true;
       default:
         return false;
     }
+  }
+
+  Future<void> popUntil(String routeName) async {
+    FusionContainer? targetContainer =
+        FusionOverlayManager.instance.findContainerByPage(routeName);
+    if (targetContainer == null) {
+      return;
+    }
+    final targetPage = targetContainer.findPage(routeName);
+    if (targetPage == null) {
+      return;
+    }
+    final containers = FusionOverlayManager.instance.containers.reversed;
+    final topContainer = containers.first;
+    for (final container in containers) {
+      if (container == targetContainer) {
+        break;
+      }
+      await FusionChannel.instance.destroy(container.uniqueId);
+    }
+    if (targetPage == targetContainer.topPage) {
+      return;
+    }
+    if (topContainer == targetContainer) {
+      _handlePageInvisible(FusionOverlayManager.instance.topRoute);
+      _handlePageVisible(targetPage.route);
+    }
+    final pages = targetContainer.pages.reversed.toList();
+    final pendingPoppedPages = <FusionPage>[];
+    for (final page in pages) {
+      if (page == targetPage) {
+        break;
+      }
+      pendingPoppedPages.add(page);
+    }
+    targetContainer.removeAll(pendingPoppedPages);
+    FusionChannel.instance
+        .sync(targetContainer.uniqueId, targetContainer.pageEntities);
   }
 
   Future<void> remove(String routeName) async {
@@ -163,8 +221,13 @@ class FusionNavigatorDelegate {
       container.remove(page);
       FusionChannel.instance.sync(container.uniqueId, container.pageEntities);
     } else {
-      FusionChannel.instance.destroy(container.uniqueId);
+      await FusionChannel.instance.destroy(container.uniqueId);
     }
+  }
+
+  bool hasRouteByName(String routeName) {
+    FusionPage? page = FusionOverlayManager.instance.findPageByName(routeName);
+    return page != null;
   }
 
   void create(

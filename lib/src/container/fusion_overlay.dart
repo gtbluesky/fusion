@@ -12,6 +12,9 @@ class FusionOverlayManager {
 
   final routes = <Route>[];
 
+  List<FusionContainer> get containers =>
+      _entryList.map((e) => e.container).toList();
+
   Route? get topRoute => routes.isNotEmpty ? routes.last : null;
 
   Route? get nextRoute =>
@@ -90,6 +93,17 @@ class FusionOverlayManager {
     for (final entry in _entryList.reversed) {
       for (final page in entry.container.pages.reversed) {
         if (page.route == route) {
+          return page;
+        }
+      }
+    }
+    return null;
+  }
+
+  FusionPage? findPageByName(String routeName) {
+    for (final entry in _entryList.reversed) {
+      for (final page in entry.container.pages.reversed) {
+        if (page.pageEntity.name == routeName) {
           return page;
         }
       }

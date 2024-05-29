@@ -63,6 +63,19 @@ class FusionContainer extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeAll(List<FusionPage> pages) {
+    if (_pages.isEmpty) {
+      return;
+    }
+    for (final page in pages) {
+      if (_pages.contains(page)) {
+        _pages.remove(page);
+        page.didComplete(null);
+      }
+    }
+    notifyListeners();
+  }
+
   Future<T?> replace<T extends Object?>(FusionPage<T> page) {
     page.container = this;
     if (_pages.isNotEmpty) {
@@ -185,16 +198,16 @@ class NavigatorExtensionState extends NavigatorState {
   Future<T?> pushNamed<T extends Object?>(String routeName,
       {Object? arguments}) {
     if (arguments == null) {
-      return FusionNavigatorDelegate.instance.push(routeName);
+      return FusionNavigatorDelegate.instance.push<T>(routeName);
     }
     if (arguments is Map<String, dynamic>) {
-      return FusionNavigatorDelegate.instance.push(routeName, arguments);
+      return FusionNavigatorDelegate.instance.push<T>(routeName, arguments);
     }
     if (arguments is Map) {
       return FusionNavigatorDelegate.instance
-          .push(routeName, Map<String, dynamic>.from(arguments));
+          .push<T>(routeName, Map<String, dynamic>.from(arguments));
     } else {
-      return FusionNavigatorDelegate.instance.push(routeName);
+      return FusionNavigatorDelegate.instance.push<T>(routeName);
     }
   }
 
@@ -221,11 +234,11 @@ class NavigatorExtensionState extends NavigatorState {
   void pop<T extends Object?>([T? result]) {
     final topRoute = FusionOverlayManager.instance.topRoute;
     if (topRoute is PageRoute) {
-      FusionNavigatorDelegate.instance.pop(result);
+      FusionNavigatorDelegate.instance.pop<T>(result);
     } else if (topRoute is PopupRoute && this != topRoute.navigator) {
-      topRoute.navigator?.pop(result);
+      topRoute.navigator?.pop<T>(result);
     } else {
-      super.pop(result);
+      super.pop<T>(result);
     }
   }
 }

@@ -19,7 +19,8 @@ class IndexPage extends StatefulWidget {
   State<IndexPage> createState() => _IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleListener {
+class _IndexPageState extends State<IndexPage>
+    implements FusionPageLifecycleListener {
   String? msg;
 
   void onReceive(Map<String, dynamic>? args) {
@@ -113,7 +114,22 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                   routeType: FusionRouteType.flutter,
                 );
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('push(flutter) /index result=$result');
+                }
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+                    InkWell(
+              child: const Text('push(flutterWithContainer) /index'),
+              onTap: () async {
+                final result = await FusionNavigator.push<String?>(
+                  '/index',
+                  routeArgs: {'title': 'Index Page'},
+                  routeType: FusionRouteType.flutterWithContainer,
+                );
+                if (kDebugMode) {
+                  print('push(flutterWithContainer) /index result=$result');
                 }
               }),
           const SizedBox(
@@ -129,7 +145,7 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                   routeType: FusionRouteType.flutter,
                 );
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('push(flutter) /lifecycle result=$result');
                 }
               }),
           const SizedBox(
@@ -179,7 +195,7 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                   routeType: FusionRouteType.flutter,
                 );
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('push(flutter) /navigator result=$result');
                 }
               }),
           const SizedBox(
@@ -193,7 +209,7 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                   routeType: FusionRouteType.flutter,
                 );
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('push(flutter) /willpop result=$result');
                 }
               }),
           const SizedBox(
@@ -207,7 +223,21 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                   routeType: FusionRouteType.flutter,
                 );
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('push(flutter) /web result=$result');
+                }
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('pushAndClear /lifecycle'),
+              onTap: () async {
+                final result = await FusionNavigator.pushAndClear<String?>(
+                  '/lifecycle',
+                  routeArgs: {'title': 'Lifecycle Page'},
+                );
+                if (kDebugMode) {
+                  print('pushAndClear /lifecycle result=$result');
                 }
               }),
           const SizedBox(
@@ -217,6 +247,16 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
               child: const Text('pop'),
               onTap: () {
                 FusionNavigator.pop('test返回结果');
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('popUntil /lifecycle'),
+              onTap: () {
+                FusionNavigator.popUntil(
+                  '/lifecycle',
+                );
               }),
           const SizedBox(
             height: 20,
@@ -257,7 +297,7 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                 final result =
                     await widget._channel.invokeMethod('getPlatformVersion');
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('fusion plugin result=$result');
                 }
               }),
           const SizedBox(
@@ -270,7 +310,7 @@ class _IndexPageState extends State<IndexPage> implements FusionPageLifecycleLis
                     await const MethodChannel('container_related_channel')
                         .invokeMethod('container_related_channel');
                 if (kDebugMode) {
-                  print('result=$result');
+                  print('container_related_channel result=$result');
                 }
               }),
           const SizedBox(

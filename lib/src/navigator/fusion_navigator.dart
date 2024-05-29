@@ -10,9 +10,18 @@ class FusionNavigator {
     String routeName, {
     Map<String, dynamic>? routeArgs,
     FusionRouteType routeType = FusionRouteType.adaption,
-  }) async {
+  }) {
     return FusionNavigatorDelegate.instance
-        .push(routeName, routeArgs, routeType);
+        .push<T>(routeName, routeArgs, routeType);
+  }
+
+  /// Push a new page and clear the stack.
+  static Future<T?> pushAndClear<T extends Object?>(
+    String routeName, {
+    Map<String, dynamic>? routeArgs,
+  }) {
+    return FusionNavigatorDelegate.instance
+        .pushAndClear<T>(routeName, routeArgs);
   }
 
   /// Replace a designated flutter page with a new flutter page in the current container.
@@ -20,25 +29,34 @@ class FusionNavigator {
     String routeName, [
     Map<String, dynamic>? routeArgs,
     bool animated = false,
-  ]) async {
+  ]) {
     return FusionNavigatorDelegate.instance
-        .replace(routeName, routeArgs, animated);
+        .replace<T>(routeName, routeArgs, animated);
   }
 
   /// Pop in the current container.
-  static Future<void> pop<T extends Object?>([T? result]) async {
-    return FusionNavigatorDelegate.instance.pop(result);
+  static Future<void> pop<T extends Object?>([T? result]) {
+    return FusionNavigatorDelegate.instance.pop<T>(result);
+  }
+
+  /// Calls [pop] repeatedly until the predicate returns true.
+  static Future<void> popUntil(String routeName) {
+    return FusionNavigatorDelegate.instance.popUntil(routeName);
   }
 
   /// Pop in the current container.
   /// Can be used with [WillPopScope].
-  static Future<bool> maybePop<T extends Object?>([T? result]) async {
-    return FusionNavigatorDelegate.instance.maybePop(result);
+  static Future<bool> maybePop<T extends Object?>([T? result]) {
+    return FusionNavigatorDelegate.instance.maybePop<T>(result);
   }
 
   /// Remove a designated flutter page in all containers.
-  static Future<void> remove(String routeName) async {
+  static Future<void> remove(String routeName) {
     return FusionNavigatorDelegate.instance.remove(routeName);
+  }
+
+  static bool hasRouteByName(String routeName) {
+    return FusionNavigatorDelegate.instance.hasRouteByName(routeName);
   }
 
   static NavigatorState? get navigator =>
