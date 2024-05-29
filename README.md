@@ -276,17 +276,19 @@ HarmonyOS 侧
 
 ### 3、路由API（FusionNavigator）
 
-- push：将对应路由入栈，Navigator.pushNamed 与之等同，根据FusionRouteType分为以下几种方式：
+- push: 将对应路由入栈，使用 Navigator.pushNamed 与之等同，根据FusionRouteType分为以下几种方式：
   - flutter模式: 在当前Flutter容器中将指定路由对应的Flutter页面入栈，如果没有则跳转kUnknownRoute对应Flutter页面
   - flutterWithContainer模式: 创建一个新的Flutter容器，并将指定路由对应的Flutter页面入栈，如果没有则跳转kUnknownRoute对应Flutter页面。即执行FusionRouteDelegate的pushFlutterRoute
   - native模式: 将指定路由对应的Native页面入栈，即执行FusionRouteDelegate的pushNativeRoute
   - adaption模式: 自适应模式，默认类型。首先判断该路由是否是Flutter路由，如果不是则进入native模式，如果是再判断当前是否是页面是否是Flutter容器，如果是则进入flutter模式，如果不是则进入flutterWithContainer模式
-- pop：在当前Flutter容器中将栈顶路由出栈，Navigator.pop 与之等同
-- maybePop：在当前Flutter容器中将栈顶路由出栈，可被WillPopScope拦截
-- replace：在当前Flutter容器中将栈顶路由替换为对应路由，Navigator.pushReplacementNamed 与之等同
-- remove：在当前Flutter容器中移除对应路由
+- pushAndClear: 将指定路由入栈，并清空栈中其他路由
+- pop: 将栈顶路由出栈，使用 Navigator.pop 与之等同
+- popUntil: 将栈顶路由出栈，直到指定路由（只能在栈顶路由与目标路由之间不存在原生容器的场景下使用）
+- maybePop: 将栈顶路由出栈，可被WillPopScope拦截
+- replace: 将栈顶路由替换为对应路由
+- remove: 移除对应路由
+- hasRouteByName：路由栈中是否存在该路由名对应的路由
 
-路由跳转与关闭等操作既可使用`FusionNavigator`的 API，也可使用`Navigator`中与之对应的API（仅上述提到的部分）
 ### 4、Flutter Plugin 注册
 
 在 Android 和 iOS 平台上框架内部会自动注册插件，无须手动调用 `GeneratedPluginRegistrant.registerWith` 进行注册，但 HarmonyOS 必须手动调用该方法。
