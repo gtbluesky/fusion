@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fusion/fusion.dart';
 import 'package:fusion_example/page/background_page.dart';
+import 'package:fusion_example/page/dialog_page.dart';
 import 'package:fusion_example/page/lifecycle_page.dart';
 import 'package:fusion_example/page/list_page.dart';
 import 'package:fusion_example/page/navigator_page.dart';
@@ -85,6 +86,7 @@ final Map<String, FusionPageFactory> routeMap = {
   '/transparent': (args) => TransparentPage(args: args),
   '/background': (args) => BackgroundPage(args: args),
   '/refresh': (args) => RefreshPage(args: args),
+  '/dialog_page': (args) => DialogPage(args: args),
   kUnknownRoute: (args) => UnknownPage(args: args),
 };
 

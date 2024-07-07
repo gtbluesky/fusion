@@ -3,7 +3,9 @@ package com.gtbluesky.fusion.container
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +14,15 @@ import androidx.annotation.ColorInt
 import com.gtbluesky.fusion.Fusion
 import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
-import io.flutter.embedding.android.*
+import io.flutter.embedding.android.ExclusiveAppComponent
+import io.flutter.embedding.android.FlutterFragment
+import io.flutter.embedding.android.FlutterImageView
+import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.TransparencyMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
-import java.util.*
+import java.util.UUID
 
 open class FusionFragment : FlutterFragment(), FusionContainer {
     private val history = mutableListOf<Map<String, Any?>>()
@@ -171,6 +177,18 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
         engineBinding?.destroy(uniqueId)
     }
 
+    private fun skipUnexpectedLifecycle(): Boolean {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.Q) {
+            return false
+        }
+        val top = FusionStackManager.getTopActivityContainer()
+        val result = top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
+        if (result) {
+            Log.w("Fusion", "Skip the unexpected activity lifecycle on Android Q.")
+        }
+        return result
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         // Detach
@@ -262,6 +280,9 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onResume() {
         super.onResume()
+        if (skipUnexpectedLifecycle()) {
+            return
+        }
         if (!isHidden && userVisibleHint) {
             onContainerVisible()
         }
@@ -269,6 +290,9 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun onPause() {
         super.onPause()
+        if (skipUnexpectedLifecycle()) {
+            return
+        }
         if (!isHidden && userVisibleHint) {
             onContainerInvisible()
         }

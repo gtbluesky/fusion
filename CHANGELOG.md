@@ -1,3 +1,7 @@
+## 4.3.1
+
+* Fixes some known bugs.
+
 ## 4.3.0
 
 * Adds `popUntil`、`pushAndClear` and `hasRouteByName` methods in `FusionNavigator`.

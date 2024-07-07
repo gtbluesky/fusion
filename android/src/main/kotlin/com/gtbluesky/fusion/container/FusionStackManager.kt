@@ -25,6 +25,11 @@ internal object FusionStackManager {
         return containerStack.last().get()
     }
 
+    fun getTopActivityContainer(): FusionContainer? {
+        if (containerStack.isEmpty()) return null
+        return containerStack.findLast { it.get() is Activity }?.get()
+    }
+
     fun findContainer(uniqueId: String): FusionContainer? {
         if (uniqueId.isEmpty()) return null
         for (containerRef in containerStack) {

@@ -120,7 +120,7 @@ class _IndexPageState extends State<IndexPage>
           const SizedBox(
             height: 20,
           ),
-                    InkWell(
+          InkWell(
               child: const Text('push(flutterWithContainer) /index'),
               onTap: () async {
                 final result = await FusionNavigator.push<String?>(
@@ -347,6 +347,16 @@ class _IndexPageState extends State<IndexPage>
                   context: context);
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('push(flutterWithContainer) show dialog'),
+              onTap: () {
+                FusionNavigator.push('/dialog_page',
+                    routeArgs: {'transparent': true},
+                    routeType: FusionRouteType.flutterWithContainer);
+              }),
           const SizedBox(
             height: 20,
           ),

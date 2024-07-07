@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import com.gtbluesky.fusion.Fusion
@@ -20,7 +21,7 @@ import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.platform.PlatformPlugin
 import java.io.Serializable
-import java.util.*
+import java.util.UUID
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
     private val history = mutableListOf<Map<String, Any?>>()
@@ -54,8 +55,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
         engine.activityControlSurface.attachToActivity(
-            delegate,
-            lifecycle
+            delegate, lifecycle
         )
         // Attach rendering pipeline.
         flutterView?.attachToFlutterEngine(engine)
@@ -146,6 +146,18 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         engineBinding?.destroy(uniqueId)
     }
 
+    private fun skipUnexpectedLifecycle(): Boolean {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.Q) {
+            return false
+        }
+        val top = FusionStackManager.getTopActivityContainer()
+        val result = top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
+        if (result) {
+            Log.w("Fusion", "Skip the unexpected activity lifecycle on Android Q.")
+        }
+        return result
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         // Detach
@@ -156,8 +168,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         super.onCreate(savedInstanceState)
         val routeName =
             intent.getStringExtra(FusionConstant.ROUTE_NAME) ?: FusionConstant.INITIAL_ROUTE
-        val routeArgs =
-            intent.getSerializableExtra(FusionConstant.ROUTE_ARGS) as? Map<String, Any>
+        val routeArgs = intent.getSerializableExtra(FusionConstant.ROUTE_ARGS) as? Map<String, Any>
         savedInstanceState?.getString(FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY)?.let {
             uniqueId = it
         }
@@ -179,22 +190,26 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(
-            FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY,
-            uniqueId
+            FusionConstant.FUSION_RESTORATION_UNIQUE_ID_KEY, uniqueId
         )
         outState.putSerializable(
-            FusionConstant.FUSION_RESTORATION_HISTORY_KEY,
-            history as? Serializable
+            FusionConstant.FUSION_RESTORATION_HISTORY_KEY, history as? Serializable
         )
     }
 
     override fun onResume() {
         super.onResume()
+        if (skipUnexpectedLifecycle()) {
+            return
+        }
         onContainerVisible()
     }
 
     override fun onPause() {
         super.onPause()
+        if (skipUnexpectedLifecycle()) {
+            return
+        }
         onContainerInvisible()
     }
 
@@ -233,7 +248,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun provideFlutterEngine(context: Context) = engineBinding?.engine
 
     override fun providePlatformPlugin(
-        activity: Activity?,
-        flutterEngine: FlutterEngine
+        activity: Activity?, flutterEngine: FlutterEngine
     ): PlatformPlugin? = null
 }
