@@ -63,10 +63,6 @@ internal class FusionStackManager {
                 if (nextVc is UINavigationController) {
                     nextVc = (nextVc as? UINavigationController)?.topViewController
                 }
-                if !(nextVc is FusionViewController) {
-                    vc.dismiss(animated: vc.isViewOpaque)
-                    return
-                }
                 nextVc?.beginAppearanceTransition(true, animated: false)
                 vc.dismiss(animated: vc.isViewOpaque) {
                     nextVc?.endAppearanceTransition()
