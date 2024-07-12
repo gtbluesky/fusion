@@ -81,6 +81,7 @@ class _IndexPageState extends State<IndexPage>
 
   @override
   Widget build(BuildContext context) {
+    print('$runtimeType@$hashCode:build');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),

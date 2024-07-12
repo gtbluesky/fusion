@@ -18,6 +18,7 @@ class _LifecyclePageState extends State<LifecyclePage>
     implements FusionPageLifecycleListener {
   @override
   Widget build(BuildContext context) {
+    print('$runtimeType@$hashCode build');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
@@ -163,8 +164,9 @@ class _LifecyclePageState extends State<LifecyclePage>
             InkWell(
                 child: const Text('custom channel'),
                 onTap: () async {
-                  final result = await const MethodChannel('container_related_channel')
-                      .invokeMethod('container related channel');
+                  final result =
+                      await const MethodChannel('container_related_channel')
+                          .invokeMethod('container related channel');
                   if (kDebugMode) {
                     print('result=$result');
                   }

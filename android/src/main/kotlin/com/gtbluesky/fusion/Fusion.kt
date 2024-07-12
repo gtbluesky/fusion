@@ -58,6 +58,10 @@ object Fusion {
         isRunning = false
     }
 
+    fun getTopActivity(): Activity? {
+        return FusionStackManager.getTopActivity()
+    }
+
     @UiThread
     private fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
         /// GeneratedPluginRegister里会通过反射调用GeneratedPluginRegistrant来注册插件
@@ -76,6 +80,7 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     private var finishLaunching = false
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        FusionStackManager.add(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -91,6 +96,8 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityResumed(activity: Activity) {
+        // 复用场景下调整顺序
+        FusionStackManager.add(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {
@@ -107,6 +114,7 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityDestroyed(activity: Activity) {
+        FusionStackManager.remove(activity)
     }
 
 }
