@@ -12,6 +12,7 @@ import com.gtbluesky.fusion.navigator.FusionRouteDelegate
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
+import java.lang.ref.WeakReference
 
 object Fusion {
     var engineGroup: FlutterEngineGroup? = null
@@ -25,6 +26,7 @@ object Fusion {
     private lateinit var context: Application
     private var lifecycleCallback: Application.ActivityLifecycleCallbacks? = null
     private var isRunning = false
+    internal var topActivityRef: WeakReference<Activity>? = null
 
     @UiThread
     fun install(context: Application, delegate: FusionRouteDelegate) {
@@ -58,9 +60,7 @@ object Fusion {
         isRunning = false
     }
 
-    fun getTopActivity(): Activity? {
-        return FusionStackManager.getTopActivity()
-    }
+    fun getTopActivity() = topActivityRef?.get()
 
     @UiThread
     private fun createAndRunEngine(initialRoute: String = FusionConstant.INITIAL_ROUTE): FlutterEngine? {
@@ -80,7 +80,6 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     private var finishLaunching = false
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        FusionStackManager.add(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -96,8 +95,7 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityResumed(activity: Activity) {
-        // 复用场景下调整顺序
-        FusionStackManager.add(activity)
+        Fusion.topActivityRef = WeakReference(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {
@@ -114,7 +112,6 @@ internal class FusionLifecycleCallbacks : Application.ActivityLifecycleCallbacks
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        FusionStackManager.remove(activity)
     }
 
 }

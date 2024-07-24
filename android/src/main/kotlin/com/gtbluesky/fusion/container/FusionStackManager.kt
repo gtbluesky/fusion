@@ -5,24 +5,6 @@ import com.gtbluesky.fusion.Fusion
 import java.lang.ref.WeakReference
 
 internal object FusionStackManager {
-    private val activityStack = mutableListOf<WeakReference<Activity>>()
-
-    fun add(activity: Activity) {
-        remove(activity)
-        activityStack.add(WeakReference(activity))
-    }
-
-    fun remove(activity: Activity) {
-        activityStack.removeAll {
-            it.get() == activity || it.get() == null
-        }
-    }
-
-    fun getTopActivity(): Activity? {
-        if (activityStack.isEmpty()) return null
-        return activityStack.last().get()
-    }
-
     val containerStack = mutableListOf<WeakReference<FusionContainer>>()
 
     fun isEmpty() = containerStack.isEmpty()
