@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fusion/fusion.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class IndexPage extends StatefulWidget {
   IndexPage({Key? key, this.args}) : super(key: key) {
@@ -107,12 +108,12 @@ class _IndexPageState extends State<IndexPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('push(flutter) /index'),
+              child: const Text('push(adaption) /index'),
               onTap: () async {
                 final result = await FusionNavigator.push<String?>(
                   '/index',
                   routeArgs: {'title': 'Index Page'},
-                  routeType: FusionRouteType.flutter,
+                  routeType: FusionRouteType.adaption,
                 );
                 if (kDebugMode) {
                   print('push(flutter) /index result=$result');
@@ -217,6 +218,25 @@ class _IndexPageState extends State<IndexPage>
             height: 20,
           ),
           InkWell(
+              child: const Text('push(flutterWithContainer) /transparent'),
+              onTap: () async {
+                final result = await FusionNavigator.push(
+                  '/transparent',
+                  routeArgs: {
+                    'title': 'Transparent Flutter Page',
+                    'transparent': true
+                  },
+                  routeType: FusionRouteType.flutterWithContainer,
+                );
+                if (kDebugMode) {
+                  print(
+                      'push(flutterWithContainer) /transparent result=$result');
+                }
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
               child: const Text('push(flutter) /web'),
               onTap: () async {
                 final result = await FusionNavigator.push<String?>(
@@ -240,6 +260,14 @@ class _IndexPageState extends State<IndexPage>
                 if (kDebugMode) {
                   print('pushAndClear /lifecycle result=$result');
                 }
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('openAppSettings'),
+              onTap: () {
+                openAppSettings();
               }),
           const SizedBox(
             height: 20,

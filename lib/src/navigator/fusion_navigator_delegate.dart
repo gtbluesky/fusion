@@ -40,7 +40,7 @@ class FusionNavigatorDelegate {
         return null;
       case FusionRouteType.adaption:
         if (_isFlutterPage(routeName)) {
-          if (FusionPageLifecycleManager.instance.isVisible) {
+          if (FusionOverlayManager.instance.topContainer()?.isVisible == true) {
             return _push<T>(routeName, args);
           } else {
             await FusionChannel.instance

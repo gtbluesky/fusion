@@ -1,3 +1,7 @@
+## 4.3.3
+
+* Fixes some known bugs.
+
 ## 4.3.2
 
 * Adds the `Fusion.getTopActivity` method on Android.

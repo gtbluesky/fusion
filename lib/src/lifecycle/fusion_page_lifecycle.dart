@@ -25,8 +25,6 @@ class FusionPageLifecycleManager {
 
   final _listeners = <Route<dynamic>, FusionPageLifecycleListener>{};
 
-  bool isVisible = false;
-
   /// Register the page's lifecycle listener.
   void register(FusionPageLifecycleListener listener) {
     if (listener is! State) {
@@ -52,8 +50,6 @@ class FusionPageLifecycleManager {
     Route<dynamic> route, {
     bool isFirstTime = false,
   }) {
-    isVisible = true;
-
     /// 确保didChangeDependencies后调用生命周期方法
     if (isFirstTime) {
       // ignore: invalid_null_aware_operator
@@ -74,7 +70,6 @@ class FusionPageLifecycleManager {
   }
 
   void dispatchPageInvisibleEvent(Route<dynamic> route) {
-    isVisible = false;
     try {
       _listeners[route]?.onPageInvisible();
     } on Exception catch (e) {
