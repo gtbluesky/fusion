@@ -21,7 +21,7 @@ import fusion
             result("container_unrelated_channel: \(self)_\(call.method)")
         }
         if window?.rootViewController == nil {
-            let naviController = UINavigationController(rootViewController: MainViewController())
+            let naviController = FusionNavigationController(rootViewController: MainViewController())
             naviController.restorationIdentifier = "naviController"
             window?.rootViewController = naviController
         }

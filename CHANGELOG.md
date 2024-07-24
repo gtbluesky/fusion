@@ -1,5 +1,6 @@
-## 4.3.3
+## 4.4.0
 
+* Adds `FusionNavigationController` class on iOS.
 * Fixes some known bugs.
 
 ## 4.3.2

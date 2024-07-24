@@ -59,13 +59,13 @@ internal class FusionStackManager {
             }
         } else {
             if vc.modalPresentationStyle == .overFullScreen || vc.modalPresentationStyle == .overCurrentContext {
-                var nextVc = vc.presentingViewController
-                if (nextVc is UINavigationController) {
-                    nextVc = (nextVc as? UINavigationController)?.topViewController
+                var previousVc = vc.presentingViewController
+                if (previousVc is UINavigationController) {
+                    previousVc = (previousVc as? UINavigationController)?.topViewController
                 }
-                nextVc?.beginAppearanceTransition(true, animated: false)
+                previousVc?.beginAppearanceTransition(true, animated: false)
                 vc.dismiss(animated: vc.isViewOpaque) {
-                    nextVc?.endAppearanceTransition()
+                    previousVc?.endAppearanceTransition()
                 }
             } else {
                 vc.dismiss(animated: vc.isViewOpaque)
