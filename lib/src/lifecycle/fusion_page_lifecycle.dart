@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../log/fusion_log.dart';
 
-class FusionPageLifecycleListener {
+mixin FusionPageLifecycleListener {
   /// Called when the flutter page is visible.
   void onPageVisible() {}
 

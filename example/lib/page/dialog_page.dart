@@ -15,7 +15,7 @@ class DialogPage extends StatefulWidget {
 }
 
 class _DialogPageState extends State<DialogPage>
-    implements FusionPageLifecycleListener {
+    with FusionPageLifecycleListener {
   @override
   void initState() {
     super.initState();

@@ -1,6 +1,6 @@
 import '../log/fusion_log.dart';
 
-class FusionAppLifecycleListener {
+mixin FusionAppLifecycleListener {
   /// Called when the app switches from the background to the foreground.
   void onForeground() {}
 

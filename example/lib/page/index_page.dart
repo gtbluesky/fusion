@@ -21,7 +21,7 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage>
-    implements FusionPageLifecycleListener {
+    with FusionPageLifecycleListener {
   String? msg;
 
   void onReceive(Map<String, dynamic>? args) {
@@ -52,19 +52,19 @@ class _IndexPageState extends State<IndexPage>
     }
   }
 
-  @override
-  void onBackground() {
-    if (kDebugMode) {
-      print('$runtimeType@$hashCode:onBackground');
-    }
-  }
+  // @override
+  // void onBackground() {
+  //   if (kDebugMode) {
+  //     print('$runtimeType@$hashCode:onBackground');
+  //   }
+  // }
 
-  @override
-  void onForeground() {
-    if (kDebugMode) {
-      print('$runtimeType@$hashCode:onForeground');
-    }
-  }
+  // @override
+  // void onForeground() {
+  //   if (kDebugMode) {
+  //     print('$runtimeType@$hashCode:onForeground');
+  //   }
+  // }
 
   @override
   void onPageInvisible() {
