@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fusion/fusion.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class IndexPage extends StatefulWidget {
   IndexPage({Key? key, this.args}) : super(key: key) {
@@ -265,9 +264,9 @@ class _IndexPageState extends State<IndexPage>
             height: 20,
           ),
           InkWell(
-              child: const Text('openAppSettings'),
+              child: const Text('topRouteName'),
               onTap: () {
-                openAppSettings();
+                print('topRouteName=${FusionNavigator.topRouteName}');
               }),
           const SizedBox(
             height: 20,

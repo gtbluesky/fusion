@@ -230,6 +230,11 @@ class FusionNavigatorDelegate {
     return page != null;
   }
 
+  String get topRouteName {
+    FusionPage? page = FusionOverlayManager.instance.topContainer()?.topPage;
+    return page?.name ?? '';
+  }
+
   void create(
     String uniqueId,
     String routeName, [

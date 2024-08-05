@@ -1,3 +1,8 @@
+## 4.5.0
+
+* Changes `FusionAppLifecycleListener` and `FusionPageLifecycleListener` from class to mixin.
+* Adds `FusionNavigator.topRouteName` method.
+
 ## 4.4.0
 
 * Adds `FusionNavigationController` class on iOS.
