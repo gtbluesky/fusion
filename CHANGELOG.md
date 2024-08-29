@@ -1,3 +1,7 @@
+## 4.5.1
+
+* Fixes some known bugs.
+
 ## 4.5.0
 
 * Changes `FusionAppLifecycleListener` and `FusionPageLifecycleListener` from class to mixin.

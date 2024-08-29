@@ -83,12 +83,16 @@ class FusionNavigatorDelegate {
     final result = _push<T>(routeName, args);
     final containers =
         FusionOverlayManager.instance.containers.reversed.toList();
-    final topContainer = containers.removeAt(0);
-    final pages = topContainer.pages.reversed.toList();
-    pages.removeAt(0);
-    topContainer.removeAll(pages);
-    FusionChannel.instance
-        .sync(topContainer.uniqueId, topContainer.pageEntities);
+    if (containers.isNotEmpty) {
+      final topContainer = containers.removeAt(0);
+      final pages = topContainer.pages.reversed.toList();
+      if (pages.isNotEmpty) {
+        pages.removeAt(0);
+        topContainer.removeAll(pages);
+      }
+      FusionChannel.instance
+          .sync(topContainer.uniqueId, topContainer.pageEntities);
+    }
     for (final container in containers) {
       await FusionChannel.instance.destroy(container.uniqueId);
     }
