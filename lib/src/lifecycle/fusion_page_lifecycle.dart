@@ -29,7 +29,7 @@ mixin FusionPageLifecycleMixin<T extends StatefulWidget> on State<T>
     super.dispose();
   }
 
-    @override
+  @override
   void onPageVisible() {}
 
   @override
