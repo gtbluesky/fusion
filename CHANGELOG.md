@@ -1,3 +1,7 @@
+## 4.6.0
+
+* Adds `FusionPageLifecycleMixin` to simplify page lifecycle management.
+
 ## 4.5.1
 
 * Fixes some known bugs.

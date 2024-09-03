@@ -20,7 +20,7 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage>
-    with FusionPageLifecycleListener {
+    with FusionPageLifecycleMixin {
   String? msg;
 
   void onReceive(Map<String, dynamic>? args) {
@@ -38,14 +38,12 @@ class _IndexPageState extends State<IndexPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     FusionEventManager.instance.register('custom_event', onReceive);
-    FusionPageLifecycleManager.instance.register(this);
   }
 
   @override
   void dispose() {
     super.dispose();
     FusionEventManager.instance.unregister('custom_event');
-    FusionPageLifecycleManager.instance.unregister(this);
     if (kDebugMode) {
       print('$runtimeType@$hashCode:dispose');
     }

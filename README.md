@@ -444,9 +444,7 @@ FusionAppLifecycleListener 生命周期回调函数：
 - onBackground: 应用退到后台会被调用
 
 页面生命周期监听：
-- ①、在需要监听生命周期页面的 State 中 `implements` FusionPageLifecycleListener
-- ②、在 didChangeDependencies 中注册监听
-- ③、在 dispose 中注销监听
+- ①、在需要监听生命周期页面的 State 中 `with` FusionPageLifecycleMixin
 ```dart
 class LifecyclePage extends StatefulWidget {
   const LifecyclePage({Key? key}) : super(key: key);
@@ -456,16 +454,10 @@ class LifecyclePage extends StatefulWidget {
 }
 
 class _LifecyclePageState extends State<LifecyclePage>
-    implements FusionPageLifecycleListener {
+    with FusionPageLifecycleMixin {
   @override
   Widget build(BuildContext context) {
     return Container();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    FusionPageLifecycleManager.instance.register(this);
   }
 
   @override
@@ -479,15 +471,9 @@ class _LifecyclePageState extends State<LifecyclePage>
 
   @override
   void onBackground() {}
-
-  @override
-  void dispose() {
-    super.dispose();
-    FusionPageLifecycleManager.instance.unregister(this);
-  }
 }
 ```
-PageLifecycleListener 生命周期回调函数：
+生命周期回调函数：
 - onForeground: 应用进入前台会被调用，所有注册了生命周期监听的页面都会收到
 - onBackground: 应用退到后台会被调用，所有注册了生命周期监听的页面都会收到
 - onPageVisible: 该 Flutter 页面可见时被调用，如：从 Native 页面或其他 Flutter 页面 `push` 到该 Flutter 页面时；从 Native 页面或其他 Flutter 页面 `pop` 到该 Flutter 页面时；应用进入前台时也会被调用。
@@ -512,8 +498,8 @@ class _TestPageState extends State<TestPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     FusionEventManager.instance.register('custom_event', onReceive);
   }
 
