@@ -2,8 +2,6 @@ PODS:
   - Flutter (1.0.0)
   - fusion (0.0.1):
     - Flutter
-  - permission_handler_apple (9.1.1):
-    - Flutter
   - SideMenu (6.5.0)
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
@@ -11,7 +9,6 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - fusion (from `.symlinks/plugins/fusion/ios`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - SideMenu (= 6.5.0)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
@@ -24,15 +21,12 @@ EXTERNAL SOURCES:
     :path: Flutter
   fusion:
     :path: ".symlinks/plugins/fusion/ios"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   fusion: 21596c6377405e024a44b2fe78b637ab1eb0863c
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   SideMenu: f583187d21c5b1dd04c72002be544b555a2627a2
   webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
 

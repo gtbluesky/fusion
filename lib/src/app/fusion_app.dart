@@ -35,6 +35,7 @@ class FusionApp extends StatefulWidget {
   final bool debugShowCheckedModeBanner;
   final Map<Type, Action<Intent>>? actions;
   final String? restorationScopeId;
+  final List<NavigatorObserver>? navigatorObservers;
 
   FusionApp({
     Map<String, FusionPageFactory>? routeMap,
@@ -63,6 +64,7 @@ class FusionApp extends StatefulWidget {
     this.debugShowCheckedModeBanner = true,
     this.actions,
     this.restorationScopeId,
+    this.navigatorObservers,
     Duration transitionDuration = const Duration(milliseconds: 300),
     Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
@@ -71,6 +73,8 @@ class FusionApp extends StatefulWidget {
     FusionNavigatorDelegate.instance.customRouteMap = customRouteMap;
     FusionData.transitionDuration = transitionDuration;
     FusionData.reverseTransitionDuration = reverseTransitionDuration;
+    FusionNavigatorObserverManager.instance.navigatorObservers =
+        navigatorObservers;
   }
 
   @override

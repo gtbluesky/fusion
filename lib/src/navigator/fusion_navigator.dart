@@ -63,6 +63,10 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.topRouteName;
   }
 
+  static Route? get topRoute {
+    return FusionOverlayManager.instance.topRoute;
+  }
+
   static NavigatorState? get navigator =>
       FusionOverlayManager.instance.topRoute?.navigator;
 

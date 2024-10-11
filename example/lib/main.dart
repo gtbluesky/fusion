@@ -19,6 +19,7 @@ import 'package:fusion_example/page/willpop_page.dart';
 
 void main() {
   print('defaultRouteName=${ui.window.defaultRouteName}');
+  // MyWidgetsFlutterBinding.ensureInitialized();
   Fusion.instance.install();
   FusionAppLifecycleManager.instance.register(MyAppLifecycleListener());
   runApp(const MyApp());
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         routeMap: routeMap,
         customRouteMap: customRouteMap,
         // builder: EasyLoading.init(),
+        navigatorObservers: [_MyNavigatorObserver()],
         transitionDuration: const Duration(milliseconds: 400),
         reverseTransitionDuration: const Duration(milliseconds: 400),
         localizationsDelegates: const [
@@ -76,6 +78,41 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class _MyNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    print('didPush:route=$route,previousRoute=$previousRoute');
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    print('didPop:route=$route,previousRoute=$previousRoute');
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    print('didRemove:route=$route,previousRoute=$previousRoute');
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    print('didReplace:newRoute=$newRoute,oldRoute=$oldRoute');
+  }
+}
+
+// class MyWidgetsFlutterBinding extends WidgetsFlutterBinding {
+//   @override
+//   void handleAppLifecycleStateChanged(ui.AppLifecycleState state) {
+//     super.handleAppLifecycleStateChanged(state);
+//     print('handleAppLifecycleStateChanged: $state');
+//   }
+
+//   static WidgetsBinding? ensureInitialized() {
+//     MyWidgetsFlutterBinding();
+//     return WidgetsBinding.instance;
+//   }
+// }
 
 final Map<String, FusionPageFactory> routeMap = {
   '/index': (args) => IndexPage(args: args),

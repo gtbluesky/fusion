@@ -1,3 +1,7 @@
+## 4.7.0
+
+* `FusionApp` supports setting the `navigatorObservers` parameter, which can be used to listen for routes.
+
 ## 4.6.0
 
 * Adds `FusionPageLifecycleMixin` to simplify page lifecycle management.

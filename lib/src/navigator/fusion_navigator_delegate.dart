@@ -6,6 +6,7 @@ import '../container/fusion_overlay.dart';
 import '../container/fusion_page.dart';
 import '../lifecycle/fusion_page_lifecycle.dart';
 import 'fusion_navigator.dart';
+import 'fusion_navigator_observer.dart';
 
 class FusionNavigatorDelegate {
   FusionNavigatorDelegate._();
@@ -319,7 +320,12 @@ class FusionNavigatorDelegate {
     if (container == null) {
       return;
     }
-    FusionOverlayManager.instance.removeRoute(container.topPage.route);
+    final route = container.topPage.route;
+    FusionOverlayManager.instance.removeRoute(route);
+    FusionNavigatorObserverManager.instance.navigatorObservers
+        ?.forEach((observer) {
+      observer.didPop(route, null);
+    });
   }
 
   void _handlePageVisible(
