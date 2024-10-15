@@ -48,10 +48,8 @@ class FusionEventManager {
   }
 
   void _dispatchEvent(String name, Map<String, dynamic>? args) {
-    final callbacks = _callbackMap[name];
-    if (callbacks == null) {
-      return;
-    }
+    final callbacks =
+        Set<FusionEventCallback>.unmodifiable(_callbackMap[name] ?? {});
     for (final callback in callbacks) {
       callback(args);
     }
