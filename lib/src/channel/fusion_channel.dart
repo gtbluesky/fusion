@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../container/fusion_overlay.dart';
 import '../container/fusion_page.dart';
 import '../data/fusion_state.dart';
@@ -70,7 +73,11 @@ class FusionChannel {
       String name = message['name'];
       Map<String, dynamic>? args;
       if (message['args'] != null) {
-        args = Map<String, dynamic>.from(message['args']);
+        try {
+          args = jsonDecode(jsonEncode(message['args']));
+        } catch (e) {
+          args = null;
+        }
       }
       final type = FusionRouteType.values[message['type']];
       return FusionNavigatorDelegate.instance.push(name, args, type);
@@ -80,7 +87,11 @@ class FusionChannel {
       String name = message['name'];
       Map<String, dynamic>? args;
       if (message['args'] != null) {
-        args = Map<String, dynamic>.from(message['args']);
+        try {
+          args = jsonDecode(jsonEncode(message['args']));
+        } catch (e) {
+          args = null;
+        }
       }
       return FusionNavigatorDelegate.instance.replace(name, args);
     });
@@ -107,7 +118,11 @@ class FusionChannel {
         String name = message['name'];
         Map<String, dynamic>? args;
         if (message['args'] != null) {
-          args = Map<String, dynamic>.from(message['args']);
+          try {
+            args = jsonDecode(jsonEncode(message['args']));
+          } catch (e) {
+            args = null;
+          }
         }
         FusionNavigatorDelegate.instance.create(uniqueId, name, args);
         removeMaskView(uniqueId);
