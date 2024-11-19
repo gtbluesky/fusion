@@ -1,3 +1,7 @@
+## 4.7.2
+
+* Fixes some known bugs.
+
 ## 4.7.1
 
 * Fixes a possible `ConcurrentModificationError` when sending events.
