@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import '../app/fusion_home.dart';
 import '../container/fusion_container.dart';
@@ -10,17 +12,39 @@ class FusionOverlayManager {
 
   final _entryList = <FusionOverlayEntry>[];
 
-  final routes = <Route>[];
+  final rootRoutes = <Route>[];
+
+  List<Route> get containerRoutes {
+    return containerRoutesMap.values.expand((e) => e).toList();
+  }
+
+  final containerRoutesMap = LinkedHashMap<String, List<Route>>.from({});
 
   List<FusionContainer> get containers =>
       _entryList.map((e) => e.container).toList();
 
-  Route? get topRoute => routes.isNotEmpty ? routes.last : null;
+  Route? get topRoute {
+    if (rootRoutes.isNotEmpty) {
+      return rootRoutes.last;
+    }
+    if (containerRoutes.isNotEmpty) {
+      return containerRoutes.last;
+    }
+    return null;
+  }
 
-  Route? get nextRoute =>
-      routes.length >= 2 ? routes.elementAt(routes.length - 2) : null;
+  Route? get topPageRoute {
+    final it = containerRoutes.whereType<PageRoute>();
+    return it.isNotEmpty ? it.last : null;
+  }
+
+  Route? get nextPageRoute {
+    final it = containerRoutes.whereType<PageRoute>();
+    return it.length >= 2 ? it.elementAt(it.length - 2) : null;
+  }
 
   void add(FusionContainer container) {
+    containerRoutesMap[container.uniqueId] = [];
     final entry = FusionOverlayEntry(container);
     _entryList.add(entry);
     overlayKey.currentState?.insert(entry);
@@ -29,6 +53,7 @@ class FusionOverlayManager {
   void restore(List<FusionContainer> containers) {
     final entryList = <FusionOverlayEntry>[];
     for (final container in containers) {
+      containerRoutesMap[container.uniqueId] = [];
       final entry = FusionOverlayEntry(container);
       entryList.add(entry);
     }
@@ -78,15 +103,34 @@ class FusionOverlayManager {
     return null;
   }
 
-  FusionContainer? findContainerByPage(String routeName) {
-    for (final entry in _entryList.reversed) {
-      for (final page in entry.container.pages.reversed) {
-        if (page.pageEntity.name == routeName) {
-          return entry.container;
+  FusionContainer? findContainerByRoute(Route route) {
+    String? uniqueId;
+    containerRoutesMap.forEach((k, v) {
+      for (final r in v) {
+        if (r == route) {
+          uniqueId = k;
         }
       }
+    });
+    if (uniqueId == null) {
+      return null;
     }
-    return null;
+    return findContainer(uniqueId!);
+  }
+
+  FusionContainer? findContainerByRouteName(String routeName) {
+    String? uniqueId;
+    containerRoutesMap.forEach((k, v) {
+      for (final route in v) {
+        if (route.settings.name == routeName) {
+          uniqueId = k;
+        }
+      }
+    });
+    if (uniqueId == null) {
+      return null;
+    }
+    return findContainer(uniqueId!);
   }
 
   FusionPage? findPage(Route route) {
@@ -113,14 +157,6 @@ class FusionOverlayManager {
 
   FusionContainer? topContainer() {
     return _entryList.isEmpty ? null : _entryList.last.container;
-  }
-
-  void addRoute(Route route) {
-    routes.add(route);
-  }
-
-  void removeRoute(Route route) {
-    routes.remove(route);
   }
 }
 

@@ -44,6 +44,21 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
+                child: const Text('push(flutterWithContainer) /index'),
+                onTap: () async {
+                  final result = await FusionNavigator.push<String?>(
+                    '/index',
+                    routeArgs: {'title': 'Index Page'},
+                    routeType: FusionRouteType.flutterWithContainer,
+                  );
+                  if (kDebugMode) {
+                    print('push(flutterWithContainer) /index result=$result');
+                  }
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
                 child: const Text('push(flutter) /index'),
                 onTap: () async {
                   final result = await FusionNavigator.push<String?>(
@@ -113,9 +128,63 @@ class _LifecyclePageState extends State<LifecyclePage>
               height: 20,
             ),
             InkWell(
+              child: const Text('show dialog'),
+              onTap: () async {
+                await showDialog<bool>(
+                    useRootNavigator: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: const RoundedRectangleBorder(),
+                        backgroundColor: Colors.red,
+                        elevation: 0,
+                        title: const Text('提示'),
+                        content: const Text('确定要退出吗？'),
+                        actions: [
+                          InkWell(
+                              onTap: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: const Text('关闭')),
+                          InkWell(
+                              child: const Text('push(flutter) /lifecycle'),
+                              onTap: () async {
+                                FusionNavigator.push(
+                                  '/lifecycle',
+                                  routeType: FusionRouteType.flutter,
+                                );
+                              }),
+                          InkWell(
+                              child: const Text('push(flutter) /index'),
+                              onTap: () async {
+                                FusionNavigator.push(
+                                  '/index',
+                                  routeType: FusionRouteType.flutter,
+                                );
+                              }),
+                        ],
+                      );
+                    },
+                    context: context);
+                print('dilog pop');
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
                 child: const Text('pop'),
                 onTap: () {
                   FusionNavigator.pop('test返回结果');
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+                child: const Text('popUntil /index'),
+                onTap: () {
+                  FusionNavigator.popUntil(
+                    '/index',
+                  );
                 }),
             const SizedBox(
               height: 20,

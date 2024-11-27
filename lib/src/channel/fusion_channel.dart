@@ -159,7 +159,7 @@ class FusionChannel {
       if (message is! Map) return;
       FocusManager.instance.primaryFocus?.unfocus();
       String uniqueId = message['uniqueId'];
-      await FusionNavigatorDelegate.instance.destroy(uniqueId);
+      FusionOverlayManager.instance.remove(uniqueId);
       // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.drawFrame();
       return null;

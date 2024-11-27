@@ -4,7 +4,8 @@ import '../container/fusion_overlay.dart';
 class FusionNavigatorObserver extends NavigatorObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
-    FusionOverlayManager.instance.addRoute(route);
+    final uniqueId = FusionOverlayManager.instance.topContainer()?.uniqueId;
+    FusionOverlayManager.instance.containerRoutesMap[uniqueId]?.add(route);
     FusionNavigatorObserverManager.instance.navigatorObservers
         ?.forEach((observer) {
       observer.didPush(route, previousRoute);
@@ -13,7 +14,9 @@ class FusionNavigatorObserver extends NavigatorObserver {
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    FusionOverlayManager.instance.removeRoute(route);
+    final uniqueId =
+        FusionOverlayManager.instance.findContainerByRoute(route)?.uniqueId;
+    FusionOverlayManager.instance.containerRoutesMap[uniqueId]?.remove(route);
     FusionNavigatorObserverManager.instance.navigatorObservers
         ?.forEach((observer) {
       observer.didPop(route, previousRoute);
@@ -22,7 +25,9 @@ class FusionNavigatorObserver extends NavigatorObserver {
 
   @override
   void didRemove(Route route, Route? previousRoute) {
-    FusionOverlayManager.instance.removeRoute(route);
+    final uniqueId =
+        FusionOverlayManager.instance.findContainerByRoute(route)?.uniqueId;
+    FusionOverlayManager.instance.containerRoutesMap[uniqueId]?.remove(route);
     FusionNavigatorObserverManager.instance.navigatorObservers
         ?.forEach((observer) {
       observer.didRemove(route, previousRoute);
@@ -31,11 +36,13 @@ class FusionNavigatorObserver extends NavigatorObserver {
 
   @override
   void didReplace({Route? newRoute, Route? oldRoute}) {
+    final uniqueId = FusionOverlayManager.instance.topContainer()?.uniqueId;
     if (oldRoute != null) {
-      FusionOverlayManager.instance.removeRoute(oldRoute);
+      FusionOverlayManager.instance.containerRoutesMap[uniqueId]
+          ?.remove(oldRoute);
     }
     if (newRoute != null) {
-      FusionOverlayManager.instance.addRoute(newRoute);
+      FusionOverlayManager.instance.containerRoutesMap[uniqueId]?.add(newRoute);
     }
     FusionNavigatorObserverManager.instance.navigatorObservers
         ?.forEach((observer) {
@@ -44,18 +51,24 @@ class FusionNavigatorObserver extends NavigatorObserver {
   }
 }
 
+/// showDialog & showModalBottomSheet等 useRootNavigator: true
 class FusionRootNavigatorObserver extends NavigatorObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
     if (route is PageRoute) {
       return;
     }
-    FusionOverlayManager.instance.addRoute(route);
+    FusionOverlayManager.instance.rootRoutes.add(route);
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    FusionOverlayManager.instance.removeRoute(route);
+    FusionOverlayManager.instance.rootRoutes.remove(route);
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    FusionOverlayManager.instance.rootRoutes.remove(route);
   }
 }
 

@@ -19,8 +19,7 @@ class IndexPage extends StatefulWidget {
   State<IndexPage> createState() => _IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage>
-    with FusionPageLifecycleMixin {
+class _IndexPageState extends State<IndexPage> with FusionPageLifecycleMixin {
   String? msg;
 
   void onReceive(Map<String, dynamic>? args) {
@@ -262,6 +261,14 @@ class _IndexPageState extends State<IndexPage>
             height: 20,
           ),
           InkWell(
+              child: const Text('topPageRouteName'),
+              onTap: () {
+                print('topPageRouteName=${FusionNavigator.topPageRouteName}');
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
               child: const Text('topRouteName'),
               onTap: () {
                 print('topRouteName=${FusionNavigator.topRouteName}');
@@ -354,6 +361,7 @@ class _IndexPageState extends State<IndexPage>
             child: const Text('show dialog'),
             onTap: () {
               showDialog<bool>(
+                  useRootNavigator: false,
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: const RoundedRectangleBorder(),
@@ -367,12 +375,38 @@ class _IndexPageState extends State<IndexPage>
                               Navigator.of(context).pop(false);
                             },
                             child: const Text('关闭')),
+                        InkWell(
+                            child: const Text('push(flutter) /lifecycle'),
+                            onTap: () async {
+                              FusionNavigator.push(
+                                '/lifecycle',
+                                routeType: FusionRouteType.flutter,
+                              );
+                            }),
+                        InkWell(
+                            child: const Text('push(flutter) /index'),
+                            onTap: () async {
+                              FusionNavigator.push(
+                                '/index',
+                                routeType: FusionRouteType.flutter,
+                              );
+                            }),
                       ],
                     );
                   },
                   context: context);
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
+              child: const Text('push(flutter) show dialog'),
+              onTap: () {
+                FusionNavigator.push('/dialog_page',
+                    routeArgs: {'transparent': true},
+                    routeType: FusionRouteType.flutter);
+              }),
           const SizedBox(
             height: 20,
           ),

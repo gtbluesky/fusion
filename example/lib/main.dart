@@ -123,13 +123,17 @@ final Map<String, FusionPageFactory> routeMap = {
   '/transparent': (args) => TransparentPage(args: args),
   '/background': (args) => BackgroundPage(args: args),
   '/refresh': (args) => RefreshPage(args: args),
-  '/dialog_page': (args) => DialogPage(args: args),
   kUnknownRoute: (args) => UnknownPage(args: args),
 };
 
 final Map<String, FusionPageCustomFactory> customRouteMap = {
+  '/dialog_page': (settings) => PageRouteBuilder(
+      opaque: settings.opaque,
+      settings: settings,
+      pageBuilder: (_, __, ___) =>
+          DialogPage(args: settings.arguments as Map<String, dynamic>?)),
   '/navigator': (settings) => PageRouteBuilder(
-      opaque: false,
+      opaque: settings.opaque,
       settings: settings,
       pageBuilder: (_, __, ___) =>
           NavigatorPage(args: settings.arguments as Map<String, dynamic>?)),
@@ -183,3 +187,7 @@ final Animatable<Offset> _kMiddleLeftTween = Tween<Offset>(
   begin: Offset.zero,
   end: const Offset(-1.0 / 3.0, 0.0),
 );
+
+extension RouteSettingsExt on RouteSettings {
+  bool get opaque => !((arguments as Map?)?['transparent'] ?? false);
+}

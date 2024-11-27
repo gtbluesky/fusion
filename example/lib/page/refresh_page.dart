@@ -1,4 +1,5 @@
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusion/fusion.dart';
 
@@ -11,9 +12,24 @@ class RefreshPage extends StatefulWidget {
   State<RefreshPage> createState() => _RefreshPageState();
 }
 
-class _RefreshPageState extends State<RefreshPage> {
+class _RefreshPageState extends State<RefreshPage>
+    with FusionPageLifecycleMixin {
   int _count = 1;
   late EasyRefreshController _controller;
+
+  @override
+  void onPageInvisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
+  }
+
+  @override
+  void onPageVisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
+    }
+  }
 
   @override
   void initState() {

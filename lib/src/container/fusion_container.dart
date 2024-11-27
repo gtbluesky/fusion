@@ -236,6 +236,7 @@ class NavigatorExtensionState extends NavigatorState {
     if (topRoute is PageRoute) {
       FusionNavigatorDelegate.instance.pop<T>(result);
     } else if (topRoute is PopupRoute && this != topRoute.navigator) {
+      // showDialog, useRootNavigator: true
       topRoute.navigator?.pop<T>(result);
     } else {
       super.pop<T>(result);

@@ -1,3 +1,8 @@
+## 4.8.0
+
+* Adjusts page lifecycle(Dialogs don't affect the lifecycle of all pages.).
+* Supports to remove specified dialog.
+
 ## 4.7.2
 
 * Fixes some known bugs.
