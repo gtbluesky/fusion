@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../app/fusion_home.dart';
 import '../container/fusion_container.dart';
 import '../container/fusion_page.dart';
+import '../navigator/fusion_navigator_observer.dart';
 
 class FusionOverlayManager {
   FusionOverlayManager._();
@@ -61,14 +62,20 @@ class FusionOverlayManager {
     overlayKey.currentState?.insertAll(entryList);
   }
 
-  FusionContainer? remove(String uniqueId) {
+  bool remove(String uniqueId) {
     final entry = findEntry(uniqueId);
     if (entry == null) {
-      return null;
+      return false;
     }
     _entryList.remove(entry);
     entry.remove();
-    return entry.container;
+    containerRoutesMap.remove(uniqueId)?.forEach((route) {
+      FusionNavigatorObserverManager.instance.navigatorObservers
+          ?.forEach((observer) {
+        observer.didRemove(route, null);
+      });
+    });
+    return true;
   }
 
   void switchTop(String uniqueId) {
