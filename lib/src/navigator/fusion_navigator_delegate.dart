@@ -79,7 +79,7 @@ class FusionNavigatorDelegate {
     String routeName, [
     Map<String, dynamic>? args,
   ]) async {
-    // push new page in top container
+    // push a new page in top container
     final result = _push<T>(routeName, args);
     final containers =
         FusionOverlayManager.instance.containers.reversed.toList();
@@ -200,7 +200,7 @@ class FusionNavigatorDelegate {
     }
     // root dialogs
     final rootRoutes =
-        List<Route>.from(FusionOverlayManager.instance.rootRoutes);
+        List<Route>.from(FusionOverlayManager.instance.rootRoutes.reversed);
     for (var route in rootRoutes) {
       if (route.settings.name == routeName) {
         return;
@@ -233,7 +233,7 @@ class FusionNavigatorDelegate {
       await FusionChannel.instance.destroy(container.uniqueId);
     }
     // target container's pages
-    for (var i = routesInTargetContainer.length - 1; i > -0; --i) {
+    for (var i = routesInTargetContainer.length - 1; i >= 0; --i) {
       final route = routesInTargetContainer[i];
       if (route.settings.name == routeName) {
         break;
@@ -266,7 +266,7 @@ class FusionNavigatorDelegate {
   }
 
   Future<void> remove(String routeName) async {
-    for (final route in FusionOverlayManager.instance.rootRoutes) {
+    for (final route in FusionOverlayManager.instance.rootRoutes.reversed) {
       if (route.settings.name == routeName) {
         route.navigator?.removeRoute(route);
         return;
@@ -275,13 +275,27 @@ class FusionNavigatorDelegate {
     FusionContainer? container =
         FusionOverlayManager.instance.findContainerByRouteName(routeName);
     if (container == null) {
+      // not found
       return;
     }
-    if (container.pageCount > 1) {
-      final page = container.findPage(routeName);
-      if (page == null) {
+    final page = container.findPage(routeName);
+    // target route is dialog
+    if (page == null) {
+      final routes =
+          FusionOverlayManager.instance.containerRoutesMap[container.uniqueId];
+      if (routes == null) {
         return;
       }
+      for (final route in routes.reversed) {
+        if (route.settings.name == routeName) {
+          route.navigator?.removeRoute(route);
+          return;
+        }
+      }
+      return;
+    }
+    // target route is page
+    if (container.pageCount > 1) {
       final topPageRoute = FusionOverlayManager.instance.topPageRoute;
       if (page.route == topPageRoute) {
         // Page's Visibility Change
