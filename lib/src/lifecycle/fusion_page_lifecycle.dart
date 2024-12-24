@@ -93,55 +93,69 @@ class FusionPageLifecycleManager {
     if (isFirstTime) {
       // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        try {
-          _listenerMap[route]?.forEach((listener) {
+        final listeners = Set<FusionPageLifecycleListener>.unmodifiable(
+            _listenerMap[route] ?? {});
+        for (final listener in listeners) {
+          try {
             listener.onPageVisible();
-          });
-        } on Exception catch (e) {
-          FusionLog.log(e.toString());
+          } on Exception catch (e) {
+            FusionLog.log(e.toString());
+          }
         }
       });
     } else {
-      try {
-        _listenerMap[route]?.forEach((listener) {
+      final listeners = Set<FusionPageLifecycleListener>.unmodifiable(
+          _listenerMap[route] ?? {});
+      for (final listener in listeners) {
+        try {
           listener.onPageVisible();
-        });
-      } on Exception catch (e) {
-        FusionLog.log(e.toString());
+        } on Exception catch (e) {
+          FusionLog.log(e.toString());
+        }
       }
     }
   }
 
   void dispatchPageInvisibleEvent(Route<dynamic> route) {
-    try {
-      _listenerMap[route]?.forEach((listener) {
+    final listeners = Set<FusionPageLifecycleListener>.unmodifiable(
+        _listenerMap[route] ?? {});
+    for (final listener in listeners) {
+      try {
         listener.onPageInvisible();
-      });
-    } on Exception catch (e) {
-      FusionLog.log(e.toString());
+      } on Exception catch (e) {
+        FusionLog.log(e.toString());
+      }
     }
   }
 
   void dispatchPageForegroundEvent() {
-    _listenerMap.forEach((key, value) {
-      try {
-        for (final listener in value) {
+    final listenerMap =
+        Map<Route<dynamic>, Set<FusionPageLifecycleListener>>.unmodifiable(
+            _listenerMap);
+    listenerMap.forEach((key, value) {
+      value = Set<FusionPageLifecycleListener>.unmodifiable(value);
+      for (final listener in value) {
+        try {
           listener.onForeground();
+        } on Exception catch (e) {
+          FusionLog.log(e.toString());
         }
-      } on Exception catch (e) {
-        FusionLog.log(e.toString());
       }
     });
   }
 
   void dispatchPageBackgroundEvent() {
-    _listenerMap.forEach((key, value) {
-      try {
-        for (final listener in value) {
+    final listenerMap =
+        Map<Route<dynamic>, Set<FusionPageLifecycleListener>>.unmodifiable(
+            _listenerMap);
+    listenerMap.forEach((key, value) {
+      value = Set<FusionPageLifecycleListener>.unmodifiable(value);
+      for (final listener in value) {
+        try {
           listener.onBackground();
+        } on Exception catch (e) {
+          FusionLog.log(e.toString());
         }
-      } on Exception catch (e) {
-        FusionLog.log(e.toString());
       }
     });
   }

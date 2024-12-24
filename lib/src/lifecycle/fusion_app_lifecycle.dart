@@ -29,7 +29,8 @@ class FusionAppLifecycleManager {
   }
 
   void dispatchAppForegroundEvent() {
-    for (final listener in _listeners) {
+    final listeners = Set<FusionAppLifecycleListener>.unmodifiable(_listeners);
+    for (final listener in listeners) {
       try {
         listener.onForeground();
       } on Exception catch (e) {
@@ -39,7 +40,8 @@ class FusionAppLifecycleManager {
   }
 
   void dispatchAppBackgroundEvent() {
-    for (final listener in _listeners) {
+    final listeners = Set<FusionAppLifecycleListener>.unmodifiable(_listeners);
+    for (final listener in listeners) {
       try {
         listener.onBackground();
       } on Exception catch (e) {
