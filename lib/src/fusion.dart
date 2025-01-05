@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'channel/fusion_channel.dart';
+import 'interceptor/fusion_interceptor.dart';
 
 class Fusion {
   Fusion._();
@@ -13,6 +14,8 @@ class Fusion {
   bool _installed = false;
 
   bool _mounted = false;
+
+  List<FusionInterceptor> interceptors = [];
 
   /// If use `flutter_screenutil`, must call this method before runApp.
   void install() {

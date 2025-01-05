@@ -60,6 +60,7 @@ class MyApp extends StatelessWidget {
         customRouteMap: customRouteMap,
         // builder: EasyLoading.init(),
         navigatorObservers: [_MyNavigatorObserver()],
+        // interceptors: [MyInterceptor()],
         transitionDuration: const Duration(milliseconds: 400),
         reverseTransitionDuration: const Duration(milliseconds: 400),
         localizationsDelegates: const [
@@ -98,6 +99,26 @@ class _MyNavigatorObserver extends NavigatorObserver {
   @override
   void didReplace({Route? newRoute, Route? oldRoute}) {
     print('didReplace:newRoute=$newRoute,oldRoute=$oldRoute');
+  }
+}
+
+class MyInterceptor extends FusionInterceptor {
+  @override
+  void onPush(FusionInterceptorOption option, InterceptorHandler handler) {
+    if (option.routeName == '/refresh') {
+      handler.reject(option);
+      return;
+    }
+    super.onPush(option, handler);
+  }
+
+  @override
+  void onPop(FusionInterceptorOption option, InterceptorHandler handler) {
+    if (option.routeName == '/list') {
+      handler.reject(option);
+      return;
+    }
+    super.onPop(option, handler);
   }
 }
 

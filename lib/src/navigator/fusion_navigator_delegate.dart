@@ -4,6 +4,8 @@ import '../channel/fusion_channel.dart';
 import '../container/fusion_container.dart';
 import '../container/fusion_overlay.dart';
 import '../container/fusion_page.dart';
+import '../fusion.dart';
+import '../interceptor/fusion_interceptor.dart';
 import '../lifecycle/fusion_page_lifecycle.dart';
 import 'fusion_navigator.dart';
 import 'fusion_navigator_observer.dart';
@@ -32,6 +34,28 @@ class FusionNavigatorDelegate {
     Map<String, dynamic>? args,
     FusionRouteType type = FusionRouteType.adaption,
   ]) async {
+    final option =
+        FusionInterceptorOption(routeName: routeName, args: args, type: type);
+    var state = InterceptorState<FusionInterceptorOption>(option);
+    for (final interceptor in Fusion.instance.interceptors) {
+      final handler = InterceptorHandler();
+      interceptor.onPush(state.data, handler);
+      state = handler.state;
+      if (handler.state.type == InterceptorResultType.resolve) {
+        break;
+      } else if (handler.state.type == InterceptorResultType.reject) {
+        return null;
+      }
+    }
+    if (state.data.routeName != null) {
+      routeName = state.data.routeName!;
+    }
+    if (state.data.args != null) {
+      args = state.data.args!;
+    }
+    if (state.data.type != null) {
+      type = state.data.type!;
+    }
     switch (type) {
       case FusionRouteType.flutter:
         return _push<T>(routeName, args);
@@ -135,6 +159,18 @@ class FusionNavigatorDelegate {
     FusionContainer? container = FusionOverlayManager.instance.topContainer();
     if (container == null) {
       return;
+    }
+    final option = FusionInterceptorOption(routeName: container.topPage?.name);
+    var state = InterceptorState<FusionInterceptorOption>(option);
+    for (final interceptor in Fusion.instance.interceptors) {
+      final handler = InterceptorHandler();
+      interceptor.onPop(state.data, handler);
+      state = handler.state;
+      if (handler.state.type == InterceptorResultType.resolve) {
+        break;
+      } else if (handler.state.type == InterceptorResultType.reject) {
+        return;
+      }
     }
     if (container.pageCount > 1) {
       // Page's Visibility Change

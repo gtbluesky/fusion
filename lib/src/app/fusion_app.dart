@@ -4,6 +4,7 @@ import '../app/fusion_home.dart';
 import '../data/fusion_data.dart';
 import '../data/fusion_state.dart';
 import '../fusion.dart';
+import '../interceptor/fusion_interceptor.dart';
 import '../navigator/fusion_navigator_delegate.dart';
 import '../navigator/fusion_navigator_observer.dart';
 
@@ -36,6 +37,7 @@ class FusionApp extends StatefulWidget {
   final Map<Type, Action<Intent>>? actions;
   final String? restorationScopeId;
   final List<NavigatorObserver>? navigatorObservers;
+  final List<FusionInterceptor>? interceptors;
 
   FusionApp({
     Map<String, FusionPageFactory>? routeMap,
@@ -65,6 +67,7 @@ class FusionApp extends StatefulWidget {
     this.actions,
     this.restorationScopeId,
     this.navigatorObservers,
+    this.interceptors,
     Duration transitionDuration = const Duration(milliseconds: 300),
     Duration reverseTransitionDuration = const Duration(milliseconds: 300),
   }) : super(key: key) {
@@ -75,6 +78,9 @@ class FusionApp extends StatefulWidget {
     FusionData.reverseTransitionDuration = reverseTransitionDuration;
     FusionNavigatorObserverManager.instance.navigatorObservers =
         navigatorObservers;
+    if (interceptors != null) {
+      Fusion.instance.interceptors.addAll(interceptors!);
+    }
   }
 
   @override

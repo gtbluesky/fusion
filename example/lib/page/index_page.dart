@@ -311,6 +311,14 @@ class _IndexPageState extends State<IndexPage> with FusionPageLifecycleMixin {
             height: 20,
           ),
           InkWell(
+              child: const Text('remove /test-dialog'),
+              onTap: () {
+                FusionNavigator.remove('/test-dialog');
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          InkWell(
               child: const Text('platform plugin'),
               onTap: () async {
                 if (Platform.isAndroid) {
@@ -362,6 +370,8 @@ class _IndexPageState extends State<IndexPage> with FusionPageLifecycleMixin {
             onTap: () {
               showDialog<bool>(
                   useRootNavigator: false,
+                  barrierDismissible: false,
+                  routeSettings: const RouteSettings(name: '/test-dialog'),
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: const RoundedRectangleBorder(),
