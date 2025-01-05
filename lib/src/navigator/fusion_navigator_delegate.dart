@@ -324,6 +324,11 @@ class FusionNavigatorDelegate {
     return false;
   }
 
+  bool hasPageByName(String routeName) {
+    final page = FusionOverlayManager.instance.findPageByName(routeName);
+    return page != null;
+  }
+
   String get topPageRouteName {
     FusionPage? page = FusionOverlayManager.instance.topContainer()?.topPage;
     return page?.name ?? '';
@@ -393,8 +398,8 @@ class FusionNavigatorDelegate {
     FusionOverlayManager.instance.restore(containers);
     // Page's Visibility Change
     final page = containers.last.topPage;
-    page.containerVisible = true;
-    _handlePageVisible(page.route, isFirstTime: true);
+    page?.containerVisible = true;
+    _handlePageVisible(page?.route, isFirstTime: true);
   }
 
   void _handlePageVisible(

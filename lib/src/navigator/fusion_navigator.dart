@@ -59,6 +59,10 @@ class FusionNavigator {
     return FusionNavigatorDelegate.instance.hasRouteByName(routeName);
   }
 
+  static bool hasPageByName(String routeName) {
+    return FusionNavigatorDelegate.instance.hasPageByName(routeName);
+  }
+
   static String get topPageRouteName =>
       FusionNavigatorDelegate.instance.topPageRouteName;
 

@@ -30,7 +30,7 @@ class FusionContainer extends ChangeNotifier {
   List<FusionPageEntity> get pageEntities =>
       _pages.map((e) => e.pageEntity).toList();
 
-  FusionPage get topPage => _pages.last;
+  FusionPage? get topPage => _pages.lastOrNull;
 
   int get pageCount => _pages.length;
 
