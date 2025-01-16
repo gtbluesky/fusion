@@ -23,10 +23,6 @@ open class FusionFragmentActivity : FlutterFragmentActivity(), FusionContainer {
 
     override fun isAttached() = flutterFragment?.isAttached() ?: false
 
-    override fun removeMask() {
-        flutterFragment?.removeMask()
-    }
-
     override fun detachFromContainer() {
         flutterFragment?.detachFromContainer()
     }

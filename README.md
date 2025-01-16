@@ -7,7 +7,7 @@
 
 ## 简介
 
-Fusion 是新一代的混合栈管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。此外，Fusion 彻底解决了混合开发过程中普遍存在的黑屏、白屏、闪屏等问题，更加适合重视用户体验的App使用。
+Fusion 是新一代的混合栈管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
 
 从 4.0 开始，Fusion 已完成纯鸿蒙平台（HarmonyOS Next/OpenHarmony，以下简称 HarmonyOS）的适配，开发者可以在Android、iOS、HarmonyOS上得到完全一致的体验。（HarmonyOS 的 Flutter SDK 可以在[这里](https://gitee.com/openharmony-sig/flutter_flutter)获取）
 

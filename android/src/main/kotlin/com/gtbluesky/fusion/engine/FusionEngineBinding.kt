@@ -19,7 +19,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
     private var hostRestore: BasicMessageChannel<Any>? = null
     private var hostSync: BasicMessageChannel<Any>? = null
     private var hostDispatchEvent: BasicMessageChannel<Any>? = null
-    private var hostRemoveMaskView: BasicMessageChannel<Any>? = null
     private var flutterCreate: BasicMessageChannel<Any>? = null
     private var flutterSwitchTop: BasicMessageChannel<Any>? = null
     private var flutterRestore: BasicMessageChannel<Any>? = null
@@ -77,11 +76,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
             hostDispatchEvent = BasicMessageChannel(
                 binaryMessenger,
                 "${FusionConstant.FUSION_CHANNEL}/host/dispatchEvent",
-                messageCodec
-            )
-            hostRemoveMaskView = BasicMessageChannel(
-                binaryMessenger,
-                "${FusionConstant.FUSION_CHANNEL}/host/removeMaskView",
                 messageCodec
             )
             flutterCreate = BasicMessageChannel(
@@ -233,19 +227,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
             }
             val args = message["args"] as? Map<String, Any>
             FusionEventManager.send(name, args, FusionEventType.NATIVE)
-            reply.reply(null)
-        }
-        hostRemoveMaskView?.setMessageHandler { message, reply ->
-            if (message !is Map<*, *>) {
-                reply.reply(null)
-                return@setMessageHandler
-            }
-            val uniqueId = message["uniqueId"] as? String
-            if (uniqueId == null) {
-                reply.reply(null)
-                return@setMessageHandler
-            }
-            FusionStackManager.findContainer(uniqueId)?.removeMask()
             reply.reply(null)
         }
     }
@@ -444,8 +425,6 @@ internal class FusionEngineBinding(engine: FlutterEngine?) {
         hostSync = null
         hostDispatchEvent?.setMessageHandler(null)
         hostDispatchEvent = null
-        hostRemoveMaskView?.setMessageHandler(null)
-        hostRemoveMaskView = null
         flutterCreate = null
         flutterSwitchTop = null
         flutterRestore = null

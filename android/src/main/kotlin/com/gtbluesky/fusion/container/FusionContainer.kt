@@ -9,8 +9,6 @@ internal interface FusionContainer {
 
     fun isAttached(): Boolean
 
-    fun removeMask()
-
     fun detachFromContainer()
 
     // To avoid compilation errors caused by the lack of "attachToEngineAutomatically()"

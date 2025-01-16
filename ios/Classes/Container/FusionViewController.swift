@@ -12,23 +12,12 @@ open class FusionViewController: FlutterViewController {
     internal var history: [Dictionary<String, Any?>] = []
     internal var uniqueId = "container_\(UUID().uuidString)"
     private let engineBinding = Fusion.instance.engineBinding
-    private var maskView: UIView? = nil
     private var backgroundColor: UIColor = .white
     
     private var isAttached: Bool {
         get {
             engineBinding?.engine?.viewController == self
         }
-    }
-    
-    func removeMask() {
-        guard let maskView = maskView else {
-            return
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            maskView.removeFromSuperview()
-        }
-        self.maskView = nil
     }
     
     private func attachToContainer() {
@@ -55,12 +44,6 @@ open class FusionViewController: FlutterViewController {
         if isViewOpaque {
             modalPresentationStyle = .fullScreen
             view.backgroundColor = backgroundColor
-            maskView = UIView()
-            if let maskView = maskView {
-                maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                maskView.backgroundColor = backgroundColor
-                view.addSubview(maskView)
-            }
         } else {
             modalPresentationStyle = .overFullScreen
         }

@@ -14,7 +14,6 @@ internal class FusionEngineBinding: NSObject {
     private var hostRestore: FlutterBasicMessageChannel? = nil
     private var hostSync: FlutterBasicMessageChannel? = nil
     private var hostDispatchEvent: FlutterBasicMessageChannel? = nil
-    private var hostRemoveMaskView: FlutterBasicMessageChannel? = nil
     private var flutterCreate: FlutterBasicMessageChannel? = nil
     private var flutterSwitchTop: FlutterBasicMessageChannel? = nil
     private var flutterRestore: FlutterBasicMessageChannel? = nil
@@ -56,7 +55,6 @@ internal class FusionEngineBinding: NSObject {
         hostRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/restore", binaryMessenger: binaryMessenger)
         hostSync = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/sync", binaryMessenger: binaryMessenger)
         hostDispatchEvent = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/dispatchEvent", binaryMessenger: binaryMessenger)
-        hostRemoveMaskView = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/host/removeMaskView", binaryMessenger: binaryMessenger)
         flutterCreate = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/create", binaryMessenger: binaryMessenger)
         flutterSwitchTop = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/switchTop", binaryMessenger: binaryMessenger)
         flutterRestore = FlutterBasicMessageChannel(name: "\(FusionConstant.FUSION_CHANNEL)/flutter/restore", binaryMessenger: binaryMessenger)
@@ -126,14 +124,6 @@ internal class FusionEngineBinding: NSObject {
             }
             let args = dict["args"] as? Dictionary<String, Any>
             FusionEventManager.instance.send(name, args: args, type: .native)
-            reply(nil)
-        }
-        hostRemoveMaskView?.setMessageHandler { (message: Any?, reply: @escaping FlutterReply) in
-            guard let dict = message as? Dictionary<String, Any>, let uniqueId = dict["uniqueId"] as? String else {
-                reply(nil)
-                return
-            }
-            FusionStackManager.instance.findContainer(uniqueId)?.removeMask()
             reply(nil)
         }
     }
@@ -297,8 +287,6 @@ internal class FusionEngineBinding: NSObject {
         hostSync = nil
         hostDispatchEvent?.setMessageHandler(nil)
         hostDispatchEvent = nil
-        hostRemoveMaskView?.setMessageHandler(nil)
-        hostRemoveMaskView = nil
         flutterCreate = nil
         flutterSwitchTop = nil
         flutterRestore = nil

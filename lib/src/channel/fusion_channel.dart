@@ -33,8 +33,6 @@ class FusionChannel {
       '$_fusionChannel/host/sync', StandardMessageCodec());
   final _hostDispatchEvent = const BasicMessageChannel(
       '$_fusionChannel/host/dispatchEvent', StandardMessageCodec());
-  final _hostRemoveMaskView = const BasicMessageChannel(
-      '$_fusionChannel/host/removeMaskView', StandardMessageCodec());
   final _flutterCreate = const BasicMessageChannel(
       '$_fusionChannel/flutter/create', StandardMessageCodec());
   final _flutterSwitchTop = const BasicMessageChannel(
@@ -125,7 +123,6 @@ class FusionChannel {
           }
         }
         FusionNavigatorDelegate.instance.create(uniqueId, name, args);
-        removeMaskView(uniqueId);
       });
       return null;
     });
@@ -151,7 +148,6 @@ class FusionChannel {
           return;
         }
         FusionNavigatorDelegate.instance.restore(uniqueId, list);
-        removeMaskView(uniqueId);
       });
       return;
     });
@@ -290,16 +286,6 @@ class FusionChannel {
     _hostDispatchEvent.send({
       'name': name,
       'args': args,
-    });
-  }
-
-  void removeMaskView(String uniqueId) {
-    // ignore: invalid_null_aware_operator
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // callback of the next frame completes
-      _hostRemoveMaskView.send({
-        'uniqueId': uniqueId,
-      });
     });
   }
 }

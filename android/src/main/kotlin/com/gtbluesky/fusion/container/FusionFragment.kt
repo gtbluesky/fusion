@@ -26,7 +26,6 @@ import java.util.UUID
 
 open class FusionFragment : FlutterFragment(), FusionContainer {
     private val history = mutableListOf<Map<String, Any?>>()
-    private var maskView: View? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
@@ -40,15 +39,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     override fun isTransparent() = transparencyMode.name == TransparencyMode.transparent.name
 
     override fun isAttached() = isAttached
-
-    override fun removeMask() {
-        maskView?.let {
-            it.postDelayed({
-                (it.parent as? FrameLayout)?.removeView(it)
-            }, 100)
-        }
-        maskView = null
-    }
 
     @Suppress("UNCHECKED_CAST")
     private fun attachToContainer() {
@@ -107,14 +97,6 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
     }
 
     private fun onContainerCreate() {
-        val frameLayout = flutterView?.parent as? FrameLayout
-        if (frameLayout != null && !isTransparent()) {
-            val backgroundColor =
-                arguments?.getInt(FusionConstant.EXTRA_BACKGROUND_COLOR) ?: Color.WHITE
-            maskView = View(context)
-            maskView?.setBackgroundColor(backgroundColor)
-            frameLayout.addView(maskView)
-        }
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
         }

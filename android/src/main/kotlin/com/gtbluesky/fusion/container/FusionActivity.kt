@@ -25,7 +25,6 @@ import java.util.UUID
 
 open class FusionActivity : FlutterActivity(), FusionContainer {
     private val history = mutableListOf<Map<String, Any?>>()
-    private var maskView: View? = null
     private var flutterView: FlutterView? = null
     private var isAttached = false
     private var uniqueId = "container_${UUID.randomUUID()}"
@@ -39,15 +38,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
     override fun isTransparent() = backgroundMode.name == BackgroundMode.transparent.name
 
     override fun isAttached() = isAttached
-
-    override fun removeMask() {
-        maskView?.let {
-            it.postDelayed({
-                (it.parent as? FrameLayout)?.removeView(it)
-            }, 100)
-        }
-        maskView = null
-    }
 
     private fun attachToContainer() {
         if (isAttached) return
@@ -96,12 +86,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             val backgroundColor =
                 intent.getIntExtra(FusionConstant.EXTRA_BACKGROUND_COLOR, Color.WHITE)
             window.setBackgroundDrawable(ColorDrawable(backgroundColor))
-            val frameLayout = flutterView?.parent as? FrameLayout
-            if (frameLayout != null) {
-                maskView = View(this)
-                maskView?.setBackgroundColor(backgroundColor)
-                frameLayout.addView(maskView)
-            }
         }
         if (FusionStackManager.isEmpty()) {
             engineBinding?.engine?.lifecycleChannel?.appIsResumed()
