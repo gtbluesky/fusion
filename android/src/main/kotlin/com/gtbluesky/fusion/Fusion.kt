@@ -9,6 +9,8 @@ import com.gtbluesky.fusion.constant.FusionConstant
 import com.gtbluesky.fusion.engine.FusionEngineBinding
 import com.gtbluesky.fusion.container.FusionStackManager
 import com.gtbluesky.fusion.navigator.FusionRouteDelegate
+import io.flutter.embedding.android.FlutterFragment
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineGroup
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -29,6 +31,19 @@ object Fusion {
     internal var topActivityRef: WeakReference<Activity>? = null
 
     @UiThread
+    fun preInstall(context: Application) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw RuntimeException(
+                "Methods marked with @UiThread must be executed on the main thread. Current thread: ${Thread.currentThread().name}"
+            )
+        }
+        FlutterFragmentActivity.FRAGMENT_CONTAINER_ID
+        FlutterFragment.FLUTTER_VIEW_ID
+        lifecycleCallback = FusionLifecycleCallbacks()
+        context.registerActivityLifecycleCallbacks(lifecycleCallback)
+    }
+
+    @UiThread
     fun install(context: Application, delegate: FusionRouteDelegate) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw RuntimeException(
@@ -45,8 +60,9 @@ object Fusion {
         defaultEngine = createAndRunEngine()
         engineBinding = FusionEngineBinding(defaultEngine)
         engineBinding?.attach()
-        lifecycleCallback = FusionLifecycleCallbacks()
-        context.registerActivityLifecycleCallbacks(lifecycleCallback)
+        if (lifecycleCallback == null) {
+            preInstall(context)
+        }
     }
 
     @UiThread
