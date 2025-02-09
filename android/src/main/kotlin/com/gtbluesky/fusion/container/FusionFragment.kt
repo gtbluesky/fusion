@@ -40,24 +40,15 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
 
     override fun isAttached() = isAttached
 
-    @Suppress("UNCHECKED_CAST")
     private fun attachToContainer() {
         if (isAttached) return
         isAttached = true
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
-        try {
-            val delegateField = findFlutterFragmentClass().getDeclaredField("delegate")
-            delegateField.isAccessible = true
-            (delegateField.get(this) as? ExclusiveAppComponent<Activity>)?.let {
-                engine.activityControlSurface.attachToActivity(
-                    it,
-                    lifecycle
-                )
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        engine.activityControlSurface.attachToActivity(
+            exclusiveAppComponent,
+            lifecycle
+        )
         // Attach rendering pipeline.
         flutterView?.attachToFlutterEngine(engine)
         // 配置PlatformChannel和CustomChannel是因为其和Activity相关联
@@ -164,7 +155,8 @@ open class FusionFragment : FlutterFragment(), FusionContainer {
             return false
         }
         val top = FusionStackManager.getTopActivityContainer()
-        val result = top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
+        val result =
+            top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
         if (result) {
             Log.w("Fusion", "Skip the unexpected activity lifecycle on Android Q.")
         }

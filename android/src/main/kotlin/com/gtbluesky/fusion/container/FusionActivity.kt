@@ -45,7 +45,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         val engine = engineBinding?.engine ?: return
         // Attach plugins to the activity.
         engine.activityControlSurface.attachToActivity(
-            delegate, lifecycle
+            exclusiveAppComponent,
+            lifecycle
         )
         // Attach rendering pipeline.
         flutterView?.attachToFlutterEngine(engine)
@@ -135,7 +136,8 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
             return false
         }
         val top = FusionStackManager.getTopActivityContainer()
-        val result = top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
+        val result =
+            top != null && top != activity && top.isTransparent() && !(top as Activity).isFinishing
         if (result) {
             Log.w("Fusion", "Skip the unexpected activity lifecycle on Android Q.")
         }
