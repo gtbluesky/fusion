@@ -2,10 +2,8 @@ import { buildFusionParams, FusionEntry, FusionComponent } from 'fusion'
 import List from '@ohos.util.List'
 import CustomFusionEntry from './CustomFusionEntry'
 
-@Entry({ routeName: TabScenePage.ROUTE_NAME })
 @Component
 export default struct TabScenePage {
-  static ROUTE_NAME = 'TabScenePage'
   @State currentIndex: number = 0
   private flutterEntryList = new List<FusionEntry>()
 
@@ -47,29 +45,31 @@ export default struct TabScenePage {
   }
 
   override build(): void {
-    Tabs({
-      index: this.currentIndex,
-      barPosition: BarPosition.End
-    }) {
-      TabContent() {
-        FusionComponent({ entry: this.flutterEntryList.get(0)})
-      }
-      .tabBar('Tab0')
+    NavDestination() {
+      Tabs({
+        index: this.currentIndex,
+        barPosition: BarPosition.End
+      }) {
+        TabContent() {
+          FusionComponent({ entry: this.flutterEntryList.get(0), childMode: true })
+        }
+        .tabBar('Tab0')
 
-      TabContent() {
-        FusionComponent({ entry: this.flutterEntryList.get(1)})
-      }
-      .tabBar('Tab1')
+        TabContent() {
+          FusionComponent({ entry: this.flutterEntryList.get(1), childMode: true })
+        }
+        .tabBar('Tab1')
 
-      TabContent() {
-        FusionComponent({ entry: this.flutterEntryList.get(2)})
+        TabContent() {
+          FusionComponent({ entry: this.flutterEntryList.get(2), childMode: true })
+        }
+        .tabBar('Tab2')
       }
-      .tabBar('Tab2')
-    }
-    .scrollable(false)
-    .animationDuration(0)
-    .onChange((index) => {
-      this.currentIndex = index
-    })
+      .scrollable(false)
+      .animationDuration(0)
+      .onChange((index) => {
+        this.currentIndex = index
+      })
+    }.hideTitleBar(true)
   }
 }

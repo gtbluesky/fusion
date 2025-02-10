@@ -141,13 +141,17 @@ final Map<String, FusionPageFactory> routeMap = {
   '/lifecycle': (args) => LifecyclePage(args: args),
   '/willpop': ((args) => WillPopPage(args: args)),
   '/web': (args) => WebPage(args: args),
-  '/transparent': (args) => TransparentPage(args: args),
   '/background': (args) => BackgroundPage(args: args),
   '/refresh': (args) => RefreshPage(args: args),
   kUnknownRoute: (args) => UnknownPage(args: args),
 };
 
 final Map<String, FusionPageCustomFactory> customRouteMap = {
+  '/transparent': (settings) => PageRouteBuilder(
+      opaque: settings.opaque,
+      settings: settings,
+      pageBuilder: (_, __, ___) =>
+          TransparentPage(args: settings.arguments as Map<String, dynamic>?)),
   '/dialog_page': (settings) => PageRouteBuilder(
       opaque: settings.opaque,
       settings: settings,

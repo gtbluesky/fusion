@@ -9,7 +9,5 @@ export default interface FusionContainer {
 
   isAttached(): boolean
 
-  removeMask(): void
-
   detachFromContainer(): void
 }

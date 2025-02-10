@@ -6,8 +6,7 @@ import Fusion from '../Fusion';
 import FusionMessengerHandler from '../handler/FusionMessengerHandler';
 import { Context } from '@kit.AbilityKit';
 import FusionConstant from '../constant/FusionConstant';
-import { window } from '@kit.ArkUI';
-import { FlutterEngine, FlutterEntry, PlatformChannel, PlatformPlugin, ToolUtils } from '@ohos/flutter_ohos';
+import { FlutterEngine, FlutterEntry, PlatformPlugin, ToolUtils } from '@ohos/flutter_ohos';
 
 export default class FusionEntry extends FlutterEntry implements FusionContainer {
   private _context: Context
@@ -17,6 +16,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
   private _uniqueId = `container_${util.generateRandomUUID(false)}`
   private engineBinding = Fusion.instance.engineBinding
   private platformPlugin: PlatformPlugin | null = null
+  public navDestinationId?: string | null
 
   /* override */ uniqueId(): string {
     return this._uniqueId
@@ -34,16 +34,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     return this._isAttached
   }
 
-  /* override */ removeMask(): void {
-    if (this.isTransparent()) {
-      return
-    }
-    setTimeout(() => {
-      this._context.eventHub.emit(this._uniqueId)
-    }, 100)
-  }
-
-  private attachToContainer(): void {
+  attachToContainer(): void {
     if (this._isAttached) {
       return
     }
@@ -61,6 +52,7 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     if (this.platformPlugin == null) {
       let platformChannel = this.engineBinding?.engine?.getPlatformChannel()
       this.platformPlugin = new PlatformPlugin(platformChannel!, this._context)
+      this.platformPlugin.callback.mainWindow = this.windowStage?.getMainWindowSync() ?? null
     }
     // Configure custom channel
     if (ToolUtils.implementsInterface(this, 'configureFlutterChannel')) {
@@ -77,7 +69,9 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     if (engine == null) {
       return
     }
+    // Plugins are no longer attached to the ability.
     engine.getAbilityControlSurface()?.detachFromAbility()
+    // Detach rendering pipeline.
     this.getFlutterView()?.detachFromFlutterEngine()
     // Release platform channel
     this.platformPlugin?.destroy()
@@ -139,22 +133,21 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
     return this._params
   }
 
-  override async aboutToAppear(): Promise<void> {
+  override aboutToAppear(): void {
     const top = FusionStackManager.instance.getTopContainer()
     if (top != this) {
       top?.detachFromContainer()
     }
-    await super.aboutToAppear()
+    super.aboutToAppear()
     const routeName = (this._params[FusionConstant.ROUTE_NAME] ?? FusionConstant.INITIAL_ROUTE) as string
     const routeArgs = this._params[FusionConstant.ROUTE_ARGS] as Map<string, Object>
-    if (this.isTransparent()) {
-      const win = window.findWindow(FusionConstant.TRANSPARENT_WINDOW)
-      win.setWindowLayoutFullScreen(true)
-      win.setWindowBackgroundColor('#00000000')
-    }
     this.engineBinding?.create(this._uniqueId, routeName, routeArgs)
     this.getFlutterView()?.detachFromFlutterEngine()
     this.onContainerCreate()
+    if (this.navDestinationId != null) {
+      this._params['uniqueId'] = this._uniqueId
+      this._params['navDestinationId'] = this.navDestinationId
+    }
   }
 
   override onPageShow(): void {
@@ -174,6 +167,21 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
       this.engineBinding?.engine?.getLifecycleChannel()?.appIsPaused()
     }
     this.engineBinding = null
+    // 透明FlutterPage下的FlutterPage需主动触发其onPageShow
+    const previousIndex = this._params['previousIndex'] as number | null
+    if (previousIndex == null) {
+      return
+    }
+    const previousParam = Fusion.instance.navPathStack?.getParamByIndex(previousIndex) as Record<string, Object> | null
+    if (previousParam == null) {
+      return
+    }
+    const previousUniqueId = previousParam['uniqueId'] as string | null
+    if (previousUniqueId == null) {
+      return
+    }
+    const previousEntry = FusionStackManager.instance.findContainer(previousUniqueId) as FusionEntry | null
+    previousEntry?.onPageShow()
   }
 
   override onBackPress(): void {

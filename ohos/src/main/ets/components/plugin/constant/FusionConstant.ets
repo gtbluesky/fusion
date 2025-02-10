@@ -7,5 +7,4 @@ export default class FusionConstant {
   static EXTRA_BACKGROUND_COLOR: string = 'background_color'
   static FUSION_RESTORATION_HISTORY_KEY: string = 'history'
   static FUSION_RESTORATION_UNIQUE_ID_KEY: string = 'uniqueId'
-  static TRANSPARENT_WINDOW: string = 'TRANSPARENT_WINDOW'
 }

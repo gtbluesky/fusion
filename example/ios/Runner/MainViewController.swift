@@ -26,7 +26,6 @@ class MainViewController: UIViewController {
         newButton(button: UIButton(), offsetY: -75, title: "Flutter普通页面场景", action: #selector(click0(btn:)))
         newButton(button: UIButton(), offsetY: -25, title: "Flutter透明页面场景", action: #selector(click1(btn:)))
         newButton(button: UIButton(), offsetY: 25, title: "Flutter子页面场景", action: #selector(click2(btn:)))
-        newButton(button: UIButton(), offsetY: 75, title: "Native侧边栏嵌入Flutter场景", action: #selector(click3(btn:)))
         FusionEventManager.instance.register("custom_event", callback: onReceive)
     }
     
@@ -75,15 +74,6 @@ class MainViewController: UIViewController {
             "/native_tab_fixed",
             routeType: .native
         )
-    }
-
-    @IBAction func click3(btn: Any) {
-        FusionEventManager.instance.unregister("custom_event", callback: onReceive)
-
-//        let fusionVc = CustomFusionViewController(
-//            routeName: "/lifecycle", routeArgs: nil
-//        )
-//        presentLeftDrawer(fusionVc, animated: true)
     }
     
     deinit {

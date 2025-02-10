@@ -4,50 +4,39 @@ import FusionEntry from './FusionEntry'
 
 @Component
 export default struct FusionComponent {
-  entry: FusionEntry | null = null
-  @State private showMask: boolean = false
+  @Require entry!: FusionEntry
+  childMode: boolean = false
   private bgColor = BigInt(0xFFFFFFFF)
+  private static TAG = 'FusionComponent'
 
-  override async aboutToAppear(): Promise<void> {
-    await this.entry?.aboutToAppear()
-    this.showMask = this.entry?.isTransparent() == false
-    this.bgColor = (this.entry?.params[FusionConstant.EXTRA_BACKGROUND_COLOR] ?? BigInt(0xFFFFFFFF)) as bigint
-    getContext(this).eventHub.on(this.entry?.uniqueId(), () => {
-      this.showMask = false
-    })
-  }
-
-  onComponentShow(): void {
-    this.entry?.onPageShow()
-  }
-
-  onComponentHide(): void {
-    this.entry?.onPageHide()
-  }
-
-  override aboutToDisappear(): void {
-    getContext(this).eventHub.off(this.entry?.uniqueId())
-    this.entry?.aboutToDisappear()
-    this.entry = null
+  override aboutToAppear(): void {
+    if (!this.childMode) {
+      const navInfo = this.queryNavDestinationInfo()
+      const navDestinationId = navInfo?.navDestinationId ?? null
+      this.entry.navDestinationId = navDestinationId
+    }
+    this.entry.aboutToAppear()
+    this.bgColor = (this.entry.params[FusionConstant.EXTRA_BACKGROUND_COLOR] ?? BigInt(0xFFFFFFFF)) as bigint
   }
 
   override build(): void {
     Stack() {
       FlutterPage({
-        viewId: this.entry?.getFlutterView()?.getId(),
+        viewId: this.entry.getFlutterView()?.getId(),
+        checkMouseWheel: false,
+        xComponentColor: this.entry.isTransparent() == true ? Color.Transparent : Number(this.bgColor)
       })
-      if (this.showMask) {
-        Stack()
-          .backgroundColor(Number(this.bgColor))
-          .width('100%')
-          .height('100%')
-      }
-    }.onVisibleAreaChange([0.0, 1.0], (isVisible, _) => {
+    }
+    .onVisibleAreaChange([0.0, 1.0], (isVisible, _) => {
       if (isVisible) {
-        this.onComponentShow()
+        this.entry.onPageShow()
       } else {
-        this.onComponentHide()
+        this.entry.onPageHide()
       }
     })
+  }
+
+  override aboutToDisappear(): void {
+    this.entry.aboutToDisappear()
   }
 }

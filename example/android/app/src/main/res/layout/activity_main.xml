@@ -1,65 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tv_flutter_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerInParent="true"
-            android:gravity="center_horizontal">
+            android:text="Flutter普通页面场景"
+            android:textSize="18sp"/>
 
-            <TextView
-                android:id="@+id/tv_flutter_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Flutter普通页面场景"
-                android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/tv_transparent_flutter_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Flutter透明页面场景"
+            android:textSize="18sp"/>
 
-            <TextView
-                android:id="@+id/tv_transparent_flutter_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Flutter透明页面场景"
-                android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/tv_flutter_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Flutter子页面场景"
+            android:textSize="18sp"/>
 
-            <TextView
-                android:id="@+id/tv_flutter_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Flutter子页面场景"
-                android:textSize="18sp"/>
-
-            <TextView
-                android:id="@+id/tv_flutter_viewpager"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="ViewPager场景"
-                android:textSize="18sp"
-                android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/tv_flutter_drawer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Native侧边栏嵌入Flutter场景"
-                android:textSize="18sp"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <FrameLayout
-        android:id="@+id/flutter_layout"
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"/>
-</androidx.drawerlayout.widget.DrawerLayout>
+        <TextView
+            android:id="@+id/tv_flutter_viewpager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="ViewPager场景"
+            android:textSize="18sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</RelativeLayout>

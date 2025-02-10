@@ -1,25 +1,31 @@
-import { FusionEntry, FusionComponent } from 'fusion';
+import { FusionConstant, FusionComponent, Fusion, FusionEntry } from 'fusion';
 import CustomFusionEntry from './CustomFusionEntry';
 
-@Entry({ routeName: CustomFusionPage.ROUTE_NAME })
 @Component
 export default struct CustomFusionPage {
-  static ROUTE_NAME = 'CustomFusionPage'
-  private flutterEntry: FusionEntry | null = null
+  @Require param?: Record<string, Object>
+  private entry?: FusionEntry
 
   override aboutToAppear(): void {
-    const storage = LocalStorage.getShared()
-    this.flutterEntry = new CustomFusionEntry(getContext(this), storage.get('params') as Record<string, Object>)
+    this.entry = new CustomFusionEntry(
+      getContext(this),
+      this.param
+    )
   }
 
   override build(): void {
-    Stack() {
-      FusionComponent({entry: this.flutterEntry})
+    NavDestination() {
+      FusionComponent({ entry: this.entry })
     }
+    .mode(this.isTransparent() ? NavDestinationMode.DIALOG : NavDestinationMode.STANDARD)
+    .hideTitleBar(true)
+    .onBackPressed(() => {
+      Fusion.instance.engineBinding?.maybePop()
+      return true
+    })
   }
 
-  override onBackPress(): boolean {
-    this.flutterEntry?.onBackPress()
-    return true
+  private isTransparent(): boolean {
+    return (this.param![FusionConstant.EXTRA_BACKGROUND_MODE] ?? false) as boolean
   }
 }

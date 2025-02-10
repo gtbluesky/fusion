@@ -3,7 +3,7 @@
 
 | **OS**        | Android    | iOS   | HarmonyOS |
 |---------------|------------|-------|-----------|
-| **SDK**   | 5.0(21)+   | 11.0+ | 5.0(12)+  |
+| **SDK**   | 5.0(21)+   | 11.0+ | 5.0(13)+  |
 
 ## 简介
 
@@ -138,6 +138,12 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
     GeneratedPluginRegistrant.registerWith(Fusion.instance.defaultEngine!)
   }
 
+  override onWindowStageCreate(windowStage: window.WindowStage): void {
+    this.windowStage = windowStage
+    this.mainWindow = windowStage.getMainWindowSync()
+    windowStage.loadContent('pages/IndexPage')
+  }
+
   pushNativeRoute(name: string, args: Map<string, Object> | null): void {
     // 根据路由 name 跳转对应 Native 页面
   }
@@ -193,8 +199,7 @@ HarmonyOS 侧
 通过 `FusionEntry`（或其子类） 创建 Flutter 容器，启动容器时需要使用 Fusion 提供的 `buildFusionParams` 方法，也可直接使用 `FusionPage`。默认全屏模式。
 ```typescript
     const params = buildFusionParams(name, args, false, backgroundColor)
-    this.mainLocalStorage?.setOrCreate('params', params)
-    router.pushNamedRoute({name: FusionConstant.FUSION_ROUTE_NAME})
+    Fusion.instance.navPathStack?.pushPathByName('CustomFusionPage', params)
 ```
 
 #### 透明页面模式
@@ -228,13 +233,8 @@ HarmonyOS 侧
 使用方式与普通页面模式相似：
 ```typescript
     const params = buildFusionParams(name, args, true, backgroundColor)
-    this.windowStage?.createSubWindow(FusionConstant.TRANSPARENT_WINDOW, (_, win) => {
-      const record: Record<string, Object> = {
-        'params': params
-      }
-      win.loadContentByName(FusionConstant.FUSION_ROUTE_NAME, new LocalStorage(record))
-      win.showWindow()
-    })
+    Fusion.instance.navPathStack?.disableAnimation(true)
+    Fusion.instance.navPathStack?.pushPathByName('CustomFusionPage', params)
 ```
 
 Flutter 侧
@@ -256,7 +256,7 @@ iOS 侧
 
 HarmonyOS 侧
 
-与页面模式一样使用 FusionEntry，配合 `buildFusionParams`方法配置参数
+与页面模式一样使用 FusionEntry，配合 `buildFusionParams`方法配置参数，通过 `FusionComponent` 传入 `childMode: true`
 
 #### 自定义容器背景色
 

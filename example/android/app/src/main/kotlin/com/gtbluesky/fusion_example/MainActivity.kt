@@ -3,8 +3,6 @@ package com.gtbluesky.fusion_example
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
-import com.gtbluesky.fusion.container.buildFusionFragment
 import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.navigator.FusionRouteType
 import com.gtbluesky.fusion.event.FusionEventManager
@@ -12,7 +10,6 @@ import com.gtbluesky.fusion_example.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
-    private var hasOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,16 +59,6 @@ class MainActivity : AppCompatActivity() {
 //                routeType = FusionRouteType.NATIVE
 //            )
 //        }
-        activityMainBinding.tvFlutterDrawer.setOnClickListener {
-            if (!hasOpened) {
-                hasOpened = true
-                val flutterFragment =
-                    buildFusionFragment(CustomFusionFragment::class.java, "/lifecycle")
-                supportFragmentManager.beginTransaction()
-                    .replace(activityMainBinding.flutterLayout.id, flutterFragment).commit()
-            }
-            activityMainBinding.drawerLayout.openDrawer(GravityCompat.START)
-        }
     }
 
     override fun onDestroy() {

@@ -1,8 +1,7 @@
 import FusionContainer from './FusionContainer'
+import FusionEntry from './FusionEntry'
 import Fusion from '../Fusion'
 import List from '@ohos.util.List'
-import { router, window } from '@kit.ArkUI'
-import FusionConstant from '../constant/FusionConstant'
 
 export default class FusionStackManager {
   private static _instance = new FusionStackManager()
@@ -54,13 +53,25 @@ export default class FusionStackManager {
   }
 
   public closeContainer(container: FusionContainer): void {
-    if (container.isTransparent()) {
-      const win = window.findWindow(FusionConstant.TRANSPARENT_WINDOW)
-      // 使子窗口销毁前执行onPageHide()
-      win.minimize()
-      win.destroyWindow()
-    } else {
-      router.back()
+    const entry = container as FusionEntry
+    if (entry.navDestinationId != null && entry.isTransparent()) {
+      const size = Fusion.instance.navPathStack?.size() ?? 0
+      for (let i = 0; i < size; ++i) {
+        const param = Fusion.instance.navPathStack?.getParamByIndex(i) as Record<string, Object> | null
+        if (param == null) {
+          continue
+        }
+        if (param['navDestinationId'] == entry.navDestinationId) {
+          if (i > 0) {
+            param['previousIndex'] = --i
+          }
+          break
+        }
+      }
+    }
+    if (entry.navDestinationId != null) {
+      Fusion.instance.navPathStack?.disableAnimation(entry.isTransparent())
+      Fusion.instance.navPathStack?.removeByNavDestinationId(entry.navDestinationId)
     }
   }
 

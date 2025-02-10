@@ -39,7 +39,3 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
   end
 end
-
-pod 'SideMenu', '6.5.0'
-# pod 'MLeaksFinder', '1.0.0'
-# pod 'Toast-Swift', '5.0.1'

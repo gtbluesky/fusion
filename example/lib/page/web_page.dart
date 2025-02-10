@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fusion/fusion.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebPage extends StatefulWidget {
@@ -17,7 +18,6 @@ class _WebPageState extends State<WebPage> {
   @override
   void initState() {
     super.initState();
-
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
@@ -28,8 +28,16 @@ class _WebPageState extends State<WebPage> {
               print('progress=$progress');
             }
           },
-          onPageStarted: (String url) {},
-          onPageFinished: (String url) {},
+          onPageStarted: (String url) {
+            if (kDebugMode) {
+              print('onPageStarted: url=$url');
+            }
+          },
+          onPageFinished: (String url) {
+            if (kDebugMode) {
+              print('onPageFinished: url=$url');
+            }
+          },
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
@@ -45,7 +53,15 @@ class _WebPageState extends State<WebPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.args?['title'] ?? 'Flutter WebView')),
+      appBar: AppBar(
+          title: GestureDetector(
+        child: Text(widget.args?['title'] ?? 'Flutter WebView'),
+        onTap: () {
+          // FusionNavigator.push('/web', routeType: FusionRouteType.flutterWithContainer);
+          FusionNavigator.push('/refresh',
+              routeType: FusionRouteType.flutterWithContainer);
+        },
+      )),
       body: WebViewWidget(controller: controller),
     );
   }

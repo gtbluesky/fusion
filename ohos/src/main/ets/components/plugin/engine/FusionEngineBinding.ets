@@ -1,6 +1,5 @@
 import { List } from '@kit.ArkTS';
 import FusionEventManager from '../event/FusionEvent';
-import FusionContainer from '../container/FusionContainer';
 import FusionStackManager from '../container/FusionStackManager';
 import FusionConstant from '../constant/FusionConstant';
 import Fusion from '../Fusion';
@@ -17,7 +16,6 @@ export default class FusionEngineBinding {
   private hostRestore: BasicMessageChannel<Object> | null = null
   private hostSync: BasicMessageChannel<Object> | null = null
   private hostDispatchEvent: BasicMessageChannel<Object> | null = null
-  private hostRemoveMaskView: BasicMessageChannel<Object> | null = null
   private flutterCreate: BasicMessageChannel<Object> | null = null
   private flutterSwitchTop: BasicMessageChannel<Object> | null = null
   private flutterRestore: BasicMessageChannel<Object> | null = null
@@ -80,11 +78,6 @@ export default class FusionEngineBinding {
     this.hostDispatchEvent = new BasicMessageChannel(
       binaryMessenger,
       `${FusionConstant.FUSION_CHANNEL}/host/dispatchEvent`,
-      messageCodec
-    )
-    this.hostRemoveMaskView = new BasicMessageChannel(
-      binaryMessenger,
-      `${FusionConstant.FUSION_CHANNEL}/host/removeMaskView`,
       messageCodec
     )
     this.flutterCreate = new BasicMessageChannel(
@@ -247,21 +240,6 @@ export default class FusionEngineBinding {
         reply.reply(null)
       }
     })
-    this.hostRemoveMaskView?.setMessageHandler({
-      onMessage: (message, reply) => {
-        if (!(message instanceof Map)) {
-          reply.reply(null)
-          return
-        }
-        const uniqueId = message.get('uniqueId') as string | null
-        if (uniqueId == null) {
-          reply.reply(null)
-          return
-        }
-        FusionStackManager.instance.findContainer(uniqueId)?.removeMask()
-        reply.reply(null)
-      }
-    })
   }
 
   // external function
@@ -326,9 +304,6 @@ export default class FusionEngineBinding {
   }
 
   destroy(uniqueId: string): void {
-    if (!FusionStackManager.instance.isAttached()) {
-      this._engine?.getPlatformViewsController()?.attach(null, null, this._engine?.dartExecutor)
-    }
     const map = new Map<string, Object>()
     map.set('uniqueId', uniqueId)
     this.flutterDestroy?.send(map)
@@ -424,8 +399,6 @@ export default class FusionEngineBinding {
     this.hostSync = null
     this.hostDispatchEvent?.setMessageHandler(null)
     this.hostDispatchEvent = null
-    this.hostRemoveMaskView?.setMessageHandler(null)
-    this.hostRemoveMaskView = null
     this.flutterCreate = null
     this.flutterSwitchTop = null
     this.flutterRestore = null

@@ -16,7 +16,6 @@
 		A717A1582BC516700077AB84 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717A1572BC516700077AB84 /* MainViewController.swift */; };
 		A7532C8327E2ED67005A1D51 /* TabSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7532C8227E2ED67005A1D51 /* TabSceneViewController.swift */; };
 		A797BAAF27DEE9E2003946CE /* CustomFusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797BAAE27DEE9E2003946CE /* CustomFusionViewController.swift */; };
-		B54DDD8648D9295036C136B7 /* UIViewController+Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,7 +51,6 @@
 		A717A1572BC516700077AB84 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		A7532C8227E2ED67005A1D51 /* TabSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSceneViewController.swift; sourceTree = "<group>"; };
 		A797BAAE27DEE9E2003946CE /* CustomFusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFusionViewController.swift; sourceTree = "<group>"; };
-		B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Drawer.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,7 +117,6 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				A797BAAE27DEE9E2003946CE /* CustomFusionViewController.swift */,
 				A7532C8227E2ED67005A1D51 /* TabSceneViewController.swift */,
-				B54DD03A098FC45F9C4FE6C6 /* UIViewController+Drawer.swift */,
 				A717A1572BC516700077AB84 /* MainViewController.swift */,
 			);
 			path = Runner;
@@ -287,7 +284,6 @@
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				A7532C8327E2ED67005A1D51 /* TabSceneViewController.swift in Sources */,
 				A797BAAF27DEE9E2003946CE /* CustomFusionViewController.swift in Sources */,
-				B54DDD8648D9295036C136B7 /* UIViewController+Drawer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
