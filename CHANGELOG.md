@@ -1,3 +1,7 @@
+## 4.9.0
+
+* HarmonyOS platform is fully adapted to align the capabilities of Android and iOS.
+
 ## 4.8.0
 
 * Adjusts page lifecycle(Dialogs don't affect the lifecycle of all pages.).
