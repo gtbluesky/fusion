@@ -118,7 +118,6 @@ export default class FusionEntry extends FlutterEntry implements FusionContainer
 
   private onContainerDestroy(): void {
     this.detachFromContainer()
-    this._history.clear()
     FusionStackManager.instance.remove(this)
     this.engineBinding?.destroy(this._uniqueId)
   }

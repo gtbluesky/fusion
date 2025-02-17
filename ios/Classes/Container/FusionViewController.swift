@@ -76,7 +76,6 @@ open class FusionViewController: FlutterViewController {
     }
 
     private func onContainerDestroy() {
-        history.removeAll()
         FusionStackManager.instance.remove(self)
         engineBinding?.destroy(uniqueId)
     }

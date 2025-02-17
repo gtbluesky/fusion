@@ -126,7 +126,6 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
 
     private fun onContainerDestroy() {
         detachFromContainer()
-        history.clear()
         FusionStackManager.remove(this)
         engineBinding?.destroy(uniqueId)
     }
@@ -160,7 +159,7 @@ open class FusionActivity : FlutterActivity(), FusionContainer {
         }
         val restoredHistory =
             savedInstanceState?.getSerializable(FusionConstant.FUSION_RESTORATION_HISTORY_KEY) as? List<Map<String, Any?>>
-        if (restoredHistory == null) {
+        if (restoredHistory.isNullOrEmpty()) {
             engineBinding?.create(uniqueId, routeName, routeArgs)
         } else {
             engineBinding?.restore(uniqueId, restoredHistory)
