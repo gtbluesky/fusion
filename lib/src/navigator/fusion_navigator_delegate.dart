@@ -269,8 +269,9 @@ class FusionNavigatorDelegate {
       await FusionChannel.instance.destroy(container.uniqueId);
     }
     // target container's pages
-    for (var i = routesInTargetContainer.length - 1; i >= 0; --i) {
-      final route = routesInTargetContainer[i];
+    for (var i = targetContainer.pages.length - 1; i >= 0; --i) {
+      final page = targetContainer.pages[i];
+      final route = page.route;
       if (route.settings.name == routeName) {
         break;
       }
