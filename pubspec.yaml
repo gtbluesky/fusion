@@ -26,7 +26,6 @@ flutter:
       ios:
         pluginClass: FusionPlugin
       ohos:
-        package: com.gtbluesky.fusion
         pluginClass: FusionPlugin
 
 topics:
