@@ -90,7 +90,7 @@ class FusionPageLifecycleManager {
     bool isFirstTime = false,
   }) {
     /// 确保didChangeDependencies后调用生命周期方法
-    if (isFirstTime) {
+    if (isFirstTime && _listenerMap[route] == null) {
       // ignore: invalid_null_aware_operator
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         final listeners = Set<FusionPageLifecycleListener>.unmodifiable(

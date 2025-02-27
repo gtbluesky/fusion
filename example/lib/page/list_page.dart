@@ -1,15 +1,36 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fusion/fusion.dart';
 
-class ListPage extends StatelessWidget {
+class ListPage extends StatefulWidget {
   const ListPage({Key? key, this.args}) : super(key: key);
 
   final Map<String, dynamic>? args;
 
   @override
+  State<ListPage> createState() => _ListPageState();
+}
+
+class _ListPageState extends State<ListPage> with FusionPageLifecycleMixin {
+  @override
+  void onPageInvisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
+  }
+
+  @override
+  void onPageVisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(args?['title'] ?? '未知页面'),
+        title: Text(widget.args?['title'] ?? '未知页面'),
       ),
       body: ListView.builder(
         itemCount: 50,

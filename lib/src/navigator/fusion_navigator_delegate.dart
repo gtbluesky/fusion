@@ -146,7 +146,7 @@ class FusionNavigatorDelegate {
     final page = FusionPage.createPage(routeName, args, animated);
     // Page's Visibility Change
     _handlePageInvisible(topPageRoute);
-    _handlePageVisible(page.route);
+    _handlePageVisible(page.route, isFirstTime: true);
     return await container.replace<dynamic>(page);
   }
 

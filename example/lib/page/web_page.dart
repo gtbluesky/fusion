@@ -12,7 +12,7 @@ class WebPage extends StatefulWidget {
   State<WebPage> createState() => _WebPageState();
 }
 
-class _WebPageState extends State<WebPage> {
+class _WebPageState extends State<WebPage> with FusionPageLifecycleMixin {
   late final WebViewController controller;
 
   @override
@@ -51,13 +51,26 @@ class _WebPageState extends State<WebPage> {
   }
 
   @override
+  void onPageInvisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageInvisible');
+    }
+  }
+
+  @override
+  void onPageVisible() {
+    if (kDebugMode) {
+      print('$runtimeType@$hashCode:onPageVisible');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: GestureDetector(
         child: Text(widget.args?['title'] ?? 'Flutter WebView'),
         onTap: () {
-          // FusionNavigator.push('/web', routeType: FusionRouteType.flutterWithContainer);
           FusionNavigator.push('/refresh',
               routeType: FusionRouteType.flutterWithContainer);
         },
