@@ -11,8 +11,12 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   private windowStage: window.WindowStage | null = null
 
   override onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    Fusion.instance.install(this.context, this)
-    GeneratedPluginRegistrant.registerWith(Fusion.instance.defaultEngine!)
+    Fusion.instance.install(this.context, this, (engine) => {
+      if (engine == null) {
+        return
+      }
+      GeneratedPluginRegistrant.registerWith(engine)
+    })
     const channel = new MethodChannel(Fusion.instance.defaultEngine?.dartExecutor!, 'container_unrelated_channel')
     channel.setMethodCallHandler({
       onMethodCall(call, result) {

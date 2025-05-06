@@ -133,9 +133,13 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   private mainWindow: window.Window | null = null
   private windowStage: window.WindowStage | null = null
 
-  override async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
-    await Fusion.instance.install(this.context, this)
-    GeneratedPluginRegistrant.registerWith(Fusion.instance.defaultEngine!)
+  override onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    Fusion.instance.install(this.context, this, (engine) => {
+      if (engine == null) {
+        return
+      }
+      GeneratedPluginRegistrant.registerWith(engine)
+    })
   }
 
   override onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -154,6 +158,10 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   }
 }
 ```
+**注意：合规风险**
+
+在用户未授权前初始化`Flutter Engine`可能会存在合规风险，可以在用户未授权前进行预初始化（preInstall），在用户授权后再进行初始化（install），这样就可以规避相关风险。（iOS 端无需预初始化）
+
 ### 2、Flutter 容器
 
 #### 普通页面模式

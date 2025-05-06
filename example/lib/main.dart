@@ -17,11 +17,15 @@ import 'package:fusion_example/page/unknown_page.dart';
 import 'package:fusion_example/page/web_page.dart';
 import 'package:fusion_example/page/willpop_page.dart';
 
+final _pageTransitionsBuilder = <TargetPlatform, PageTransitionsBuilder>{};
+
 void main() {
   print('defaultRouteName=${ui.window.defaultRouteName}');
   // MyWidgetsFlutterBinding.ensureInitialized();
   Fusion.instance.install();
   FusionAppLifecycleManager.instance.register(MyAppLifecycleListener());
+  _pageTransitionsBuilder.addAll(const PageTransitionsTheme().builders);
+  _pageTransitionsBuilder[TargetPlatform.android] = const SlidePageTransitionsBuilder();
   runApp(const MyApp());
 }
 
@@ -74,7 +78,7 @@ class MyApp extends StatelessWidget {
         ],
         theme: ThemeData(
             pageTransitionsTheme:
-                const PageTransitionsTheme(builders: _defaultBuilders)),
+                PageTransitionsTheme(builders: _pageTransitionsBuilder)),
       ),
     );
   }
@@ -162,13 +166,6 @@ final Map<String, FusionPageCustomFactory> customRouteMap = {
       settings: settings,
       pageBuilder: (_, __, ___) =>
           NavigatorPage(args: settings.arguments as Map<String, dynamic>?)),
-};
-
-const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders =
-    <TargetPlatform, PageTransitionsBuilder>{
-  TargetPlatform.android: SlidePageTransitionsBuilder(),
-  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-  // TargetPlatform.ohos: SlidePageTransitionsBuilder(),
 };
 
 class SlidePageTransitionsBuilder extends PageTransitionsBuilder {

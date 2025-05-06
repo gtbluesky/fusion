@@ -1,11 +1,7 @@
 dependency_overrides:
-  webview_flutter:
+  webview_flutter_ohos:
     git:
-      url: https://gitee.com/openharmony-sig/flutter_packages
-      path: packages/webview_flutter/webview_flutter
-      ref: master
-  webview_flutter_platform_interface:
-    git:
-      url: https://gitee.com/openharmony-sig/flutter_packages
-      path: packages/webview_flutter/webview_flutter_platform_interface
-      ref: master
+      url: https://gitcode.com/openharmony-sig/flutter_packages
+      path: packages/webview_flutter/webview_flutter_ohos
+      ref: br_webview_flutter-v4.8.0_ohos
+  webview_flutter_platform_interface: ^2.10.0

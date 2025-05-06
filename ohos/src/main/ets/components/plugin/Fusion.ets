@@ -53,28 +53,36 @@ export default class Fusion {
   private constructor() {
   }
 
-  public install(context: Context, delegate: FusionRouteDelegate): void {
+  public preInstall(context: Context) {
+    this._navPathStack = new NavPathStack()
+    this.lifecycleCallback = new FusionLifecycleCallback()
+    this.callbackId = context.getApplicationContext().on('abilityLifecycle', this.lifecycleCallback)
+  }
+
+  public install(context: Context, delegate: FusionRouteDelegate, registerPlugins: (engine: FlutterEngine | null) => void): void {
     if (this.isRunning) {
       return
     }
-    this._navPathStack = new NavPathStack()
     this.isRunning = true
     this.context = context
     this._delegate = delegate
-    this.lifecycleCallback = new FusionLifecycleCallback()
-    this.callbackId = this.context.getApplicationContext().on('abilityLifecycle', this.lifecycleCallback)
     this._engineGroup = new FlutterEngineGroup()
     this._engineGroup.checkLoader(context, null)
-    this._defaultEngine = this.createAndRunEngine()
+    this._defaultEngine = this.createAndRunEngine(registerPlugins)
     this._engineBinding = new FusionEngineBinding(this._defaultEngine)
     this._engineBinding?.attach()
+    if (this.lifecycleCallback == null) {
+      this.preInstall(context)
+    }
   }
 
-  private createAndRunEngine(initialRoute: string = FusionConstant.INITIAL_ROUTE): FlutterEngine | null{
+  private createAndRunEngine(registerPlugins: (engine: FlutterEngine | null) => void, initialRoute: string = FusionConstant.INITIAL_ROUTE): FlutterEngine | null{
     let option = new Options(this.context!)
     option.setDartEntrypoint(DartEntrypoint.createDefault())
     option.setInitialRoute(initialRoute)
-    return this._engineGroup?.createAndRunEngineByOptions(option) ?? null
+    const engine = this._engineGroup?.createAndRunEngineByOptions(option) ?? null
+    registerPlugins(engine)
+    return engine
   }
 
   public uninstall(): void {

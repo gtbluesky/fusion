@@ -1,3 +1,7 @@
+## 4.10.0
+
+* HarmonyOS platform supports pre-installation.
+
 ## 4.9.0
 
 * HarmonyOS platform is fully adapted to align the capabilities of Android and iOS.
