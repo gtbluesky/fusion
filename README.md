@@ -145,6 +145,8 @@ export default class EntryAbility extends UIAbility implements FusionRouteDelega
   override onWindowStageCreate(windowStage: window.WindowStage): void {
     this.windowStage = windowStage
     this.mainWindow = windowStage.getMainWindowSync()
+    // Fusion does not force fullscreen. Set window layout here if needed.
+    this.mainWindow.setWindowLayoutFullScreen(true)
     windowStage.loadContent('pages/IndexPage')
   }
 
