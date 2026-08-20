@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusion/src/container/fusion_container.dart';
 import 'package:fusion/src/container/fusion_page.dart';
+import 'package:fusion/src/data/fusion_data.dart';
 import 'package:fusion/src/navigator/fusion_navigator_delegate.dart';
 import 'package:fusion/src/navigator/fusion_navigator_observer.dart';
 
@@ -28,6 +29,8 @@ void main() {
       '/b': (_) => const Text('B'),
       '/c': (_) => const Text('C'),
     };
+    FusionData.transitionDuration = Duration.zero;
+    FusionData.reverseTransitionDuration = Duration.zero;
   });
 
   tearDown(() {
@@ -100,7 +103,7 @@ void main() {
   testWidgets(
     'FusionContainer.replace notifies didReplace instead of only didRemove',
     (tester) async {
-      final pageA = FusionPage.createPage('/a');
+      final pageA = FusionPage.createPage('/a', null, false);
       final container = FusionContainer('container-1', pageA);
 
       await tester.pumpWidget(
@@ -108,12 +111,12 @@ void main() {
           home: FusionContainerWidget(container),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       recordingObserver.events.clear();
 
-      final pageB = FusionPage.createPage('/b');
+      final pageB = FusionPage.createPage('/b', null, false);
       await container.replace(pageB);
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(recordingObserver.events, ['didReplace']);
       expect(recordingObserver.lastOldRoute, pageA.route);
