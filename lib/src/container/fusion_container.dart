@@ -78,10 +78,18 @@ class FusionContainer extends ChangeNotifier {
 
   Future<T?> replace<T extends Object?>(FusionPage<T> page) {
     page.container = this;
+    FusionPage? oldPage;
     if (_pages.isNotEmpty) {
-      _pages.removeLast().didComplete(null);
+      oldPage = _pages.removeLast();
+      oldPage.didComplete(null);
     }
     _pages.add(page);
+    if (oldPage != null) {
+      FusionNavigatorObserverManager.instance.beginReplace(
+        oldRoute: oldPage.route,
+        newRoute: page.route,
+      );
+    }
     notifyListeners();
     return page.popped;
   }
