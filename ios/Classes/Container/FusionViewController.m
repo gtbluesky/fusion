@@ -10,6 +10,10 @@
 @interface FusionViewController (SwiftSupport)
 + (FlutterEngine *)fusionSharedEngine;
 + (void)fusionDetachSharedEngine;
+- (void)fusion_completeInitWithRouteName:(NSString *)routeName
+                               routeArgs:(NSDictionary<NSString *, id> *)routeArgs
+                             transparent:(BOOL)transparent
+                         backgroundColor:(UIColor *)backgroundColor;
 - (void)fusion_decodeRestorableState:(NSCoder *)coder;
 - (void)fusion_encodeRestorableState:(NSCoder *)coder;
 - (void)onContainerCreate;
@@ -26,6 +30,26 @@
                          routeArgs:routeArgs
                        transparent:NO
                    backgroundColor:nil];
+}
+
+- (instancetype)initWithRouteName:(NSString *)routeName
+                        routeArgs:(NSDictionary<NSString *, id> *)routeArgs
+                      transparent:(BOOL)transparent
+                  backgroundColor:(UIColor *)backgroundColor {
+    FlutterEngine *engine = [FusionViewController fusionSharedEngine];
+    if (engine != nil) {
+        [FusionViewController fusionDetachSharedEngine];
+        self = [super initWithEngine:engine nibName:nil bundle:nil];
+    } else {
+        self = [super initWithProject:nil nibName:nil bundle:nil];
+    }
+    if (self) {
+        [self fusion_completeInitWithRouteName:routeName
+                                     routeArgs:routeArgs
+                                   transparent:transparent
+                               backgroundColor:backgroundColor];
+    }
+    return self;
 }
 
 - (instancetype)initWithRouteName:(NSString *)routeName

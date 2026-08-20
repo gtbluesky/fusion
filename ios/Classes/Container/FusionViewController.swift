@@ -70,14 +70,11 @@ extension FusionViewController {
         Fusion.instance.engineBinding?.engine?.viewController = nil
     }
 
-    @objc(initWithRouteName:routeArgs:transparent:backgroundColor:)
     public convenience init(routeName: String, routeArgs: Dictionary<String, Any>?, transparent: Bool = false, backgroundColor: UIColor? = nil) {
-        if let engine = Fusion.instance.engineBinding?.engine {
-            Fusion.instance.engineBinding?.engine?.viewController = nil
-            self.init(engine: engine, nibName: nil, bundle: nil)
-        } else {
-            self.init(project: nil, nibName: nil, bundle: nil)
-        }
+        self.init(__routeName: routeName, routeArgs: routeArgs, transparent: transparent, backgroundColor: backgroundColor)
+    }
+
+    @objc func fusion_completeInitWithRouteName(_ routeName: String, routeArgs: Dictionary<String, Any>?, transparent: Bool, backgroundColor: UIColor?) {
         engineBinding = Fusion.instance.engineBinding
         if let backgroundColor = backgroundColor {
             fusionBackgroundColor = backgroundColor

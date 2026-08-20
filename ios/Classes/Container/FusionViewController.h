@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRouteName:(NSString *)routeName
                         routeArgs:(nullable NSDictionary<NSString *, id> *)routeArgs
                       transparent:(BOOL)transparent
-                  backgroundColor:(nullable UIColor *)backgroundColor;
+                  backgroundColor:(nullable UIColor *)backgroundColor
+    NS_SWIFT_NAME(init(__routeName:routeArgs:transparent:backgroundColor:));
 
 - (instancetype)initWithRouteName:(NSString *)routeName
                         routeArgs:(nullable NSDictionary<NSString *, id> *)routeArgs
