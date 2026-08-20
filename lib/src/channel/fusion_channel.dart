@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -233,7 +234,7 @@ class FusionChannel {
         .map((e) => {
               'uniqueId': e.uniqueId,
               'name': e.name,
-              'args': e.args,
+              'args': sanitizeForStandardMessageCodec(e.args),
             })
         .toList();
     if (history.length == 1) {
@@ -287,5 +288,52 @@ class FusionChannel {
       'name': name,
       'args': args,
     });
+  }
+}
+
+const Object _kOmitHostSyncValue = Object();
+
+/// Returns a [StandardMessageCodec]-safe copy of [value].
+///
+/// [Function] callbacks and other types the codec cannot encode are omitted
+/// (dropped from [Map]s and [List]s). Encodable values are left unchanged.
+Object? sanitizeForStandardMessageCodec(Object? value) {
+  final sanitized = _sanitizeForStandardMessageCodec(value);
+  return identical(sanitized, _kOmitHostSyncValue) ? null : sanitized;
+}
+
+Object? _sanitizeForStandardMessageCodec(Object? value) {
+  if (value is Function) {
+    return _kOmitHostSyncValue;
+  }
+  if (value is Map) {
+    final result = <Object?, Object?>{};
+    value.forEach((key, val) {
+      final sanitizedKey = _sanitizeForStandardMessageCodec(key);
+      final sanitizedVal = _sanitizeForStandardMessageCodec(val);
+      if (!identical(sanitizedKey, _kOmitHostSyncValue) &&
+          !identical(sanitizedVal, _kOmitHostSyncValue)) {
+        result[sanitizedKey] = sanitizedVal;
+      }
+    });
+    return result;
+  }
+  // Typed data lists are themselves [List]s; keep them intact when the codec
+  // supports them instead of rewriting element-by-element.
+  if (value is List && value is! TypedData) {
+    final result = <Object?>[];
+    for (final item in value) {
+      final sanitized = _sanitizeForStandardMessageCodec(item);
+      if (!identical(sanitized, _kOmitHostSyncValue)) {
+        result.add(sanitized);
+      }
+    }
+    return result;
+  }
+  try {
+    const StandardMessageCodec().encodeMessage(value);
+    return value;
+  } catch (_) {
+    return _kOmitHostSyncValue;
   }
 }
