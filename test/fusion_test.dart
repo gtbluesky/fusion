@@ -115,7 +115,8 @@ void main() {
       recordingObserver.events.clear();
 
       final pageB = FusionPage.createPage('/b', null, false);
-      await container.replace(pageB);
+      // replace() returns the new page's popped future; do not await it here.
+      container.replace(pageB);
       await tester.pump();
 
       expect(recordingObserver.events, ['didReplace']);
