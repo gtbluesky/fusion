@@ -1,3 +1,7 @@
+## 4.10.4
+
+* HarmonyOS: no longer forces `setWindowLayoutFullScreen(true)`. Apps set window layout in `EntryAbility#onWindowStageCreate`.
+
 ## 4.10.3
 
 * Fixes some known bugs.

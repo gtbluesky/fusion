@@ -112,7 +112,7 @@ class FusionLifecycleCallback extends AbilityLifecycleCallback {
   }
 
   override onWindowStageCreate(ability: UIAbility, windowStage: window.WindowStage): void {
-    windowStage.getMainWindowSync().setWindowLayoutFullScreen(true)
+    // Host apps set window layout in EntryAbility#onWindowStageCreate.
     FlutterManager.getInstance().pushWindowStage(ability, windowStage)
     if (this.isDefaultFullScreen()) {
       FlutterManager.getInstance().setUseFullScreen(true, ability.context)
