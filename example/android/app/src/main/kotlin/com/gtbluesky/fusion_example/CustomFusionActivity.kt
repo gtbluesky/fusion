@@ -1,7 +1,8 @@
 package com.gtbluesky.fusion_example
 
+import android.os.Bundle
 import android.util.Log
-import com.gtbluesky.fusion.container.FusionActivity
+import androidx.activity.enableEdgeToEdge
 import com.gtbluesky.fusion.handler.FusionMessengerHandler
 import com.gtbluesky.fusion.container.FusionFragmentActivity
 import io.flutter.plugin.common.BinaryMessenger
@@ -10,6 +11,11 @@ import io.flutter.plugin.common.MethodChannel
 open class CustomFusionActivity : FusionFragmentActivity(), FusionMessengerHandler {
 
     private var channel: MethodChannel? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+    }
 
     override fun configureFlutterChannel(binaryMessenger: BinaryMessenger) {
         Log.d(this.toString(), "configureFlutterChannel")

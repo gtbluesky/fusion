@@ -2,7 +2,9 @@ package com.gtbluesky.fusion_example
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import com.gtbluesky.fusion.navigator.FusionNavigator
 import com.gtbluesky.fusion.navigator.FusionRouteType
 import com.gtbluesky.fusion.event.FusionEventManager
@@ -12,11 +14,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
         setListener()
         FusionEventManager.register("custom_event", ::onReceive)
+//        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
     }
 
     private fun onReceive(args: Map<String, Any>?) {

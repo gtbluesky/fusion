@@ -303,7 +303,7 @@ class NavigatorExtensionState extends NavigatorState {
   }
 
   @override
-  void removeRoute(Route route) {
+  void removeRoute<T extends Object?>(Route<T> route, [T? result]) {
     if (route is PopupRoute) {
       final targetContainer =
           FusionOverlayManager.instance.findContainerByRoute(route);
@@ -315,6 +315,6 @@ class NavigatorExtensionState extends NavigatorState {
         FusionRouteObserverManager.instance.didRemove(route);
       }
     }
-    super.removeRoute(route);
+    super.removeRoute(route, result);
   }
 }

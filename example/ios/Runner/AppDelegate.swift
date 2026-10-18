@@ -1,7 +1,7 @@
 import UIKit
 import fusion
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: UIResponder, UIApplicationDelegate, FusionRouteDelegate {
     var window: UIWindow?
 

@@ -7,11 +7,11 @@
         "material": {
           "certpath": "/Users/gant/.ohos/config/common_ohos_ELVpOyAllNItDCOGNxaeqiQjvJ5ReKeA0TUF70bCYCc=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A731A24B129C1A76E76C8EBB182E4FBD40362659C672AFF68905774D525973E7D36C09191852C",
+          "keyPassword": "0000001BB16F3C39CC0165BC44A779E71A1578FFDE7869F0D6EA5FA4D2659571354F24B56C7E5615153EE3",
           "profile": "/Users/gant/.ohos/config/common_ohos_ELVpOyAllNItDCOGNxaeqiQjvJ5ReKeA0TUF70bCYCc=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/gant/.ohos/config/common_ohos_ELVpOyAllNItDCOGNxaeqiQjvJ5ReKeA0TUF70bCYCc=.p12",
-          "storePassword": "0000001A41FFFD40197EDF0647BD59B306915DB7E4EDF9F137EDF11A5AF0225177768D4F7C25398F14CA"
+          "storePassword": "0000001B7BC1EED43D9009877D4ABF67668EFC57E22C99832327A1A4EE1AFAAA43C4330B61303ACA7E1EB5"
         }
       }
     ],
@@ -19,8 +19,20 @@
       {
         "name": "default",
         "signingConfig": "common",
-        "compatibleSdkVersion": "5.0.0(12)",
-        "runtimeOS": "HarmonyOS"
+        "compatibleSdkVersion": "5.1.0(18)",
+        "targetSdkVersion": "26.0.0",
+        "runtimeOS": "HarmonyOS",
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "profile"
+      },
+      {
+        "name": "release"
       }
     ]
   },

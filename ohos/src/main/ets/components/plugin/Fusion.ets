@@ -69,7 +69,7 @@ export default class Fusion {
     this.context = context
     this._delegate = delegate
     this._engineGroup = new FlutterEngineGroup()
-    this._engineGroup.checkLoader(context, null)
+    this._engineGroup.checkLoader(context, [])
     this._defaultEngine = this.createAndRunEngine(registerPlugins)
     this._engineBinding = new FusionEngineBinding(this._defaultEngine)
     this._engineBinding?.attach()

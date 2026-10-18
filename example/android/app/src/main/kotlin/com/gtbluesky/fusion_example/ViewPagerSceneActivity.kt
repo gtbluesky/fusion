@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.gtbluesky.fusion.container.FusionFragment
@@ -14,6 +15,7 @@ class ViewPagerSceneActivity : FragmentActivity() {
     private lateinit var binding: ActivityViewpagerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityViewpagerBinding.inflate(layoutInflater)
         setContentView(binding.root)

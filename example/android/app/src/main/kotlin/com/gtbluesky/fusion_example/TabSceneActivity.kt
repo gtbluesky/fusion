@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.gtbluesky.fusion.container.FusionFragment
@@ -15,6 +16,7 @@ class TabSceneActivity : FragmentActivity() {
     private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityTabBinding.inflate(layoutInflater)
         setContentView(binding.root)

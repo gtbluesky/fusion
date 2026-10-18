@@ -3,13 +3,13 @@
 
 | **OS**        | Android    | iOS   | HarmonyOS |
 |---------------|------------|-------|-----------|
-| **SDK**   | 5.0(21)+   | 11.0+ | 5.0(13)+  |
+| **SDK**   | 7.0(24)+   | 13.0+ | 5.1.0(18)+  |
 
 ## 简介
 
 Fusion 是新一代的混合栈管理框架，用于 Flutter 与 Native 页面统一管理，并支持页面通信、页面生命周期监听等功能。Fusion 即 `融合`，我们的设计初衷就是帮助开发者在使用 Flutter 与 Native 进行混合开发时尽量感受不到两者的隔阂，提升开发体验。
 
-从 4.0 开始，Fusion 已完成纯鸿蒙平台（HarmonyOS Next/OpenHarmony，以下简称 HarmonyOS）的适配，开发者可以在Android、iOS、HarmonyOS上得到完全一致的体验。（HarmonyOS 的 Flutter SDK 可以在[这里](https://gitcode.com/openharmony-tpc/flutter_flutter)获取）
+从 4.0 开始，Fusion 已完成纯鸿蒙平台（HarmonyOS Next/OpenHarmony，以下简称 HarmonyOS）的适配，开发者可以在Android、iOS、HarmonyOS上得到完全一致的体验。（HarmonyOS 的 Flutter SDK 可以在[这里](https://gitcode.com/CPF-Flutter/flutter_flutter)获取）
 
 Fusion 采用引擎复用方案，在 Flutter 与 Native 页面多次跳转情况下，APP 始终仅有一份 FlutterEngine 实例，因此拥有更好的性能和更低的内存占用。
 

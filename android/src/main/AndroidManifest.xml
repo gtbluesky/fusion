@@ -1,7 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.gtbluesky.fusion">
 
-    <application>
+    <application
+        android:enableOnBackInvokedCallback="false"
+        tools:targetApi="33">
         <activity
             android:name=".container.FusionActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
